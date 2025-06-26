@@ -3,7 +3,7 @@
 # installs and configures the display for startup
 sudo apt update
 sudo apt install -y xserver-xorg
-sudo mv boot-display.service /etc/systemd/system/
+sudo cp boot-display.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable boot-display.service
 
