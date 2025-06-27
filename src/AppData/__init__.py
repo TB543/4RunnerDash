@@ -1,5 +1,6 @@
 from AppData.AppearanceSettings import APPEARANCE_SETTINGS
 
+
 # loads settings
 APPEARANCE_SETTINGS.load()
 

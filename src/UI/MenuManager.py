@@ -1,5 +1,5 @@
 from customtkinter import CTk
-from AppData import PI_WIDTH, PI_HEIGHT
+from AppData import PI_WIDTH, PI_HEIGHT, APPEARANCE_SETTINGS
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
 
@@ -27,7 +27,7 @@ class MenuManager(CTk):
             "main": MainMenu(self),
             "settings": SettingsMenu(self)
         }
-        self.menus[self.active_menu].pack(fill="both", expand=True)
+        self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def change_menu(self, menu_name):
         """
@@ -36,6 +36,7 @@ class MenuManager(CTk):
         @param menu_name: the name of the menu to switch to
         """
         
-        self.menus[self.active_menu].pack_forget()
+        self.menus[self.active_menu].place_forget()
         self.active_menu = menu_name
-        self.menus[self.active_menu].pack(fill="both", expand=True)
+        self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
+        APPEARANCE_SETTINGS.set_scaling(APPEARANCE_SETTINGS.scaling)
