@@ -91,7 +91,7 @@ class APPEARANCE_MANAGER:
     @classmethod
     def load(cls):
         try:
-            with open("AppData/json/appearance_settings.json", "r") as f:
+            with open("AppData/appearance_settings.json", "r") as f:
                 data = load(f)
                 cls.mode = data["mode"]
                 cls.theme = data["theme"]
@@ -113,7 +113,7 @@ class APPEARANCE_MANAGER:
 
     @classmethod
     def save(cls):
-        with open("AppData/json/appearance_settings.json", "w") as f:
+        with open("AppData/appearance_settings.json", "w") as f:
             dump({
                 "mode": cls.mode,
                 "theme": cls.theme,
