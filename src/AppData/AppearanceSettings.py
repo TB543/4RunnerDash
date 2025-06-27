@@ -1,5 +1,9 @@
 from customtkinter import set_appearance_mode, set_default_color_theme, set_widget_scaling, ThemeManager
 from json import dump, load
+from geocoder import ip
+from astral import LocationInfo
+from astral.sun import sun
+from datetime import datetime, timezone
 
 
 def change_theme(root):
@@ -26,13 +30,17 @@ def change_theme(root):
         change_theme(widget)
 
 
-class APPEARANCE_SETTINGS:
+class APPEARANCE_MANAGER:
 
     # ==================================== DEFAULT VALUES ====================================
 
+    root = None  # the will be set by the MenuManager when it is created
+    after_change_mode = None  # used to change the mode on sunrise/sunset if the mode is set to "system"
     mode = "dark"
     theme = "blue"
     scaling = 1.00
+    lat = 0
+    long = 0
 
     # ====================================== ALL VALUES ======================================
 
@@ -44,7 +52,7 @@ class APPEARANCE_SETTINGS:
 
     MODES = {
         "light": MetaData("dark", "☀️"),
-        "dark": MetaData("light", "🌙"),
+        "dark": MetaData("system", "🌙"),
         "system": MetaData("light", "🕒")  # todo implement system to switch based based on time of day
     }
 
@@ -55,29 +63,29 @@ class APPEARANCE_SETTINGS:
     }
 
     SCALES = {
-        1.00: MetaData(1.37, "👁️"),
-        1.37: MetaData(1.75, "🔍"),
-        1.75: MetaData(1.00, "🔭")
+        1.000: MetaData(1.375, "👁️"),
+        1.375: MetaData(1.750, "🔍"),
+        1.750: MetaData(1.000, "🔭")
     }
 
     # ======================================= SETTERS ========================================
 
     @classmethod
     def set_mode(cls, mode):
-        set_appearance_mode(mode)
         cls.mode = mode
-
+        cls.root.after_cancel(cls.after_change_mode)
+        set_appearance_mode(mode) if (mode != "system") else cls.apply_system_mode()
+        
     @classmethod
-    def set_theme(cls, theme, root=None):
-        set_default_color_theme(theme)
+    def set_theme(cls, theme):
         cls.theme = theme
-        change_theme(root) if root else None
-
+        set_default_color_theme(theme)
+        change_theme(cls.root) if cls.root else None
 
     @classmethod
     def set_scaling(cls, scaling):
-        set_widget_scaling(scaling)
         cls.scaling = scaling
+        set_widget_scaling(scaling)
 
     # ======================================= LOAD/SAVE ======================================
 
@@ -86,14 +94,23 @@ class APPEARANCE_SETTINGS:
         try:
             with open("AppData/json/appearance_settings.json", "r") as f:
                 data = load(f)
-                cls.set_mode(data["mode"])
-                cls.set_theme(data["theme"])
-                cls.set_scaling(data["scaling"])
+                cls.mode = data["mode"]
+                cls.theme = data["theme"]
+                cls.scaling = data["scaling"]
+                cls.lat = data["lat"]
+                cls.long = data["long"]
         
         # If the file does not exist, create it with default values
         except FileNotFoundError:
             cls.save()
-            cls.load()
+
+    @classmethod
+    def set_root(cls, root):
+        cls.root = root
+        cls.after_change_mode = root.after(0, lambda: None)
+        cls.set_mode(cls.mode)
+        cls.set_theme(cls.theme)
+        cls.set_scaling(cls.scaling)
 
     @classmethod
     def save(cls):
@@ -101,5 +118,29 @@ class APPEARANCE_SETTINGS:
             dump({
                 "mode": cls.mode,
                 "theme": cls.theme,
-                "scaling": cls.scaling
+                "scaling": cls.scaling,
+                "lat": cls.lat,
+                "long": cls.long
             }, f, indent=4)
+
+    # ======================================= HELPERS ========================================
+
+    @classmethod
+    def apply_system_mode(cls):
+        """
+        Applies the system appearance mode to the application.
+        """
+
+        # gets the sunrise and sunset times for the current location
+        location = ip("me")
+        cls.lat, cls.long = location.latlng if location.latlng else (cls.lat, cls.long)
+        city = LocationInfo(latitude=cls.lat, longitude=cls.long)
+        now = datetime.now(tz=timezone.utc)
+        s = sun(city.observer, date=now.date())
+        sunrise = s["sunrise"]
+        sunset = s["sunset"]
+
+        # sets the mode based on the current time and schedules the next update in 30 minutes
+        cls.save()
+        set_appearance_mode("light" if sunrise < now < sunset else "dark")
+        cls.after_change_mode = cls.root.after(1_800_000, cls.apply_system_mode)

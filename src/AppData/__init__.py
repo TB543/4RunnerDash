@@ -1,8 +1,8 @@
-from AppData.AppearanceSettings import APPEARANCE_SETTINGS
+from AppData.AppearanceSettings import APPEARANCE_MANAGER
 
 
 # loads settings
-APPEARANCE_SETTINGS.load()
+APPEARANCE_MANAGER.load()
 
 # sets the dimensions of the pi screen
 PI_WIDTH = 1024

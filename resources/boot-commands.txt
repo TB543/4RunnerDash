@@ -4,6 +4,8 @@ if [[ -n "$SSH_CLIENT" ]]; then
     export DISPLAY=$(echo $SSH_CLIENT | awk '{print $1}'):0.0
 else
     export DISPLAY=:0
+
+    # runs the program locally
     cd $HOME/4RunnerDash/src
     sudo ../venv/bin/python main.py
 fi

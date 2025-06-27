@@ -1,5 +1,7 @@
 {
     "mode": "dark",
-    "theme": "green",
-    "scaling": 1.75
+    "theme": "blue",
+    "scaling": 1.0,
+    "lat": 0,
+    "long": 0
 }

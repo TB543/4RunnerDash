@@ -24,8 +24,9 @@ todo add hardware list here and hardware installation guide
     sudo raspi-config
     ```
 4. Navigate to **System Options** -> **Auto Login** and enable it.
+5. Optionally you can also disable screen sleeping after 10 mins in **Display Options -> Screen Blanking**
 
-> **Note:** Sometimes you may need to change the WLAN Country and reconnect to Wi-Fi for proper internet connectivity, even if it was set during flashing.
+> **Note:** Sometimes you may need to change the WLAN Country and reconnect to Wi-Fi for proper internet connectivity, even if it was set during flashing. This can be done in **Localization Options -> WLAN Country** and **System Options -> Wireless LAN**
 
 ## Installing and Running 4RunnerDash
 1. Install Git:

@@ -1,5 +1,5 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton
-from AppData import ICON_FONT, LABEL_FONT, APPEARANCE_SETTINGS
+from AppData import ICON_FONT, LABEL_FONT, APPEARANCE_MANAGER
 from subprocess import run
 
 
@@ -18,15 +18,15 @@ class SettingsMenu(CTkFrame):
         """
 
         super().__init__(parent, fg_color=fg_color, **kwargs)
-        appearance_text = APPEARANCE_SETTINGS.MODES[APPEARANCE_SETTINGS.mode].ICON
-        theme_text = APPEARANCE_SETTINGS.THEMES[APPEARANCE_SETTINGS.theme].ICON
-        scale_text = APPEARANCE_SETTINGS.SCALES[APPEARANCE_SETTINGS.scaling].ICON
+        appearance_text = APPEARANCE_MANAGER.MODES[APPEARANCE_MANAGER.mode].ICON
+        theme_text = APPEARANCE_MANAGER.THEMES[APPEARANCE_MANAGER.theme].ICON
+        scale_text = APPEARANCE_MANAGER.SCALES[APPEARANCE_MANAGER.scaling].ICON
 
         # creates the labels for the buttons
         back_label = CTkLabel(self, text="Back", font=LABEL_FONT)
-        appearance_label = CTkLabel(self, text="appearance", font=LABEL_FONT)
+        appearance_label = CTkLabel(self, text="Appearance", font=LABEL_FONT)
         theme_label = CTkLabel(self, text="Theme", font=LABEL_FONT)
-        scale_label = CTkLabel(self, text="Scale", font=LABEL_FONT)
+        scale_label = CTkLabel(self, text="Zoom", font=LABEL_FONT)
         back_label.grid(row=0, column=1, sticky="s")
         appearance_label.grid(row=0, column=3, sticky="s")
         theme_label.grid(row=0, column=5, sticky="s")
@@ -60,11 +60,11 @@ class SettingsMenu(CTkFrame):
         @param button: the button that was clicked
         """
 
-        current_appearance = APPEARANCE_SETTINGS.mode
-        next_appearance = APPEARANCE_SETTINGS.MODES[current_appearance].NEXT
-        APPEARANCE_SETTINGS.set_mode(next_appearance)
-        button.configure(text=APPEARANCE_SETTINGS.MODES[next_appearance].ICON)
-        APPEARANCE_SETTINGS.save()
+        current_appearance = APPEARANCE_MANAGER.mode
+        next_appearance = APPEARANCE_MANAGER.MODES[current_appearance].NEXT
+        APPEARANCE_MANAGER.set_mode(next_appearance)
+        button.configure(text=APPEARANCE_MANAGER.MODES[next_appearance].ICON)
+        APPEARANCE_MANAGER.save()
 
     def change_theme(self, button):
         """
@@ -73,11 +73,11 @@ class SettingsMenu(CTkFrame):
         @param button: the button that was clicked
         """
 
-        current_theme = APPEARANCE_SETTINGS.theme
-        next_theme = APPEARANCE_SETTINGS.THEMES[current_theme].NEXT
-        APPEARANCE_SETTINGS.set_theme(next_theme, self.winfo_toplevel())
-        button.configure(text=APPEARANCE_SETTINGS.THEMES[next_theme].ICON)
-        APPEARANCE_SETTINGS.save()
+        current_theme = APPEARANCE_MANAGER.theme
+        next_theme = APPEARANCE_MANAGER.THEMES[current_theme].NEXT
+        APPEARANCE_MANAGER.set_theme(next_theme)
+        button.configure(text=APPEARANCE_MANAGER.THEMES[next_theme].ICON)
+        APPEARANCE_MANAGER.save()
 
     def change_scaling(self, button):
         """
@@ -86,11 +86,11 @@ class SettingsMenu(CTkFrame):
         @param button: the button that was clicked
         """
 
-        current_scaling = APPEARANCE_SETTINGS.scaling
-        next_scaling = APPEARANCE_SETTINGS.SCALES[current_scaling].NEXT
-        APPEARANCE_SETTINGS.set_scaling(next_scaling)
-        button.configure(text=APPEARANCE_SETTINGS.SCALES[next_scaling].ICON)
-        APPEARANCE_SETTINGS.save()
+        current_scaling = APPEARANCE_MANAGER.scaling
+        next_scaling = APPEARANCE_MANAGER.SCALES[current_scaling].NEXT
+        APPEARANCE_MANAGER.set_scaling(next_scaling)
+        button.configure(text=APPEARANCE_MANAGER.SCALES[next_scaling].ICON)
+        APPEARANCE_MANAGER.save()
 
     def open_shell(self):
         """

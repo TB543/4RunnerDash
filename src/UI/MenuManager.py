@@ -1,5 +1,5 @@
 from customtkinter import CTk
-from AppData import PI_WIDTH, PI_HEIGHT, APPEARANCE_SETTINGS
+from AppData import PI_WIDTH, PI_HEIGHT, APPEARANCE_MANAGER
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
 
@@ -19,6 +19,7 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(fg_color, **kwargs)
+        APPEARANCE_MANAGER.set_root(self)
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.active_menu = "main"
 
@@ -39,4 +40,4 @@ class MenuManager(CTk):
         self.menus[self.active_menu].place_forget()
         self.active_menu = menu_name
         self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
-        APPEARANCE_SETTINGS.set_scaling(APPEARANCE_SETTINGS.scaling)
+        APPEARANCE_MANAGER.set_scaling(APPEARANCE_MANAGER.scaling)
