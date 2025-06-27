@@ -1,5 +1,6 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton
 from AppData import ICON_FONT, LABEL_FONT
+from subprocess import run
 
 
 class MainMenu(CTkFrame):
@@ -33,10 +34,12 @@ class MainMenu(CTkFrame):
         music_button = CTkButton(self, text="🎧", font=ICON_FONT, command=lambda: parent.change_menu("music"))
         obd_button = CTkButton(self, text="🚙", font=ICON_FONT, command=lambda: parent.change_menu("obd"))
         settings_button = CTkButton(self, text="🛠️", font=ICON_FONT, command=lambda: parent.change_menu("settings"))
+        sleep_button = CTkButton(self, text="Display Off", font=LABEL_FONT, command=lambda: run(["xrandr", "--output", "HDMI-1", "--off"]))
         maps_button.grid(row=1, column=1, sticky="nsew")
         music_button.grid(row=1, column=3, sticky="nsew")
         obd_button.grid(row=1, column=5, sticky="nsew")
         settings_button.grid(row=1, column=7, sticky="nsew")
+        sleep_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
 
         # sets the grid layout
         self.grid_rowconfigure(0, weight=1, uniform="row0")

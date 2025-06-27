@@ -1,6 +1,5 @@
 from customtkinter import set_appearance_mode, set_default_color_theme, set_widget_scaling, ThemeManager
 from json import dump, load
-from geocoder import ip
 from astral import LocationInfo
 from astral.sun import sun
 from datetime import datetime, timezone
@@ -36,7 +35,7 @@ class APPEARANCE_MANAGER:
 
     root = None  # the will be set by the MenuManager when it is created
     after_change_mode = None  # used to change the mode on sunrise/sunset if the mode is set to "system"
-    mode = "dark"
+    mode = "system"
     theme = "blue"
     scaling = 1.00
     lat = 0
@@ -132,11 +131,11 @@ class APPEARANCE_MANAGER:
         """
 
         # gets the sunrise and sunset times for the current location
-        location = ip("me")
-        cls.lat, cls.long = location.latlng if location.latlng else (cls.lat, cls.long)
+        # location = ip("me")
+        # cls.lat, cls.long = location.latlng if location.latlng else (cls.lat, cls.long)
         city = LocationInfo(latitude=cls.lat, longitude=cls.long)
-        now = datetime.now(tz=timezone.utc)
-        s = sun(city.observer, date=now.date())
+        now = datetime.now().astimezone()
+        s = sun(city.observer, date=now.date(), tzinfo=now.tzinfo)
         sunrise = s["sunrise"]
         sunset = s["sunset"]
 
