@@ -2,7 +2,8 @@ from customtkinter import CTkFrame, CTkLabel, CTkButton
 from AppData import ICON_FONT, LABEL_FONT
 from subprocess import run
 from time import sleep
-from evdev import InputDevice, ecodes
+from evdev import list_devices, InputDevice, ecodes
+from os import environ
 
 
 class MainMenu(CTkFrame):
@@ -36,7 +37,7 @@ class MainMenu(CTkFrame):
         music_button = CTkButton(self, text="🎧", font=ICON_FONT, command=lambda: parent.change_menu("music"))
         obd_button = CTkButton(self, text="🚙", font=ICON_FONT, command=lambda: parent.change_menu("obd"))
         settings_button = CTkButton(self, text="🛠️", font=ICON_FONT, command=lambda: parent.change_menu("settings"))
-        sleep_button = CTkButton(self, text="Display Off", font=LABEL_FONT, command=self.sleep)
+        sleep_button = CTkButton(self, text="Display Sleep", font=LABEL_FONT, command=self.sleep)
         maps_button.grid(row=1, column=1, sticky="nsew")
         music_button.grid(row=1, column=3, sticky="nsew")
         obd_button.grid(row=1, column=5, sticky="nsew")
@@ -64,8 +65,15 @@ class MainMenu(CTkFrame):
         run(["xrandr", "--output", "HDMI-1", "--off"])
         sleep(1)
 
+        # gets the touch screen device
+        device_name = environ["TOUCH_SCREEN"]
+        touch_screen = None
+        for path in list_devices():
+            touch_screen = InputDevice(path)
+            if device_name == touch_screen.name:
+                break
+
         # Wait for a touch event to wake up the display
-        touch_screen = InputDevice('/dev/input/event0')
         for event in touch_screen.read_loop():
             if event.code == ecodes.BTN_TOUCH:
                 break

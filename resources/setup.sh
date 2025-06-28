@@ -9,5 +9,11 @@ python3 -m venv ../venv --system-site-packages
 sudo cp boot-display.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable boot-display.service
+
+# asks user for the name of the display
+clear
+grep -i "N: Name=" /proc/bus/input/devices
+read -p "Above is a list of connected devices, copy and paste the one for the touch screen (just the text in the quotes): " TOUCH_SCREEN
+echo "export TOUCH_SCREEN='$TOUCH_SCREEN'" >> ~/.bashrc
 cat boot-commands.txt >> ~/.bashrc
 sudo reboot

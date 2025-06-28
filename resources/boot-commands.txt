@@ -3,7 +3,6 @@
 if [[ -n "$SSH_CLIENT" ]]; then
     export DISPLAY=$(echo $SSH_CLIENT | awk '{print $1}'):0.0
 else
-    export DISPLAY=:0
     cd $HOME/4RunnerDash/src
 
     # configures bluetooth settings
@@ -14,5 +13,5 @@ else
 
     # runs the program locally
     sudo ../venv/bin/python Audio/BluezAgent.py &
-    sudo ../venv/bin/python main.py
+    sudo --preserve-env=TOUCH_SCREEN ../venv/bin/python main.py
 fi

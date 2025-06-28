@@ -45,4 +45,15 @@ todo add hardware list here and hardware installation guide
     ```bash
     ./setup.sh
     ```
-5. Wait for the setup to complete. The Raspberry Pi will automatically reboot and start the program.
+5. When the setup is finished it will display a list of connected devices like so:
+    ```bash
+    N: Name="pwr_button"
+    N: Name="QDTECH̐MPI700 MPI7002"
+    N: Name="vc4-hdmi-0"
+    N: Name="vc4-hdmi-0 HDMI Jack"
+    N: Name="vc4-hdmi-1"
+    N: Name="vc4-hdmi-1 HDMI Jack"
+    ```
+    It will ask you to copy and paste the device for the touch screen. So in my case it would be **QDTECH̐MPI700 MPI7002**.
+
+6. The Raspberry Pi will automatically reboot and start the program.
