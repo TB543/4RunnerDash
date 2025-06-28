@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # installs dependencies
-sudo apt install -y xserver-xorg x11-xserver-utils python3.11-dev python3-tk python3-gi fonts-noto-color-emoji bluez
+sudo apt install -y xserver-xorg x11-xserver-utils python3.11-dev python3-tk python3-gi fonts-noto-color-emoji bluez pulseaudio pulseaudio-module-bluetooth
 python3 -m venv ../venv --system-site-packages
 ../venv/bin/pip install -r requirements.txt
 

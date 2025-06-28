@@ -102,7 +102,7 @@ def interface_added(path, ifaces):
     if DEVICE_IFACE in ifaces.keys():
         dev_name = ifaces[DEVICE_IFACE].get('Name')
         print('Device found:', dev_name)
-        if dev_name == 'HC-06':
+        if dev_name == '4RunnerDash':
             device_found(path, ifaces[DEVICE_IFACE])
 
 
