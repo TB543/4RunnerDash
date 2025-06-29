@@ -8,16 +8,15 @@ class SettingsMenu(CTkFrame):
     Settings menu for the 4Runner Dash application.
     """
 
-    def __init__(self, parent, fg_color=None, **kwargs):
+    def __init__(self, master, **kwargs):
         """
         Initializes the settings menu frame.
         
-        @param parent: the parent widget
-        @param fg_color: the foreground color of the frame
+        @param master: the parent widget
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
-        super().__init__(parent, fg_color=fg_color, **kwargs)
+        super().__init__(master, **kwargs)
         appearance_text = APPEARANCE_MANAGER.MODES[APPEARANCE_MANAGER.mode].ICON
         theme_text = APPEARANCE_MANAGER.THEMES[APPEARANCE_MANAGER.theme].ICON
         scale_text = APPEARANCE_MANAGER.SCALES[APPEARANCE_MANAGER.scaling].ICON
@@ -33,7 +32,7 @@ class SettingsMenu(CTkFrame):
         scale_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        back_button = CTkButton(self, text="↩️", font=ICON_FONT, command=lambda: parent.change_menu("main"))
+        back_button = CTkButton(self, text="↩", font=ICON_FONT, command=lambda: master.change_menu("main"))
         appearance_button = CTkButton(self, text=appearance_text, font=ICON_FONT, command=lambda: self.change_appearance(appearance_button))
         theme_button = CTkButton(self, text=theme_text, font=ICON_FONT, command=lambda: self.change_theme(theme_button))
         scale_button = CTkButton(self, text=scale_text, font=ICON_FONT, command=lambda: self.change_scaling(scale_button))

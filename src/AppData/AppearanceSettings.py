@@ -2,7 +2,7 @@ from customtkinter import set_appearance_mode, set_default_color_theme, set_widg
 from json import dump, load
 from astral import LocationInfo
 from astral.sun import sun
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 def change_theme(root):
@@ -45,14 +45,14 @@ class APPEARANCE_MANAGER:
 
     # class to hold metadata for each value used by the UI to cycle through options and display the current value
     class MetaData:
-        def __init__(self, next, icon):
-            self.NEXT = next
+        def __init__(self, next_value, icon):
+            self.NEXT = next_value
             self.ICON = icon
 
     MODES = {
-        "light": MetaData("dark", "☀️"),
+        "light": MetaData("dark", "☀"),
         "dark": MetaData("system", "🌙"),
-        "system": MetaData("light", "🕒")  # todo implement system to switch based based on time of day
+        "system": MetaData("light", "🕒")
     }
 
     THEMES = {

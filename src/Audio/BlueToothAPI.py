@@ -39,27 +39,21 @@ class BlueToothAPI:
             
     # ========================================== PLAYBACK CONTROLS ==========================================
 
-    def play(self):
+    def previous_track(self):
         try:
-            self.player.Play()
+            self.player.Previous()
         except:
             self.update_player()
 
-    def pause(self):
+    def toggle_play_pause(self):
         try:
-            self.player.Pause()
+            self.player.Pause() if self.player.Status == "playing" else self.player.Play()
         except:
             self.update_player()
 
     def next_track(self):
         try:
             self.player.Next()
-        except:
-            self.update_player()
-
-    def previous_track(self):
-        try:
-            self.player.Previous()
         except:
             self.update_player()
 
@@ -82,14 +76,6 @@ class BlueToothAPI:
         return self._artist
 
     @property
-    def playback_ratio(self):
-        try:
-            self._playback_ratio = self.player.Position / self.player.Track["Duration"]
-        except:
-            self.update_player()
-        return self._playback_ratio
-
-    @property
     def elapsed_time_str(self):
         try:
             self._elapsed_time_str = strftime("%M:%S", gmtime(self.player.Position / 1000))
@@ -98,9 +84,25 @@ class BlueToothAPI:
         return self._elapsed_time_str
 
     @property
+    def playback_ratio(self):
+        try:
+            self._playback_ratio = self.player.Position / self.player.Track["Duration"]
+        except:
+            self.update_player()
+        return self._playback_ratio
+
+    @property
     def remaining_time_str(self):
         try:
             self._remaining_time_str = strftime("%M:%S", gmtime((self.player.Track["Duration"] - self.player.Position) / 1000))
         except:
             self.update_player()
         return self._remaining_time_str
+
+    @property
+    def playback_mode(self):
+        try:
+            return "▶" if self.player.Status == "playing" else "⏸"
+        except:
+            self.update_player()
+            return "⏸"
