@@ -68,41 +68,39 @@ class BlueToothAPI:
     @property
     def title(self):
         try:
-            return self.player.Track["Title"]
+            self._title = self.player.Track["Title"]
         except:
             self.update_player()
-            return self._title
+        return self._title
 
     @property
     def artist(self):
         try:
-            return self.player.Track["Artist"]
+            self._artist = self.player.Track["Artist"]
         except:
             self.update_player()
-            return self._artist
+        return self._artist
 
     @property
     def playback_ratio(self):
         try:
-            return self.player.Position / self.player.Track["Duration"]
+            self._playback_ratio = self.player.Position / self.player.Track["Duration"]
         except:
             self.update_player()
-            return self._playback_ratio
+        return self._playback_ratio
 
     @property
     def elapsed_time_str(self):
         try:
-            return strftime("%M:%S", gmtime(self.player.Position / 1000))
+            self._elapsed_time_str = strftime("%M:%S", gmtime(self.player.Position / 1000))
         except:
             self.update_player()
-            return self._elapsed_time_str
+        return self._elapsed_time_str
 
     @property
     def remaining_time_str(self):
         try:
-            return strftime("%M:%S", gmtime((self.player.Track["Duration"] - self.player.Position) / 1000))
+            self._remaining_time_str = strftime("%M:%S", gmtime((self.player.Track["Duration"] - self.player.Position) / 1000))
         except:
             self.update_player()
-            return self._remaining_time_str
-
-print(BlueToothAPI().artist)
+        return self._remaining_time_str
