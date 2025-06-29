@@ -1,5 +1,6 @@
 from pydbus import SystemBus
 from time import strftime, gmtime
+from time import sleep
 
 
 class BlueToothAPI:
@@ -14,7 +15,6 @@ class BlueToothAPI:
         """
 
         self.player = None
-        self.update_player()
         self._title = "N/A"
         self._artist = "N/A"
         self._playback_ratio = 0
@@ -27,25 +27,32 @@ class BlueToothAPI:
         """
 
         # gets bluetooth objects
-        bus = SystemBus()
-        mngr = bus.get("org.bluez", "/")
-        objects = mngr.GetManagedObjects()
+        try:
+            bus = SystemBus()
+            mngr = bus.get("org.bluez", "/")
+            objects = mngr.GetManagedObjects()
 
-        # finds player
-        for path, interfaces in objects.items():
-            if "org.bluez.MediaPlayer1" in interfaces:
-                self.player = bus.get("org.bluez", path)
-                return
+            # finds player
+            for path, interfaces in objects.items():
+                if "org.bluez.MediaPlayer1" in interfaces:
+                    self.player = bus.get("org.bluez", path)
+                    return
+        
+        except:
+            self.player = None
             
     # ========================================== PLAYBACK CONTROLS ==========================================
 
     def previous_track(self):
         try:
             self.player.Previous()
+            self.player.Pause()
+            sleep(.75)
+            self.player.Play()
         except:
             self.update_player()
 
-    def toggle_play_pause(self):
+    def track_control(self):
         try:
             self.player.Pause() if self.player.Status == "playing" else self.player.Play()
         except:
@@ -102,7 +109,7 @@ class BlueToothAPI:
     @property
     def playback_mode(self):
         try:
-            return "▶" if self.player.Status == "playing" else "⏸"
+            return "❚❚" if self.player.Status == "playing" else "▶"
         except:
             self.update_player()
-            return "⏸"
+            return "▶"

@@ -1,5 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, IntVar
-from AppData import LABEL_FONT, SONG_TITLE_FONT, SONG_ARTIST_FONT
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar
+from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, SONG_TITLE_FONT, SONG_ARTIST_FONT, SONG_TIME_FONT, TRACK_CONTROL_FONT, TRACK_SEEK_FONT
 from Audio.BlueToothAPI import BlueToothAPI
 
 
@@ -23,49 +23,62 @@ class MusicMenu(CTkFrame):
         self.api = BlueToothAPI()
         self.fps_counter = None  # will be set on place
 
-        # creates string vars
-        self.title = StringVar(self, self.api.title)
-        self.artist = StringVar(self, self.api.artist)
-        self.elapsed_time = StringVar(self, self.api.elapsed_time_str)
-        self.playback_ratio = IntVar(self, self.api.playback_ratio)
-        self.remaining_time = StringVar(self, self.api.remaining_time_str)
-        self.player_status = StringVar(self, self.api.playback_mode)
+        # creates the container and main menu widgets
+        container = CTkFrame(self, fg_color=self.cget("fg_color"))
+        main_menu = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
+        container.grid(row=1, column=1, columnspan=7, sticky="nsew")
+        main_menu.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
+
+        # creates spacer widgets and sets grid layout
+        self.rowconfigure(0, weight=1, uniform="row0")
+        self.rowconfigure(2, weight=1, uniform="row0")
+        self.columnconfigure(0, weight=1)
+        for col in range(1, 8, 2):
+            spacer = CTkButton(self, text="", font=MENU_ICON_FONT, fg_color="transparent", hover=False)
+            spacer.grid(row=0, column=col)
+            self.columnconfigure(col + 1, weight=1)
+
+        # creates string vars to hold metadata
+        self.title = StringVar(self)
+        self.artist = StringVar(self)
+        self.elapsed_time = StringVar(self)
+        self.playback_ratio = DoubleVar(self)
+        self.remaining_time = StringVar(self)
+        self.player_status = StringVar(self)
 
         # creates metadata
-        title = CTkLabel(self, textvariable=self.title, font=SONG_TITLE_FONT)
-        artist = CTkLabel(self, textvariable=self.artist, font=SONG_ARTIST_FONT)
-        elapsed_time = CTkLabel(self, textvariable=self.elapsed_time, font=LABEL_FONT)
-        progress_bar = CTkSlider(self, state="disabled", variable=self.playback_ratio)
-        remaining_time = CTkLabel(self, textvariable=self.remaining_time, font=LABEL_FONT)
+        title = CTkLabel(container, textvariable=self.title, font=SONG_TITLE_FONT, anchor="w")
+        artist = CTkLabel(container, textvariable=self.artist, font=SONG_ARTIST_FONT, anchor="w")
+        elapsed_time = CTkLabel(container, textvariable=self.elapsed_time, font=SONG_TIME_FONT)
+        progress_bar = CTkSlider(container, state="disabled", variable=self.playback_ratio)
+        remaining_time = CTkLabel(container, textvariable=self.remaining_time, font=SONG_TIME_FONT)
 
         # creates playback control widgets
-        previous_track = CTkButton(self, text="⏮", font=LABEL_FONT, fg_color="transparent", hover=False, command=self.api.previous_track)
-        toggle_play_pause = CTkButton(self, textvariable=self.player_status, font=LABEL_FONT, corner_radius=float("inf"), command=self.api.toggle_play_pause)
-        next_track = CTkButton(self, text="⏭", font=LABEL_FONT, fg_color="transparent", hover=False, command=self.api.next_track)
-        main_menu = CTkButton(self, text="Main Menu", font=LABEL_FONT, command=lambda: master.change_menu("main"))
+        previous_track = CTkButton(container, text="◀◀", font=TRACK_SEEK_FONT, corner_radius=float("inf"), command=self.api.previous_track)
+        track_control = CTkButton(container, textvariable=self.player_status, font=TRACK_CONTROL_FONT, corner_radius=float("inf"), command=self.api.track_control)
+        next_track = CTkButton(container, text="▶▶", font=TRACK_SEEK_FONT, corner_radius=float("inf"), command=self.api.next_track)
+        previous_track.configure(width=previous_track.cget("height"))
+        track_control.configure(width=track_control.cget("height") + 60, height=track_control.cget("height") + 20)
+        next_track.configure(width=next_track.cget("height"))
 
         # places metadata widgets
         # todo image at row 0
-        title.grid(row=1, column=1, columnspan=5, sticky="w")
-        artist.grid(row=2, column=1, columnspan=5, sticky="w")
-        elapsed_time.grid(row=3, column=1, sticky="e")
+        title.grid(row=1, column=1, columnspan=5, sticky="ew")
+        artist.grid(row=2, column=1, columnspan=5, sticky="ew")
+        elapsed_time.grid(row=3, column=1)
         progress_bar.grid(row=3, column=2, columnspan=3, sticky="ew")
-        remaining_time.grid(row=3, column=5, sticky="w")
+        remaining_time.grid(row=3, column=5)
 
         # places playback control widgets
-        previous_track.grid(row=4, column=2, sticky="ne")
-        toggle_play_pause.grid(row=4, column=3, sticky="n")
+        previous_track.grid(row=4, column=2)
+        track_control.grid(row=4, column=3)
         next_track.grid(row=4, column=4)
-        main_menu.grid(row=5, column=1, columnspan=5, pady=(0, 10), sticky="sew")
 
-        # sets the grid layout
-        self.grid_rowconfigure(0, weight=1, uniform="row0")
-        self.grid_rowconfigure(5, weight=1, uniform="row0")
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(2, weight=1)
-        self.grid_columnconfigure(3, weight=1)
-        self.grid_columnconfigure(4, weight=1)
-        self.grid_columnconfigure(6, weight=1)
+        # sets the grid layout of the container
+        container.columnconfigure(0, weight=1)
+        container.columnconfigure(2, weight=1)
+        container.columnconfigure(4, weight=1)
+        container.columnconfigure(6, weight=1)
 
     def update_metadata(self):
         """
@@ -97,10 +110,3 @@ class MusicMenu(CTkFrame):
 
         self.after_cancel(self.fps_counter)
         super().place_forget()
-
-
-from customtkinter import CTk
-window = MusicMenu(CTk())
-window.master.geometry(f"{1040}x{600}+0+0")
-window.pack(fill="both", expand=True)
-window.master.mainloop()

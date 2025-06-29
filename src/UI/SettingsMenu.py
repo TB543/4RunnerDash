@@ -1,5 +1,5 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton
-from AppData import ICON_FONT, LABEL_FONT, APPEARANCE_MANAGER
+from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, APPEARANCE_MANAGER
 from subprocess import run
 
 
@@ -22,26 +22,26 @@ class SettingsMenu(CTkFrame):
         scale_text = APPEARANCE_MANAGER.SCALES[APPEARANCE_MANAGER.scaling].ICON
 
         # creates the labels for the buttons
-        back_label = CTkLabel(self, text="Back", font=LABEL_FONT)
-        appearance_label = CTkLabel(self, text="Appearance", font=LABEL_FONT)
-        theme_label = CTkLabel(self, text="Theme", font=LABEL_FONT)
-        scale_label = CTkLabel(self, text="Zoom", font=LABEL_FONT)
-        back_label.grid(row=0, column=1, sticky="s")
-        appearance_label.grid(row=0, column=3, sticky="s")
-        theme_label.grid(row=0, column=5, sticky="s")
-        scale_label.grid(row=0, column=7, sticky="s")
+        appearance_label = CTkLabel(self, text="Appearance", font=MENU_LABEL_FONT)
+        theme_label = CTkLabel(self, text="Theme", font=MENU_LABEL_FONT)
+        scale_label = CTkLabel(self, text="Zoom", font=MENU_LABEL_FONT)
+        shell_label = CTkLabel(self, text="Open Shell", font=MENU_LABEL_FONT)
+        appearance_label.grid(row=0, column=1, sticky="s")
+        theme_label.grid(row=0, column=3, sticky="s")
+        scale_label.grid(row=0, column=5, sticky="s")
+        shell_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        back_button = CTkButton(self, text="↩", font=ICON_FONT, command=lambda: master.change_menu("main"))
-        appearance_button = CTkButton(self, text=appearance_text, font=ICON_FONT, command=lambda: self.change_appearance(appearance_button))
-        theme_button = CTkButton(self, text=theme_text, font=ICON_FONT, command=lambda: self.change_theme(theme_button))
-        scale_button = CTkButton(self, text=scale_text, font=ICON_FONT, command=lambda: self.change_scaling(scale_button))
-        shell_button = CTkButton(self, text="Open Shell", font=LABEL_FONT, command=self.open_shell)
-        back_button.grid(row=1, column=1, sticky="nsew")
-        appearance_button.grid(row=1, column=3, sticky="nsew")
-        theme_button.grid(row=1, column=5, sticky="nsew")
-        scale_button.grid(row=1, column=7, sticky="nsew")
-        shell_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
+        appearance_button = CTkButton(self, text=appearance_text, font=MENU_ICON_FONT, command=lambda: self.change_appearance(appearance_button))
+        theme_button = CTkButton(self, text=theme_text, font=MENU_ICON_FONT, command=lambda: self.change_theme(theme_button))
+        scale_button = CTkButton(self, text=scale_text, font=MENU_ICON_FONT, command=lambda: self.change_scaling(scale_button))
+        shell_button = CTkButton(self, text="🖥️", font=MENU_ICON_FONT, command=self.open_shell)
+        back_button = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
+        appearance_button.grid(row=1, column=1)
+        theme_button.grid(row=1, column=3)
+        scale_button.grid(row=1, column=5)
+        shell_button.grid(row=1, column=7)
+        back_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
 
         # sets the grid layout
         self.grid_rowconfigure(0, weight=1, uniform="row0")

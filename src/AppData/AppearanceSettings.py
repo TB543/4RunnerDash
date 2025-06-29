@@ -19,7 +19,7 @@ def change_theme(root):
 
                 # only applies the theme if the key is a valid configuration option for the widget
                 try:
-                    root.configure(**{key: value})
+                    root.configure(**{key: value}) if root.cget("fg_color") != "transparent" else None
                 except ValueError:
                     continue
             break
@@ -50,7 +50,7 @@ class APPEARANCE_MANAGER:
             self.ICON = icon
 
     MODES = {
-        "light": MetaData("dark", "☀"),
+        "light": MetaData("dark", "🔆"),
         "dark": MetaData("system", "🌙"),
         "system": MetaData("light", "🕒")
     }
