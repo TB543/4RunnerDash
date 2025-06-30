@@ -13,6 +13,6 @@ else
     bluetoothctl pairable on
 
     # runs the program locally
-    sudo ../venv/bin/python Audio/BluezAgent.py &
-    sudo --preserve-env=TOUCH_SCREEN,DISPLAY ../venv/bin/python main.py
+    ../venv/bin/python Audio/BluezAgent.py &
+    ../venv/bin/python main.py
 fi

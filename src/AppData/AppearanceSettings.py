@@ -70,21 +70,27 @@ class APPEARANCE_MANAGER:
     # ======================================= SETTERS ========================================
 
     @classmethod
-    def set_mode(cls, mode):
-        cls.mode = mode
+    def cycle_mode(cls):
+        cls.mode = cls.MODES[cls.mode].NEXT
         cls.root.after_cancel(cls.after_change_mode)
-        set_appearance_mode(mode) if (mode != "system") else cls.apply_system_mode()
+        set_appearance_mode(cls.mode) if (cls.mode != "system") else cls.apply_system_mode()
+        cls.save()
+        return cls.MODES[cls.mode].ICON
         
     @classmethod
-    def set_theme(cls, theme):
-        cls.theme = theme
-        set_default_color_theme(theme)
+    def cycle_theme(cls):
+        cls.theme = cls.THEMES[cls.theme].NEXT
+        set_default_color_theme(cls.theme)
         change_theme(cls.root) if cls.root else None
+        cls.save()
+        return cls.THEMES[cls.theme].ICON
 
     @classmethod
-    def set_scaling(cls, scaling):
-        cls.scaling = scaling
-        set_widget_scaling(scaling)
+    def cycle_scaling(cls):
+        cls.scaling = cls.SCALES[cls.scaling].NEXT
+        set_widget_scaling(cls.scaling)
+        cls.save()
+        return cls.SCALES[cls.scaling].ICON
 
     # ======================================= LOAD/SAVE ======================================
 
@@ -103,13 +109,14 @@ class APPEARANCE_MANAGER:
         except FileNotFoundError:
             cls.save()
 
+        set_default_color_theme(cls.theme)
+        set_widget_scaling(cls.scaling)
+
     @classmethod
     def set_root(cls, root):
         cls.root = root
         cls.after_change_mode = root.after(0, lambda: None)
-        cls.set_mode(cls.mode)
-        cls.set_theme(cls.theme)
-        cls.set_scaling(cls.scaling)
+        set_appearance_mode(cls.mode) if (cls.mode != "system") else cls.apply_system_mode()
 
     @classmethod
     def save(cls):

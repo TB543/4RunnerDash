@@ -4,15 +4,19 @@ from AppData.AppearanceSettings import APPEARANCE_MANAGER
 # loads settings
 APPEARANCE_MANAGER.load()
 
-# sets the dimensions of the pi screen
+# constants for pi settings
 PI_WIDTH = 1024
 PI_HEIGHT = 600
+MAX_VOLUME = 100
 
 # default fonts
 MENU_ICON_FONT = ("Arial", 100)
 MENU_LABEL_FONT = ("Arial", 20)
-SONG_TITLE_FONT = ("Arial", 20, "bold")
-SONG_ARTIST_FONT = ("Arial", 12)
-SONG_TIME_FONT = ("Arial", 10)
-TRACK_CONTROL_FONT = ("Arial", 30, "bold")
-TRACK_SEEK_FONT =("Arial", 20, "bold")
+
+# widgets settings
+SONG_TITLE_LABEL_KWARGS = {"height": 15, "font": ("Arial", 12, "bold"), "anchor": "w"}
+SONG_ARTIST_LABEL_KWARGS = {"height": 10, "font": ("Arial", 10), "anchor": "w"}
+SONG_TIME_LABEL_KWARGS = {"height": 8, "font": ("Arial", 8)}
+TRACK_CONTROL_BUTTON_KWARGS = {"width": 75, "height": 35, "font": ("Arial", 15), "corner_radius": float("inf")}
+TRACK_SEEK_BUTTON_KWARGS = {"width": 50, "height": 20, "font": ("Arial", 10), "corner_radius": float("inf")}
+VOLUME_BUTTON_KWARGS = {"width": 17, "height": 15, "font": ("Arial", 15), "corner_radius": float("inf")}

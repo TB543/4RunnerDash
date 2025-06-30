@@ -1,17 +1,20 @@
 from pydbus import SystemBus
-from time import strftime, gmtime
 from time import sleep
+from subprocess import run
+from os import environ
+from time import strftime, gmtime
 
 
-class BlueToothAPI:
+class AudioAPI:
     """
     A class to communicate with the connected Bluetooth devices via bluetooth.
     handles playback controls and can retrieve information about current track and playback status.
+    additionally can handle volume controls
     """
 
     def __init__(self):
         """
-        Initializes the BlueToothAPI by connecting to the system bus and retrieving the MediaPlayer1 interface.
+        Initializes the AudioAPI by connecting to the system bus and retrieving the MediaPlayer1 interface.
         """
 
         self.player = None
@@ -64,6 +67,10 @@ class BlueToothAPI:
         except:
             self.update_player()
 
+    @staticmethod
+    def set_volume(percent):
+        run(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{percent}%"])
+        
     # ========================================== METADATA RETRIEVAL =========================================
 
     @property

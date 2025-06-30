@@ -1,0 +1,4 @@
+add album art to player
+add gps for lat long data in app settings
+add volume control
+progress color for sliders

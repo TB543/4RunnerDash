@@ -1,6 +1,6 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar
-from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, SONG_TITLE_FONT, SONG_ARTIST_FONT, SONG_TIME_FONT, TRACK_CONTROL_FONT, TRACK_SEEK_FONT
-from Audio.BlueToothAPI import BlueToothAPI
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar
+from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, SONG_TITLE_LABEL_KWARGS, SONG_ARTIST_LABEL_KWARGS, SONG_TIME_LABEL_KWARGS, TRACK_CONTROL_BUTTON_KWARGS, TRACK_SEEK_BUTTON_KWARGS, VOLUME_BUTTON_KWARGS, MAX_VOLUME
+from Audio.AudioAPI import AudioAPI
 
 
 class MusicMenu(CTkFrame):
@@ -20,23 +20,23 @@ class MusicMenu(CTkFrame):
         """
 
         super().__init__(master, **kwargs)
-        self.api = BlueToothAPI()
+        self.api = AudioAPI()
         self.fps_counter = None  # will be set on place
 
-        # creates the container and main menu widgets
-        container = CTkFrame(self, fg_color=self.cget("fg_color"))
-        main_menu = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
-        container.grid(row=1, column=1, columnspan=7, sticky="nsew")
-        main_menu.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
-
         # creates spacer widgets and sets grid layout
-        self.rowconfigure(0, weight=1, uniform="row0")
-        self.rowconfigure(2, weight=1, uniform="row0")
+        self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
         for col in range(1, 8, 2):
             spacer = CTkButton(self, text="", font=MENU_ICON_FONT, fg_color="transparent", hover=False)
             spacer.grid(row=0, column=col)
             self.columnconfigure(col + 1, weight=1)
+
+        # creates the container and main menu widgets
+        container = CTkFrame(self, fg_color=self.cget("fg_color"))
+        main_menu = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
+        container.grid(row=0, column=1, columnspan=7, sticky="nsew", padx=10, pady=10)
+        main_menu.grid(row=1, column=1, columnspan=7, pady=(0, 10), sticky="sew")
+        container.grid_propagate(False)
 
         # creates string vars to hold metadata
         self.title = StringVar(self)
@@ -45,40 +45,48 @@ class MusicMenu(CTkFrame):
         self.playback_ratio = DoubleVar(self)
         self.remaining_time = StringVar(self)
         self.player_status = StringVar(self)
+        self.volume = IntVar(self, 50)
+        self.volume.trace_add("write", lambda *args: self.api.set_volume(self.volume.get()))
 
         # creates metadata
-        title = CTkLabel(container, textvariable=self.title, font=SONG_TITLE_FONT, anchor="w")
-        artist = CTkLabel(container, textvariable=self.artist, font=SONG_ARTIST_FONT, anchor="w")
-        elapsed_time = CTkLabel(container, textvariable=self.elapsed_time, font=SONG_TIME_FONT)
+        title = CTkLabel(container, textvariable=self.title, **SONG_TITLE_LABEL_KWARGS)
+        artist = CTkLabel(container, textvariable=self.artist, **SONG_ARTIST_LABEL_KWARGS)
+        elapsed_time = CTkLabel(container, textvariable=self.elapsed_time, **SONG_TIME_LABEL_KWARGS)
         progress_bar = CTkSlider(container, state="disabled", variable=self.playback_ratio)
-        remaining_time = CTkLabel(container, textvariable=self.remaining_time, font=SONG_TIME_FONT)
+        remaining_time = CTkLabel(container, textvariable=self.remaining_time, **SONG_TIME_LABEL_KWARGS)
 
         # creates playback control widgets
-        previous_track = CTkButton(container, text="◀◀", font=TRACK_SEEK_FONT, corner_radius=float("inf"), command=self.api.previous_track)
-        track_control = CTkButton(container, textvariable=self.player_status, font=TRACK_CONTROL_FONT, corner_radius=float("inf"), command=self.api.track_control)
-        next_track = CTkButton(container, text="▶▶", font=TRACK_SEEK_FONT, corner_radius=float("inf"), command=self.api.next_track)
-        previous_track.configure(width=previous_track.cget("height"))
-        track_control.configure(width=track_control.cget("height") + 60, height=track_control.cget("height") + 20)
-        next_track.configure(width=next_track.cget("height"))
+        previous_track = CTkButton(container, text="◀◀", command=self.api.previous_track, **TRACK_SEEK_BUTTON_KWARGS)
+        track_control = CTkButton(container, textvariable=self.player_status, command=self.api.track_control, **TRACK_CONTROL_BUTTON_KWARGS)
+        next_track = CTkButton(container, text="▶▶", command=self.api.next_track, **TRACK_SEEK_BUTTON_KWARGS)
+        volume_up = CTkButton(container, text="↑", command=lambda: self.volume.set(self.volume.get() + 5), **VOLUME_BUTTON_KWARGS)
+        volume_slider = CTkSlider(container, from_=0, to=MAX_VOLUME, variable=self.volume, orientation="vertical")
+        volume_down = CTkButton(container, text="↓", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), **VOLUME_BUTTON_KWARGS)
 
         # places metadata widgets
-        # todo image at row 0
-        title.grid(row=1, column=1, columnspan=5, sticky="ew")
-        artist.grid(row=2, column=1, columnspan=5, sticky="ew")
-        elapsed_time.grid(row=3, column=1)
-        progress_bar.grid(row=3, column=2, columnspan=3, sticky="ew")
-        remaining_time.grid(row=3, column=5)
+        # todo image at row 0 to 1
+        title.grid(row=2, column=1, columnspan=5, sticky="ew")
+        artist.grid(row=3, column=1, columnspan=5, sticky="ew")
+        elapsed_time.grid(row=4, column=1)
+        progress_bar.grid(row=4, column=2, columnspan=3, sticky="ew")
+        remaining_time.grid(row=4, column=5)
 
         # places playback control widgets
-        previous_track.grid(row=4, column=2)
-        track_control.grid(row=4, column=3)
-        next_track.grid(row=4, column=4)
+        previous_track.grid(row=5, column=2)
+        track_control.grid(row=5, column=3)
+        next_track.grid(row=5, column=4)
+        volume_up.grid(row=0, column=0, sticky="w", pady=(0, 5))
+        volume_slider.grid(row=1, column=0, rowspan=4, sticky="nsw", padx=4)
+        volume_down.grid(row=5, column=0, sticky="w")
 
         # sets the grid layout of the container
-        container.columnconfigure(0, weight=1)
+        container.rowconfigure(1, weight=1)
+        container.columnconfigure(0, weight=1, uniform="col0")
         container.columnconfigure(2, weight=1)
         container.columnconfigure(4, weight=1)
-        container.columnconfigure(6, weight=1)
+        container.columnconfigure(6, weight=1, uniform="col0")
+        title.grid_propagate(False)
+        artist.grid_propagate(False)
 
     def update_metadata(self):
         """

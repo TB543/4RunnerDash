@@ -32,9 +32,9 @@ class SettingsMenu(CTkFrame):
         shell_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        appearance_button = CTkButton(self, text=appearance_text, font=MENU_ICON_FONT, command=lambda: self.change_appearance(appearance_button))
-        theme_button = CTkButton(self, text=theme_text, font=MENU_ICON_FONT, command=lambda: self.change_theme(theme_button))
-        scale_button = CTkButton(self, text=scale_text, font=MENU_ICON_FONT, command=lambda: self.change_scaling(scale_button))
+        appearance_button = CTkButton(self, text=appearance_text, font=MENU_ICON_FONT, command=lambda: appearance_button.configure(text=APPEARANCE_MANAGER.cycle_mode()))
+        theme_button = CTkButton(self, text=theme_text, font=MENU_ICON_FONT, command=lambda: theme_button.configure(text=APPEARANCE_MANAGER.cycle_theme()))
+        scale_button = CTkButton(self, text=scale_text, font=MENU_ICON_FONT, command=lambda: scale_button.configure(text=APPEARANCE_MANAGER.cycle_scaling()))
         shell_button = CTkButton(self, text="🖥️", font=MENU_ICON_FONT, command=self.open_shell)
         back_button = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
         appearance_button.grid(row=1, column=1)
@@ -51,45 +51,6 @@ class SettingsMenu(CTkFrame):
         self.grid_columnconfigure(4, weight=1)
         self.grid_columnconfigure(6, weight=1)
         self.grid_columnconfigure(8, weight=1)
-
-    def change_appearance(self, button):
-        """
-        Changes the appearance of the application.
-        
-        @param button: the button that was clicked
-        """
-
-        current_appearance = APPEARANCE_MANAGER.mode
-        next_appearance = APPEARANCE_MANAGER.MODES[current_appearance].NEXT
-        APPEARANCE_MANAGER.set_mode(next_appearance)
-        button.configure(text=APPEARANCE_MANAGER.MODES[next_appearance].ICON)
-        APPEARANCE_MANAGER.save()
-
-    def change_theme(self, button):
-        """
-        Changes the theme of the application.
-        
-        @param button: the button that was clicked
-        """
-
-        current_theme = APPEARANCE_MANAGER.theme
-        next_theme = APPEARANCE_MANAGER.THEMES[current_theme].NEXT
-        APPEARANCE_MANAGER.set_theme(next_theme)
-        button.configure(text=APPEARANCE_MANAGER.THEMES[next_theme].ICON)
-        APPEARANCE_MANAGER.save()
-
-    def change_scaling(self, button):
-        """
-        Changes the scaling of the application.
-        
-        @param button: the button that was clicked
-        """
-
-        current_scaling = APPEARANCE_MANAGER.scaling
-        next_scaling = APPEARANCE_MANAGER.SCALES[current_scaling].NEXT
-        APPEARANCE_MANAGER.set_scaling(next_scaling)
-        button.configure(text=APPEARANCE_MANAGER.SCALES[next_scaling].ICON)
-        APPEARANCE_MANAGER.save()
 
     def open_shell(self):
         """
