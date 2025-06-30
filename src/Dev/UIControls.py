@@ -73,12 +73,14 @@ class UIControls:
         handles when the user presses space: clicks a button if it is focused
         """
 
-        if cls.index == -1:
+        if not cls.interactables:
             return
         if isinstance(cls.interactables[cls.index], CTkButton):
-            cls.interactables[cls.index].configure(fg_color=ThemeManager.theme["CTkButton"]["fg_color"])
             cls.interactables[cls.index].invoke()
-            cls.interactables.clear()
+            cls.window.update()
+        if not cls.interactables[cls.index].winfo_ismapped():
+            cls.interactables[cls.index].configure(fg_color=ThemeManager.theme["CTkButton"]["fg_color"])
+            cls.interactables.clear() 
 
     @classmethod
     def arrows(cls, event):
@@ -87,7 +89,7 @@ class UIControls:
         """
 
         # no slider selected
-        if not isinstance(cls.interactables[cls.index], CTkSlider):
+        if not cls.interactables or not isinstance(cls.interactables[cls.index], CTkSlider):
             return
         
         # gets 5% of value to apply as the delta
