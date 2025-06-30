@@ -1,6 +1,6 @@
 from pydbus import SystemBus
 from time import sleep
-from subprocess import run
+from subprocess import run, PIPE
 from os import environ
 from time import strftime, gmtime
 
@@ -120,3 +120,11 @@ class AudioAPI:
         except:
             self.update_player()
             return "▶"
+        
+    @property
+    def volume(self):
+        command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
+        result = command.stdout
+        volume = result.split("%")
+        volume = volume[0].split(" ")
+        return int(volume[-1])

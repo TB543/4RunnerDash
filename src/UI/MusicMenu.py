@@ -32,11 +32,11 @@ class MusicMenu(CTkFrame):
             self.columnconfigure(col + 1, weight=1)
 
         # creates the container and main menu widgets
-        container = CTkFrame(self, fg_color=self.cget("fg_color"))
+        music_container = CTkFrame(self, fg_color=self.cget("fg_color"))
         main_menu = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
-        container.grid(row=0, column=1, columnspan=7, sticky="nsew", padx=10, pady=10)
+        music_container.grid(row=0, column=1, columnspan=7, sticky="nsew", padx=10, pady=10)
         main_menu.grid(row=1, column=1, columnspan=7, pady=(0, 10), sticky="sew")
-        container.grid_propagate(False)
+        music_container.grid_propagate(False)
 
         # creates string vars to hold metadata
         self.title = StringVar(self)
@@ -45,23 +45,26 @@ class MusicMenu(CTkFrame):
         self.playback_ratio = DoubleVar(self)
         self.remaining_time = StringVar(self)
         self.player_status = StringVar(self)
-        self.volume = IntVar(self, 50)
+        self.volume = IntVar(self, self.api.volume)
         self.volume.trace_add("write", lambda *args: self.api.set_volume(self.volume.get()))
 
         # creates metadata
-        title = CTkLabel(container, textvariable=self.title, **SONG_TITLE_LABEL_KWARGS)
-        artist = CTkLabel(container, textvariable=self.artist, **SONG_ARTIST_LABEL_KWARGS)
-        elapsed_time = CTkLabel(container, textvariable=self.elapsed_time, **SONG_TIME_LABEL_KWARGS)
-        progress_bar = CTkSlider(container, state="disabled", variable=self.playback_ratio)
-        remaining_time = CTkLabel(container, textvariable=self.remaining_time, **SONG_TIME_LABEL_KWARGS)
+        title = CTkLabel(music_container, textvariable=self.title, **SONG_TITLE_LABEL_KWARGS)
+        artist = CTkLabel(music_container, textvariable=self.artist, **SONG_ARTIST_LABEL_KWARGS)
+        elapsed_time = CTkLabel(music_container, textvariable=self.elapsed_time, **SONG_TIME_LABEL_KWARGS)
+        progress_bar = CTkSlider(music_container, state="disabled", variable=self.playback_ratio)
+        remaining_time = CTkLabel(music_container, textvariable=self.remaining_time, **SONG_TIME_LABEL_KWARGS)
 
         # creates playback control widgets
-        previous_track = CTkButton(container, text="◀◀", command=self.api.previous_track, **TRACK_SEEK_BUTTON_KWARGS)
-        track_control = CTkButton(container, textvariable=self.player_status, command=self.api.track_control, **TRACK_CONTROL_BUTTON_KWARGS)
-        next_track = CTkButton(container, text="▶▶", command=self.api.next_track, **TRACK_SEEK_BUTTON_KWARGS)
-        volume_up = CTkButton(container, text="↑", command=lambda: self.volume.set(self.volume.get() + 5), **VOLUME_BUTTON_KWARGS)
-        volume_slider = CTkSlider(container, from_=0, to=MAX_VOLUME, variable=self.volume, orientation="vertical")
-        volume_down = CTkButton(container, text="↓", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), **VOLUME_BUTTON_KWARGS)
+        previous_track = CTkButton(music_container, text="◀◀", command=self.api.previous_track, **TRACK_SEEK_BUTTON_KWARGS)
+        track_control = CTkButton(music_container, textvariable=self.player_status, command=self.api.track_control, **TRACK_CONTROL_BUTTON_KWARGS)
+        next_track = CTkButton(music_container, text="▶▶", command=self.api.next_track, **TRACK_SEEK_BUTTON_KWARGS)
+
+        # creates volume container
+        volume_container = CTkFrame(music_container, fg_color=self.cget("fg_color"))
+        volume_up = CTkButton(volume_container, text="↑", command=lambda: self.volume.set(self.volume.get() + 5), **VOLUME_BUTTON_KWARGS)
+        volume_slider = CTkSlider(volume_container, from_=0, to=MAX_VOLUME, variable=self.volume, orientation="vertical")
+        volume_down = CTkButton(volume_container, text="↓", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), **VOLUME_BUTTON_KWARGS)
 
         # places metadata widgets
         # todo image at row 0 to 1
@@ -75,16 +78,22 @@ class MusicMenu(CTkFrame):
         previous_track.grid(row=5, column=2)
         track_control.grid(row=5, column=3)
         next_track.grid(row=5, column=4)
-        volume_up.grid(row=0, column=0, sticky="w", pady=(0, 5))
-        volume_slider.grid(row=1, column=0, rowspan=4, sticky="nsw", padx=4)
-        volume_down.grid(row=5, column=0, sticky="w")
+
+        # places volume controls
+        volume_up.grid(row=0, column=0, sticky="s")
+        volume_slider.grid(row=1, column=0, pady=5)
+        volume_down.grid(row=2, column=0, sticky="n")
+        volume_container.rowconfigure(0, weight=1, uniform="row0")
+        volume_container.rowconfigure(2, weight=1, uniform="row0")
+        volume_container.columnconfigure(0, weight=1)
+        volume_container.grid(row=0, column=0, rowspan=6, sticky="nsew")
 
         # sets the grid layout of the container
-        container.rowconfigure(1, weight=1)
-        container.columnconfigure(0, weight=1, uniform="col0")
-        container.columnconfigure(2, weight=1)
-        container.columnconfigure(4, weight=1)
-        container.columnconfigure(6, weight=1, uniform="col0")
+        music_container.rowconfigure(1, weight=1)
+        music_container.columnconfigure(0, weight=1, uniform="col0")
+        music_container.columnconfigure(2, weight=1)
+        music_container.columnconfigure(4, weight=1)
+        music_container.columnconfigure(6, weight=1, uniform="col0")
         title.grid_propagate(False)
         artist.grid_propagate(False)
 

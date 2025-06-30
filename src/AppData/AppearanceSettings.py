@@ -37,7 +37,7 @@ class APPEARANCE_MANAGER:
     after_change_mode = None  # used to change the mode on sunrise/sunset if the mode is set to "system"
     mode = "system"
     theme = "blue"
-    scaling = 1.750
+    scaling = 1.375
     lat = 0
     long = 0
 

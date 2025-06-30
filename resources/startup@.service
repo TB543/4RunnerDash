@@ -1,0 +1,11 @@
+[Unit]
+Description=Starts the dashboard program
+After=graphical.target bluetooth.service
+
+[Service]
+Environment=DISPLAY=:0
+WorkingDirectory=/home/%u/4RunnerDash
+ExecStart=/home/%u/4RunnerDash/startup.sh
+
+[Install]
+WantedBy=default.target
