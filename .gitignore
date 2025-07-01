@@ -193,5 +193,6 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# default settings files
+# default settings and cache files
 *.json
+*.db

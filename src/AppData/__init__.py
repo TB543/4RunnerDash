@@ -1,9 +1,3 @@
-from AppData.AppearanceSettings import APPEARANCE_MANAGER
-
-
-# loads settings
-APPEARANCE_MANAGER.load()
-
 # constants for pi settings
 PI_WIDTH = 1024
 PI_HEIGHT = 600

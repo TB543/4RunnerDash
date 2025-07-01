@@ -1,6 +1,9 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
+from AudioPlayback import AudioAPI
 from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, SONG_TITLE_LABEL_KWARGS, SONG_ARTIST_LABEL_KWARGS, SONG_TIME_LABEL_KWARGS, TRACK_CONTROL_BUTTON_KWARGS, TRACK_SEEK_BUTTON_KWARGS, VOLUME_BUTTON_KWARGS, MAX_VOLUME
-from Audio.AudioAPI import AudioAPI
+from io import BytesIO
+from PIL.Image import open as open_img
+from DataManagers import AlbumArtManager
 
 
 class MusicMenu(CTkFrame):
@@ -38,7 +41,7 @@ class MusicMenu(CTkFrame):
         main_menu.grid(row=1, column=1, columnspan=7, pady=(0, 10), sticky="sew")
         music_container.grid_propagate(False)
 
-        # creates string vars to hold metadata
+        # creates vars to hold metadata
         self.title = StringVar(self)
         self.artist = StringVar(self)
         self.elapsed_time = StringVar(self)
@@ -46,6 +49,7 @@ class MusicMenu(CTkFrame):
         self.remaining_time = StringVar(self)
         self.player_status = StringVar(self)
         self.volume = IntVar(self, self.api.volume)
+        self.image_container = CTkLabel(music_container, text="")
         self.volume.trace_add("write", lambda *args: self.api.set_volume(self.volume.get()))
 
         # creates metadata
@@ -67,17 +71,17 @@ class MusicMenu(CTkFrame):
         volume_down = CTkButton(volume_container, text="↓", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), **VOLUME_BUTTON_KWARGS)
 
         # places metadata widgets
-        # todo image at row 0 to 1
-        title.grid(row=2, column=1, columnspan=5, sticky="ew")
-        artist.grid(row=3, column=1, columnspan=5, sticky="ew")
-        elapsed_time.grid(row=4, column=1)
-        progress_bar.grid(row=4, column=2, columnspan=3, sticky="ew")
-        remaining_time.grid(row=4, column=5)
+        self.image_container.grid(row=0, column=2, columnspan=3)
+        title.grid(row=1, column=1, columnspan=5, sticky="ew")
+        artist.grid(row=2, column=1, columnspan=5, sticky="ew")
+        elapsed_time.grid(row=3, column=1)
+        progress_bar.grid(row=3, column=2, columnspan=3, sticky="ew")
+        remaining_time.grid(row=3, column=5)
 
         # places playback control widgets
-        previous_track.grid(row=5, column=2)
-        track_control.grid(row=5, column=3)
-        next_track.grid(row=5, column=4)
+        previous_track.grid(row=4, column=2)
+        track_control.grid(row=4, column=3)
+        next_track.grid(row=4, column=4)
 
         # places volume controls
         volume_up.grid(row=0, column=0, sticky="s")
@@ -86,10 +90,11 @@ class MusicMenu(CTkFrame):
         volume_container.rowconfigure(0, weight=1, uniform="row0")
         volume_container.rowconfigure(2, weight=1, uniform="row0")
         volume_container.columnconfigure(0, weight=1)
-        volume_container.grid(row=0, column=0, rowspan=6, sticky="nsew")
+        volume_container.grid(row=0, column=0, rowspan=5, sticky="nsew")
 
         # sets the grid layout of the container
-        music_container.rowconfigure(1, weight=1)
+        music_container.rowconfigure(0, weight=1)
+        music_container.rowconfigure(4, weight=1)
         music_container.columnconfigure(0, weight=1, uniform="col0")
         music_container.columnconfigure(2, weight=1)
         music_container.columnconfigure(4, weight=1)
@@ -102,6 +107,8 @@ class MusicMenu(CTkFrame):
         updates all of the metadata display widgets each frame
         """
 
+        # sets metadata
+        old_data = (self.title.get(), self.artist.get())
         self.title.set(self.api.title)
         self.artist.set(self.api.artist)
         self.elapsed_time.set(self.api.elapsed_time_str)
@@ -109,6 +116,14 @@ class MusicMenu(CTkFrame):
         self.remaining_time.set(self.api.remaining_time_str)
         self.player_status.set(self.api.playback_mode)
         self.fps_counter = self.after(MusicMenu.FPS, self.update_metadata)
+
+        # updates image
+        if old_data == (new_data := (self.title.get(), self.artist.get())):
+            image = AlbumArtManager.get_image(*new_data)
+            image = open_img(BytesIO(image))
+            image = CTkImage(light_image=image, dark_image=image, size=(200, 200))
+            self.image_container.configure(image=image)
+            self.update_idletasks()
 
     def place(self, **kwargs):
         """

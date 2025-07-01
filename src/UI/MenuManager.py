@@ -1,5 +1,6 @@
 from customtkinter import CTk, set_widget_scaling
-from AppData import PI_WIDTH, PI_HEIGHT, APPEARANCE_MANAGER
+from DataManagers import AppearanceManager
+from AppData import PI_WIDTH, PI_HEIGHT
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
 from UI.MusicMenu import MusicMenu
@@ -19,7 +20,7 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(**kwargs)
-        APPEARANCE_MANAGER.set_root(self)
+        AppearanceManager.set_root(self)
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.active_menu = "main"
 
@@ -41,5 +42,5 @@ class MenuManager(CTk):
         self.menus[self.active_menu].place_forget()
         self.active_menu = menu_name
         self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
-        set_widget_scaling(APPEARANCE_MANAGER.scaling)
+        set_widget_scaling(AppearanceManager.scaling)
 

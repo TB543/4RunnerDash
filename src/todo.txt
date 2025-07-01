@@ -1,3 +1,2 @@
-add album art to player
 add gps for lat long data in app settings
-add launch script from cmd
+add pillow to requrements

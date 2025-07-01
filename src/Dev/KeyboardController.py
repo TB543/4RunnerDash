@@ -1,7 +1,7 @@
 from customtkinter import CTkButton, CTkSlider, ThemeManager
 
 
-class UIControls:
+class KeyboardController:
     """
     a class to add keyboard controls to the UI. useful for development/debugging
     tab to cycle between interactable elements
@@ -14,7 +14,7 @@ class UIControls:
     index = -1
 
     @classmethod
-    def add(cls, window):
+    def set_handler(cls, window):
         """
         adds UI controls to the root
 

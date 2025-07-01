@@ -1,7 +1,7 @@
 from UI import *
-from Dev.UIControls import UIControls
+from Dev import KeyboardController
 
 
 window = MenuManager()
-UIControls.add(window)
+KeyboardController.set_handler(window)
 window.mainloop()

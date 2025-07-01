@@ -9,7 +9,7 @@ class AudioAPI:
     """
     A class to communicate with the connected Bluetooth devices via bluetooth.
     handles playback controls and can retrieve information about current track and playback status.
-    additionally can handle volume controls
+    additionally can handle volume controls and attempt to get album art
     """
 
     def __init__(self):
@@ -17,6 +17,7 @@ class AudioAPI:
         Initializes the AudioAPI by connecting to the system bus and retrieving the MediaPlayer1 interface.
         """
 
+        self.bus = SystemBus()
         self.player = None
         self._title = "N/A"
         self._artist = "N/A"
@@ -29,16 +30,22 @@ class AudioAPI:
         sets the player attribute
         """
 
+        # resets metadata
+        self._title = "N/A"
+        self._artist = "N/A"
+        self._playback_ratio = 0
+        self._elapsed_time_str = "00:00"
+        self._remaining_time_str = "00:00"
+
         # gets bluetooth objects
         try:
-            bus = SystemBus()
-            mngr = bus.get("org.bluez", "/")
+            mngr = self.bus.get("org.bluez", "/")
             objects = mngr.GetManagedObjects()
 
             # finds player
             for path, interfaces in objects.items():
                 if "org.bluez.MediaPlayer1" in interfaces:
-                    self.player = bus.get("org.bluez", path)
+                    self.player = self.bus.get("org.bluez", path)
                     return
         
         except:

@@ -5,31 +5,7 @@ from astral.sun import sun
 from datetime import datetime
 
 
-def change_theme(root):
-    """
-    Changes the theme of the application.
-    
-    @param root: the root widget to apply the theme to
-    """
-
-    # finds the widget type and its respective theme in the ThemeManager
-    for superclass in type(root).mro():
-        if superclass.__name__ in ThemeManager.theme:
-            for key, value in ThemeManager.theme[superclass.__name__].items():
-
-                # only applies the theme if the key is a valid configuration option for the widget
-                try:
-                    root.configure(**{key: value}) if root.cget("fg_color") != "transparent" else None
-                except ValueError:
-                    continue
-            break
-
-    # recursively applies the theme to all child widgets
-    for widget in root.winfo_children():
-        change_theme(widget)
-
-
-class APPEARANCE_MANAGER:
+class AppearanceManager:
 
     # ==================================== DEFAULT VALUES ====================================
 
@@ -81,7 +57,7 @@ class APPEARANCE_MANAGER:
     def cycle_theme(cls):
         cls.theme = cls.THEMES[cls.theme].NEXT
         set_default_color_theme(cls.theme)
-        change_theme(cls.root) if cls.root else None
+        cls.change_theme(cls.root) if cls.root else None
         cls.save()
         return cls.THEMES[cls.theme].ICON
 
@@ -150,3 +126,27 @@ class APPEARANCE_MANAGER:
         cls.save()
         set_appearance_mode("light" if sunrise < now < sunset else "dark")
         cls.after_change_mode = cls.root.after(1_800_000, cls.apply_system_mode)
+
+    @classmethod
+    def change_theme(cls, root):
+        """
+        Changes the theme of the application.
+        
+        @param root: the root widget to apply the theme to
+        """
+
+        # finds the widget type and its respective theme in the ThemeManager
+        for superclass in type(root).mro():
+            if superclass.__name__ in ThemeManager.theme:
+                for key, value in ThemeManager.theme[superclass.__name__].items():
+
+                    # only applies the theme if the key is a valid configuration option for the widget
+                    try:
+                        root.configure(**{key: value}) if root.cget("fg_color") != "transparent" else None
+                    except ValueError:
+                        continue
+                break
+
+        # recursively applies the theme to all child widgets
+        for widget in root.winfo_children():
+            cls.change_theme(widget)
