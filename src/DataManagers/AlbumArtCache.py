@@ -3,6 +3,7 @@ from PIL.Image import open as open_img, new as new_img
 from AppData import IMAGE_RESOLUTION
 from PIL.ImageDraw import Draw
 from shelve import open as open_db
+from os import remove
 
 
 class AlbumArtCache:
@@ -16,16 +17,11 @@ class AlbumArtCache:
     image_mask = new_img("L", (IMAGE_RESOLUTION, IMAGE_RESOLUTION), 0)
     Draw(image_mask).rounded_rectangle([0, 0, IMAGE_RESOLUTION, IMAGE_RESOLUTION], radius=10, fill=255)
 
-    def __init__(self, songs_db, albums_db):
+    def __init__(self):
         """
         initializes the cache variables
-
-        @param songs_db: the file path to the songs db
-        @param albums_db the file path to the albums db
         """
 
-        self.songs_db = songs_db
-        self.albums_db = albums_db
         self.songs = None
         self.albums = None
         with open("AppData/default_album_art.png", "rb") as f:
@@ -38,7 +34,8 @@ class AlbumArtCache:
         the cache to make sure the data is properly read/written
 
         ** note: cache can become corrupted if pi loses power on one of the close functions
-        but the odds of this happening are extremely small so this error will not be considered **
+        but the odds of this happening are extremely small so a backup will not be made,
+        instead cache will be deleted **
 
         @param function: the function to decorate
         """
@@ -51,11 +48,23 @@ class AlbumArtCache:
             @param kwargs: the kwargs of the function
             """
 
-            self.songs = open_db(self.songs_db)
-            self.albums = open_db(self.albums_db)
+            # opens cache
+            try:
+                db = open_db("AppData/album_art_cache")
+            except:
+                remove("AppData/album_art_cache.db")
+                db = open_db("AppData/album_art_cache")
+
+
+            # sets values and runs function
+            self.songs = db.get("songs", {})
+            self.albums = db.get("albums", {})
+
+            # stores new values to function and returns
             result = function(*args, **kwargs)
-            self.songs.close()
-            self.albums.close()
+            db["songs"] = self.songs
+            db["albums"] = self.albums
+            db.close()
             return result
 
         return wrapper

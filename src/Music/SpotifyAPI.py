@@ -10,7 +10,7 @@ class SpotifyAPI:
     additionally uses cache for offline calls
     """
 
-    cache = AlbumArtCache("AppData/songs", "AppData/albums")
+    cache = AlbumArtCache()
 
     def __init__(self, client_id, client_secret):
         """
