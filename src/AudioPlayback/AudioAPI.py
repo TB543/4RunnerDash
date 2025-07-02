@@ -19,8 +19,8 @@ class AudioAPI:
 
         self.bus = SystemBus()
         self.player = None
-        self._title = "N/A"
-        self._artist = "N/A"
+        self._title = None
+        self._artist = None
         self._playback_ratio = 0
         self._elapsed_time_str = "00:00"
         self._remaining_time_str = "00:00"
@@ -31,8 +31,8 @@ class AudioAPI:
         """
 
         # resets metadata
-        self._title = "N/A"
-        self._artist = "N/A"
+        self._title = None
+        self._artist = None
         self._playback_ratio = 0
         self._elapsed_time_str = "00:00"
         self._remaining_time_str = "00:00"

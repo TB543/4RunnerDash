@@ -1,2 +1,7 @@
 add gps for lat long data in app settings
 add pillow to requrements
+add api env vars
+add volume label
+put main menu at top of screen
+screen off not completely off
+add padding between art and song name

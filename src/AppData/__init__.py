@@ -3,9 +3,10 @@ PI_WIDTH = 1024
 PI_HEIGHT = 600
 MAX_VOLUME = 100
 
-# default fonts
+# default fonts and resolution
 MENU_ICON_FONT = ("Arial", 100)
 MENU_LABEL_FONT = ("Arial", 20)
+IMAGE_RESOLUTION = 400
 
 # widgets settings
 SONG_TITLE_LABEL_KWARGS = {"height": 15, "font": ("Arial", 12, "bold"), "anchor": "w"}

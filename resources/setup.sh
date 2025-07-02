@@ -9,7 +9,6 @@ python3 -m venv ../venv --system-site-packages
 sudo cp startup@.service /etc/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable startup@$(whoami).service
-sudo loginctl enable-linger $(whoami)
 
 # asks user for the name of the display
 clear

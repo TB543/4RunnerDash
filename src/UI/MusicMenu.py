@@ -1,8 +1,6 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar
 from AudioPlayback import AudioAPI
 from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, SONG_TITLE_LABEL_KWARGS, SONG_ARTIST_LABEL_KWARGS, SONG_TIME_LABEL_KWARGS, TRACK_CONTROL_BUTTON_KWARGS, TRACK_SEEK_BUTTON_KWARGS, VOLUME_BUTTON_KWARGS, MAX_VOLUME
-from io import BytesIO
-from PIL.Image import open as open_img
 from DataManagers import AlbumArtManager
 
 
@@ -22,6 +20,7 @@ class MusicMenu(CTkFrame):
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
+        # initializes fields
         super().__init__(master, **kwargs)
         self.api = AudioAPI()
         self.fps_counter = None  # will be set on place
@@ -109,20 +108,18 @@ class MusicMenu(CTkFrame):
 
         # sets metadata
         old_data = (self.title.get(), self.artist.get())
-        self.title.set(self.api.title)
-        self.artist.set(self.api.artist)
+        self.playback_ratio.set(self.api.playback_ratio)  # fetched first to update player and return 00:00 when needed
+        title, artist = self.api.title, self.api.artist   # this way title is not returned as None
+        self.title.set(title if title else "N/A")
+        self.artist.set(artist if artist else "N/A")
         self.elapsed_time.set(self.api.elapsed_time_str)
-        self.playback_ratio.set(self.api.playback_ratio)
         self.remaining_time.set(self.api.remaining_time_str)
         self.player_status.set(self.api.playback_mode)
         self.fps_counter = self.after(MusicMenu.FPS, self.update_metadata)
 
         # updates image
-        if old_data == (new_data := (self.title.get(), self.artist.get())):
-            image = AlbumArtManager.get_image(*new_data)
-            image = open_img(BytesIO(image))
-            image = CTkImage(light_image=image, dark_image=image, size=(200, 200))
-            self.image_container.configure(image=image)
+        if old_data != (new_data := (self.title.get(), self.artist.get())):
+            self.image_container.configure(image=AlbumArtManager.get_image(title, artist))
             self.update_idletasks()
 
     def place(self, **kwargs):
@@ -132,13 +129,13 @@ class MusicMenu(CTkFrame):
         :param kwargs: the kwargs to pass to the super call
         """
 
-        self.update_metadata()
         super().place(**kwargs)
+        self.update_metadata()
 
     def place_forget(self):
         """
         overrides the place forget method to stop the fps counter
         """
 
-        self.after_cancel(self.fps_counter)
         super().place_forget()
+        self.after_cancel(self.fps_counter)
