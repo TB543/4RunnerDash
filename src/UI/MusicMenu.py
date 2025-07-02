@@ -26,18 +26,18 @@ class MusicMenu(CTkFrame):
         self.fps_counter = None  # will be set on place
 
         # creates spacer widgets and sets grid layout
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
         for col in range(1, 8, 2):
-            spacer = CTkButton(self, text="", font=MENU_ICON_FONT, fg_color="transparent", hover=False)
-            spacer.grid(row=0, column=col)
+            spacer = CTkButton(self, text="", font=MENU_ICON_FONT, fg_color="transparent", hover=False, height=0)
+            spacer.grid(row=1, column=col)
             self.columnconfigure(col + 1, weight=1)
 
         # creates the container and main menu widgets
         music_container = CTkFrame(self, fg_color=self.cget("fg_color"))
         main_menu = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
-        music_container.grid(row=0, column=1, columnspan=7, sticky="nsew", padx=10, pady=10)
-        main_menu.grid(row=1, column=1, columnspan=7, pady=(0, 10), sticky="sew")
+        music_container.grid(row=1, column=1, columnspan=7, sticky="nsew", padx=10, pady=10)
+        main_menu.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
         music_container.grid_propagate(False)
 
         # creates vars to hold metadata
@@ -65,12 +65,12 @@ class MusicMenu(CTkFrame):
 
         # creates volume container
         volume_container = CTkFrame(music_container, fg_color=self.cget("fg_color"))
-        volume_up = CTkButton(volume_container, text="↑", command=lambda: self.volume.set(self.volume.get() + 5), **VOLUME_BUTTON_KWARGS)
+        volume_up = CTkButton(volume_container, text="🔊", command=lambda: self.volume.set(self.volume.get() + 5), **VOLUME_BUTTON_KWARGS)
         volume_slider = CTkSlider(volume_container, from_=0, to=MAX_VOLUME, variable=self.volume, orientation="vertical")
-        volume_down = CTkButton(volume_container, text="↓", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), **VOLUME_BUTTON_KWARGS)
+        volume_down = CTkButton(volume_container, text="🔉", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), **VOLUME_BUTTON_KWARGS)
 
         # places metadata widgets
-        self.image_container.grid(row=0, column=2, columnspan=3)
+        self.image_container.grid(row=0, column=2, columnspan=3, pady=(0, 6))
         title.grid(row=1, column=1, columnspan=5, sticky="ew")
         artist.grid(row=2, column=1, columnspan=5, sticky="ew")
         elapsed_time.grid(row=3, column=1)
@@ -83,12 +83,13 @@ class MusicMenu(CTkFrame):
         next_track.grid(row=4, column=4)
 
         # places volume controls
-        volume_up.grid(row=0, column=0, sticky="s")
-        volume_slider.grid(row=1, column=0, pady=5)
-        volume_down.grid(row=2, column=0, sticky="n")
+        volume_up.grid(row=0, column=1, sticky="s")
+        volume_slider.grid(row=1, column=1, pady=5)
+        volume_down.grid(row=2, column=1, sticky="n")
         volume_container.rowconfigure(0, weight=1, uniform="row0")
         volume_container.rowconfigure(2, weight=1, uniform="row0")
         volume_container.columnconfigure(0, weight=1)
+        volume_container.columnconfigure(2, weight=1)
         volume_container.grid(row=0, column=0, rowspan=5, sticky="nsew")
 
         # sets the grid layout of the container

@@ -1,5 +1,6 @@
 from shelve import open as open_db
 from customtkinter import CTkImage
+from os import environ
 from requests import get, post
 from base64 import b64encode
 from threading import Timer
@@ -62,25 +63,21 @@ class AlbumArtManager:
 
             # handles when no song is playing
             if not (title and artist):
-                print("no song")
                 cls.attempt_query_pending()
                 return cls.format_image(cls.default_art)
 
             # checks if the track is in the cache
             title, artist = title.rsplit(" • ", 1) if " • " in title else (title, artist)
             if (album := songs.get(f"{title}\n{artist}")) and (image := albums.get(album, cls.default_art)):
-                print("cache")
                 cls.attempt_query_pending()
                 return cls.format_image(image)
 
             # attempts to make api query
             if image := cls.request_data(title, artist):
-                print("api")
                 cls.attempt_query_pending()
                 return cls.format_image(image)
 
             # returns default image 
-            print("pending")
             pending_queries = songs.get("pending queries", set())
             pending_queries.add((title, artist))
             songs["pending queries"] = pending_queries
@@ -110,14 +107,12 @@ class AlbumArtManager:
         @return the token
         """
 
-
-
         # handles when token is already held
         if cls.token:
             return cls.token
 
         # prepares api call
-        credentials = f"{client_id}:{client_secret}"
+        credentials = f"{environ['CLIENT_ID']}:{environ['CLIENT_SECRET']}"
         credentials = b64encode(credentials.encode()).decode()
 
         # sends request
@@ -187,7 +182,6 @@ class AlbumArtManager:
 
         cls.songs[f"{title}\n{artist}"] = f"{album}\n{artist.split(',')[0]}"
         if art and (not f"{album}\n{artist.split(',')[0]}" in cls.albums):
-            print("writing")
             cls.albums[f"{album}\n{artist.split(',')[0]}"] = cls.compress_bytes(art)
 
         return cls.albums[f"{album}\n{artist.split(',')[0]}"] if art else cls.default_art

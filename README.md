@@ -3,6 +3,7 @@ todo add hardware list here and hardware installation guide
 
 ## Prerequisites
 - Download [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
+- Create [Spotify for Developers App](https://developer.spotify.com/dashboard)
 
 ## Flashing the Raspberry Pi OS Lite (64-bit)
 1. Open Raspberry Pi Imager.
@@ -56,4 +57,19 @@ todo add hardware list here and hardware installation guide
     ```
     It will ask you to copy and paste the device for the touch screen. So in my case it would be **QDTECH̐MPI700 MPI7002**.
 
-6. The Raspberry Pi will automatically reboot and start the program.
+6. Next you will be asked for your [Spotify API](https://developer.spotify.com/dashboard) client ID and client secret. This is needed for viewing album art in the music menu.
+
+7. The Raspberry Pi will automatically reboot and start the program.
+
+
+## Album Art Handling
+
+Due to limitations in Bluetooth protocols, album art cannot be transferred directly from connected devices. As a result, this dashboard uses the **Spotify Web API** to fetch album artwork and metadata in real time.
+
+To ensure smooth performance and offline capability:
+
+- **Album art is cached** locally for every track played while connected to the internet and with music menu open.
+- If a track is played while offline or without image data, its metadata is **queued for caching**.
+- On the next internet-connected session, the app will automatically fetch and save any missing album art for previously played tracks.
+
+This approach ensures a seamless user experience, with album visuals displayed even when the device is offline, after being seen once online.

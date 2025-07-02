@@ -42,7 +42,7 @@ class SettingsMenu(CTkFrame):
         theme_button.grid(row=1, column=3)
         scale_button.grid(row=1, column=5)
         shell_button.grid(row=1, column=7)
-        back_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
+        back_button.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
 
         # sets the grid layout
         self.grid_rowconfigure(0, weight=1, uniform="row0")

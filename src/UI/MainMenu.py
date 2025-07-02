@@ -41,7 +41,7 @@ class MainMenu(CTkFrame):
         music_button.grid(row=1, column=3)
         obd_button.grid(row=1, column=5)
         settings_button.grid(row=1, column=7)
-        sleep_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
+        sleep_button.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
 
         # sets the grid layout
         self.grid_rowconfigure(0, weight=1, uniform="row0")
@@ -61,7 +61,7 @@ class MainMenu(CTkFrame):
 
         # Hide the main window and turn off the HDMI output
         self.winfo_toplevel().withdraw()
-        run(["xrandr", "--output", "HDMI-1", "--off"])
+        run(["xrandr", "--output", "HDMI-1", "--off", "--output", "HDMI-2", "--off"])
         sleep(1)
 
         # gets the touch screen device
@@ -78,5 +78,5 @@ class MainMenu(CTkFrame):
                 break
         
         # Re-enable the HDMI output and show the main window again
-        run(["xrandr", "--output", "HDMI-1", "--auto"])
+        run(["xrandr", "--output", "HDMI-1", "--auto", "--output", "HDMI-2", "--auto"])
         self.winfo_toplevel().deiconify()
