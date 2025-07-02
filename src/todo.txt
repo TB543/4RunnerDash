@@ -1,2 +1,7 @@
 add gps for lat long data in app settings
 thread api requests
+add way to clear cache (only ones that havent been accessed in a long time)
+enter instead of space for keyboard controls to hit button
+proper classes with init instead of classmethods
+bluez same theread?
+protection against shutdown with cache open

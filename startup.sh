@@ -8,7 +8,7 @@ bluetoothctl pairable on
 
 # runs the program locally
 cd src
-~/4RunnerDash/venv/bin/python ~/4RunnerDash/src/AudioPlayback/BluezAgent.py &
+~/4RunnerDash/venv/bin/python ~/4RunnerDash/src/Music/BluezAgent.py &
 sudo Xorg :0 | ~/4RunnerDash/venv/bin/python ~/4RunnerDash/src/main.py
 cd .. 
 

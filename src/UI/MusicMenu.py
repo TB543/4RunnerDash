@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar
-from AudioPlayback import AudioAPI
+from Music import BluezAPI
 from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, SONG_TITLE_LABEL_KWARGS, SONG_ARTIST_LABEL_KWARGS, SONG_TIME_LABEL_KWARGS, TRACK_CONTROL_BUTTON_KWARGS, TRACK_SEEK_BUTTON_KWARGS, VOLUME_BUTTON_KWARGS, MAX_VOLUME
-from DataManagers import AlbumArtManager
+from UI.AlbumArt import AlbumArt
 
 
 class MusicMenu(CTkFrame):
@@ -22,7 +22,7 @@ class MusicMenu(CTkFrame):
 
         # initializes fields
         super().__init__(master, **kwargs)
-        self.api = AudioAPI()
+        self.api = BluezAPI()
         self.fps_counter = None  # will be set on place
 
         # creates spacer widgets and sets grid layout
@@ -119,8 +119,8 @@ class MusicMenu(CTkFrame):
         self.fps_counter = self.after(MusicMenu.FPS, self.update_metadata)
 
         # updates image
-        if old_data != (new_data := (self.title.get(), self.artist.get())):
-            self.image_container.configure(image=AlbumArtManager.get_image(title, artist))
+        if old_data != (self.title.get(), self.artist.get()):
+            self.image_container.configure(image=AlbumArt(title, artist))
             self.update_idletasks()
 
     def place(self, **kwargs):

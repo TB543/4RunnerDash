@@ -5,11 +5,11 @@ from os import environ
 from time import strftime, gmtime
 
 
-class AudioAPI:
+class BluezAPI:
     """
     A class to communicate with the connected Bluetooth devices via bluetooth.
     handles playback controls and can retrieve information about current track and playback status.
-    additionally can handle volume controls and attempt to get album art
+    additionally can handle volume controls
     """
 
     def __init__(self):
