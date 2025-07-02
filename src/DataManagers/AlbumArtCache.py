@@ -4,14 +4,8 @@ from AppData import IMAGE_RESOLUTION
 from PIL.ImageDraw import Draw
 from shelve import open as open_db
 
-with open_db("AppData/songs") as f, open_db("AppData/albums") as f2:
-    for i in f.keys():
-        print(i.split("\n")[0])
-    print(len(f.keys()) - 1, len(f2.keys()))
-    print(f.get("pending queries", set()))
 
-
-class Cache:
+class AlbumArtCache:
     """
     a class to represent a cache of api queries for album art
     with efficient storage by only storing 1 image per album

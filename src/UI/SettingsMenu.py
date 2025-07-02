@@ -9,18 +9,19 @@ class SettingsMenu(CTkFrame):
     Settings menu for the 4Runner Dash application.
     """
 
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, appearance_manager, **kwargs):
         """
         Initializes the settings menu frame.
         
         @param master: the parent widget
+        @param appearance_manager: a reference to the apps appearance manager
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
         super().__init__(master, **kwargs)
-        appearance_text = AppearanceManager.MODES[AppearanceManager.mode].ICON
-        theme_text = AppearanceManager.THEMES[AppearanceManager.theme].ICON
-        scale_text = AppearanceManager.SCALES[AppearanceManager.scaling].ICON
+        appearance_text = AppearanceManager.MODES[appearance_manager.mode].ICON
+        theme_text = AppearanceManager.THEMES[appearance_manager.theme].ICON
+        scale_text = AppearanceManager.SCALES[appearance_manager.scaling].ICON
 
         # creates the labels for the buttons
         appearance_label = CTkLabel(self, text="Appearance", font=MENU_LABEL_FONT)
@@ -33,9 +34,9 @@ class SettingsMenu(CTkFrame):
         shell_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        appearance_button = CTkButton(self, text=appearance_text, font=MENU_ICON_FONT, command=lambda: appearance_button.configure(text=AppearanceManager.cycle_mode()))
-        theme_button = CTkButton(self, text=theme_text, font=MENU_ICON_FONT, command=lambda: theme_button.configure(text=AppearanceManager.cycle_theme()))
-        scale_button = CTkButton(self, text=scale_text, font=MENU_ICON_FONT, command=lambda: scale_button.configure(text=AppearanceManager.cycle_scaling()))
+        appearance_button = CTkButton(self, text=appearance_text, font=MENU_ICON_FONT, command=lambda: appearance_button.configure(text=appearance_manager.cycle_mode()))
+        theme_button = CTkButton(self, text=theme_text, font=MENU_ICON_FONT, command=lambda: theme_button.configure(text=appearance_manager.cycle_theme()))
+        scale_button = CTkButton(self, text=scale_text, font=MENU_ICON_FONT, command=lambda: scale_button.configure(text=appearance_manager.cycle_scaling()))
         shell_button = CTkButton(self, text="🖥️", font=MENU_ICON_FONT, command=self.open_shell)
         back_button = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
         appearance_button.grid(row=1, column=1)

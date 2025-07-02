@@ -20,14 +20,14 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(**kwargs)
-        AppearanceManager.set_root(self)
+        self.appearance_manager = AppearanceManager(self)
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.active_menu = "main"
 
         # creates the various menus
         self.menus = {
             "main": MainMenu(self),
-            "settings": SettingsMenu(self),
+            "settings": SettingsMenu(self, self.appearance_manager),
             "music": MusicMenu(self)
         }
         self.change_menu(self.active_menu)
@@ -42,5 +42,5 @@ class MenuManager(CTk):
         self.menus[self.active_menu].place_forget()
         self.active_menu = menu_name
         self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
-        set_widget_scaling(AppearanceManager.scaling)
+        set_widget_scaling(self.appearance_manager.scaling)
 

@@ -7,16 +7,6 @@ from datetime import datetime
 
 class AppearanceManager:
 
-    # ==================================== DEFAULT VALUES ====================================
-
-    root = None  # the will be set by the MenuManager when it is created
-    after_change_mode = None  # used to change the mode on sunrise/sunset if the mode is set to "system"
-    mode = "system"
-    theme = "blue"
-    scaling = 1.375
-    lat = 0
-    long = 0
-
     # ====================================== ALL VALUES ======================================
 
     # class to hold metadata for each value used by the UI to cycle through options and display the current value
@@ -43,72 +33,71 @@ class AppearanceManager:
         1.750: MetaData(1.000, "🔭")
     }
 
-    # ======================================= SETTERS ========================================
+    # ======================================= CYCLERS ========================================
 
-    @classmethod
-    def cycle_mode(cls):
-        cls.mode = cls.MODES[cls.mode].NEXT
-        cls.root.after_cancel(cls.after_change_mode)
-        set_appearance_mode(cls.mode) if (cls.mode != "system") else cls.apply_system_mode()
-        cls.save()
-        return cls.MODES[cls.mode].ICON
+    def cycle_mode(self):
+        self.mode = self.MODES[self.mode].NEXT
+        self.root.after_cancel(self.after_change_mode)
+        set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
+        self.save()
+        return self.MODES[self.mode].ICON
         
-    @classmethod
-    def cycle_theme(cls):
-        cls.theme = cls.THEMES[cls.theme].NEXT
-        set_default_color_theme(cls.theme)
-        cls.change_theme(cls.root) if cls.root else None
-        cls.save()
-        return cls.THEMES[cls.theme].ICON
+    def cycle_theme(self):
+        self.theme = self.THEMES[self.theme].NEXT
+        set_default_color_theme(self.theme)
+        self.change_theme(self.root) if self.root else None
+        self.save()
+        return self.THEMES[self.theme].ICON
 
-    @classmethod
-    def cycle_scaling(cls):
-        cls.scaling = cls.SCALES[cls.scaling].NEXT
-        set_widget_scaling(cls.scaling)
-        cls.save()
-        return cls.SCALES[cls.scaling].ICON
+    def cycle_scaling(self):
+        self.scaling = self.SCALES[self.scaling].NEXT
+        set_widget_scaling(self.scaling)
+        self.save()
+        return self.SCALES[self.scaling].ICON
 
     # ======================================= LOAD/SAVE ======================================
 
-    @classmethod
-    def load(cls):
+    def __init__(self, root):
+        self.mode = "system"
+        self.theme = "blue"
+        self.scaling = 1.375
+        self.lat = 0
+        self.long = 0
+        self.root = root
+        self.after_change_mode = root.after(0, lambda: None)
+        self.load()
+
+    def load(self):
         try:
             with open("AppData/appearance_settings.json", "r") as f:
                 data = load(f)
-                cls.mode = data["mode"]
-                cls.theme = data["theme"]
-                cls.scaling = data["scaling"]
-                cls.lat = data["lat"]
-                cls.long = data["long"]
+                self.mode = data["mode"]
+                self.theme = data["theme"]
+                self.scaling = data["scaling"]
+                self.lat = data["lat"]
+                self.long = data["long"]
         
         # If the file does not exist, create it with default values
         except FileNotFoundError:
-            cls.save()
+            self.save()
 
-        set_default_color_theme(cls.theme)
-        set_widget_scaling(cls.scaling)
+        set_default_color_theme(self.theme)
+        set_widget_scaling(self.scaling)
+        set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
 
-    @classmethod
-    def set_root(cls, root):
-        cls.root = root
-        cls.after_change_mode = root.after(0, lambda: None)
-        set_appearance_mode(cls.mode) if (cls.mode != "system") else cls.apply_system_mode()
-
-    @classmethod
-    def save(cls):
+    def save(self):
         with open("AppData/appearance_settings.json", "w") as f:
             dump({
-                "mode": cls.mode,
-                "theme": cls.theme,
-                "scaling": cls.scaling,
-                "lat": cls.lat,
-                "long": cls.long
+                "mode": self.mode,
+                "theme": self.theme,
+                "scaling": self.scaling,
+                "lat": self.lat,
+                "long": self.long
             }, f, indent=4)
 
     # ======================================= HELPERS ========================================
 
-    @classmethod
-    def apply_system_mode(cls):
+    def apply_system_mode(self):
         """
         Applies the system appearance mode to the application.
         """
@@ -116,19 +105,18 @@ class AppearanceManager:
         # gets the sunrise and sunset times for the current location
         # location = ip("me")
         # cls.lat, cls.long = location.latlng if location.latlng else (cls.lat, cls.long)
-        city = LocationInfo(latitude=cls.lat, longitude=cls.long)
+        city = LocationInfo(latitude=self.lat, longitude=self.long)
         now = datetime.now().astimezone()
         s = sun(city.observer, date=now.date(), tzinfo=now.tzinfo)
         sunrise = s["sunrise"]
         sunset = s["sunset"]
 
         # sets the mode based on the current time and schedules the next update in 30 minutes
-        cls.save()
+        self.save()
         set_appearance_mode("light" if sunrise < now < sunset else "dark")
-        cls.after_change_mode = cls.root.after(1_800_000, cls.apply_system_mode)
+        self.after_change_mode = self.root.after(1_800_000, self.apply_system_mode)
 
-    @classmethod
-    def change_theme(cls, root):
+    def change_theme(self, root):
         """
         Changes the theme of the application.
         
@@ -149,4 +137,4 @@ class AppearanceManager:
 
         # recursively applies the theme to all child widgets
         for widget in root.winfo_children():
-            cls.change_theme(widget)
+            self.change_theme(widget)

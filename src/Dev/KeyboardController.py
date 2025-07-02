@@ -9,29 +9,25 @@ class KeyboardController:
     arrow keys to move focused slider
     """
 
-    window = None
-    interactables = []
-    index = -1
-
-    @classmethod
-    def set_handler(cls, window):
+    def __init__(self, window):
         """
         adds UI controls to the root
 
         @param window: the root window to add UI controls to
         """
 
-        cls.window = window
-        window.bind("<Tab>", lambda event: cls.cycle_interactables())
-        window.bind("<space>", lambda event: cls.space())
-        window.bind("<Up>", cls.arrows)
-        window.bind("<Down>", cls.arrows)
-        window.bind("<Left>", cls.arrows)
-        window.bind("<Right>", cls.arrows)
+        self.window = window
+        self.interactables = []
+        self.index = -1
+        window.bind("<Tab>", lambda event: self.cycle_interactables())
+        window.bind("<space>", lambda event: self.space())
+        window.bind("<Up>", self.arrows)
+        window.bind("<Down>", self.arrows)
+        window.bind("<Left>", self.arrows)
+        window.bind("<Right>", self.arrows)
         window.focus_force()
 
-    @classmethod
-    def find_interactables(cls, root):
+    def find_interactables(self, root):
         """
         recursively searches the root for all interactable elements
 
@@ -39,75 +35,72 @@ class KeyboardController:
         """
 
         if (isinstance(root, CTkButton) or isinstance(root, CTkSlider)) and root.cget("fg_color") != "transparent":
-            cls.interactables.append(root)
+            self.interactables.append(root)
         for widget in root.winfo_children():
-            cls.find_interactables(widget) if widget.winfo_ismapped() else None
+            self.find_interactables(widget) if widget.winfo_ismapped() else None
 
-    @classmethod
-    def cycle_interactables(cls):
+    def cycle_interactables(self):
         """
         cycles through the visible interactables each time the user presses tab and makes the visually "focused"
         """
 
         # loads interactables if needed
-        if not cls.interactables:
-            cls.find_interactables(cls.window)
+        if not self.interactables:
+            self.find_interactables(self.window)
             index = -1
 
         # resets color of previously focused element
-        elif isinstance(cls.interactables[cls.index], CTkButton):
-            cls.interactables[cls.index].configure(fg_color=ThemeManager.theme["CTkButton"]["fg_color"])
-        elif isinstance(cls.interactables[cls.index], CTkSlider):
-            cls.interactables[cls.index].configure(button_color=ThemeManager.theme["CTkSlider"]["button_color"])
+        elif isinstance(self.interactables[self.index], CTkButton):
+            self.interactables[self.index].configure(fg_color=ThemeManager.theme["CTkButton"]["fg_color"])
+        elif isinstance(self.interactables[self.index], CTkSlider):
+            self.interactables[self.index].configure(button_color=ThemeManager.theme["CTkSlider"]["button_color"])
 
         # sets the color of the next selected element
-        cls.index = (cls.index + 1) % len(cls.interactables)
-        if isinstance(cls.interactables[cls.index], CTkButton):
-            cls.interactables[cls.index].configure(fg_color=ThemeManager.theme["CTkButton"]["hover_color"])
-        elif isinstance(cls.interactables[cls.index], CTkSlider):
-            cls.interactables[cls.index].configure(button_color=ThemeManager.theme["CTkSlider"]["button_hover_color"])
+        self.index = (self.index + 1) % len(self.interactables)
+        if isinstance(self.interactables[self.index], CTkButton):
+            self.interactables[self.index].configure(fg_color=ThemeManager.theme["CTkButton"]["hover_color"])
+        elif isinstance(self.interactables[self.index], CTkSlider):
+            self.interactables[self.index].configure(button_color=ThemeManager.theme["CTkSlider"]["button_hover_color"])
 
-    @classmethod
-    def space(cls):
+    def space(self):
         """
         handles when the user presses space: clicks a button if it is focused
         """
 
-        if not cls.interactables:
+        if not self.interactables:
             return
-        if isinstance(cls.interactables[cls.index], CTkButton):
-            cls.interactables[cls.index].invoke()
-            cls.window.update()
-        if not cls.interactables[cls.index].winfo_ismapped():
-            cls.interactables[cls.index].configure(fg_color=ThemeManager.theme["CTkButton"]["fg_color"])
-            cls.interactables.clear() 
+        if isinstance(self.interactables[self.index], CTkButton):
+            self.interactables[self.index].invoke()
+            self.window.update()
+        if not self.interactables[self.index].winfo_ismapped():
+            self.interactables[self.index].configure(fg_color=ThemeManager.theme["CTkButton"]["fg_color"])
+            self.interactables.clear() 
 
-    @classmethod
-    def arrows(cls, event):
+    def arrows(self, event):
         """
         handles when the user presses the arrow keys: moves a slider if it is focused
         """
 
         # no slider selected
-        if not cls.interactables or not isinstance(cls.interactables[cls.index], CTkSlider):
+        if not self.interactables or not isinstance(self.interactables[self.index], CTkSlider):
             return
         
         # gets 5% of value to apply as the delta
-        min_val = cls.interactables[cls.index].cget("from_") 
-        max_val = cls.interactables[cls.index].cget("to") 
-        current = cls.interactables[cls.index].get()
+        min_val = self.interactables[self.index].cget("from_") 
+        max_val = self.interactables[self.index].cget("to") 
+        current = self.interactables[self.index].get()
         delta = (max_val - min_val) * 0.05
         
         # vertical slider
-        if cls.interactables[cls.index].cget("orientation") == "vertical":
+        if self.interactables[self.index].cget("orientation") == "vertical":
             if event.keysym == "Up":
-                cls.interactables[cls.index].set(current + delta)
+                self.interactables[self.index].set(current + delta)
             elif event.keysym == "Down":
-                cls.interactables[cls.index].set(current - delta)
+                self.interactables[self.index].set(current - delta)
 
         # horizontal slider
         else:
             if event.keysym == "Left":
-                cls.interactables[cls.index].set(current - delta)
+                self.interactables[self.index].set(current - delta)
             elif event.keysym == "Right":
-                cls.interactables[cls.index].set(current + delta)
+                self.interactables[self.index].set(current + delta)

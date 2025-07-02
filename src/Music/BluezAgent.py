@@ -14,7 +14,7 @@ CAPABILITY = 'KeyboardDisplay'
 bus = pydbus.SystemBus()
 
 
-class BluezAgent:
+class Agent:
     """
     <node>
         <interface name="org.bluez.Agent1">
@@ -82,6 +82,14 @@ class BluezAgent:
         return
 
 
+def pair_reply(*args):
+    print('reply', args)
+
+
+def pair_error(*args):
+    print('error', args)
+
+
 def dbus_path_up(dbus_obj):
     return '/'.join(dbus_obj.split('/')[:-1])
 
@@ -102,12 +110,12 @@ def interface_added(path, ifaces):
     if DEVICE_IFACE in ifaces.keys():
         dev_name = ifaces[DEVICE_IFACE].get('Name')
         print('Device found:', dev_name)
-        if dev_name == '4RunnerDash':
+        if dev_name == 'HC-06':
             device_found(path, ifaces[DEVICE_IFACE])
 
 
 def publish_agent():
-    bus.register_object(AGENT_PATH, BluezAgent(), None)
+    bus.register_object(AGENT_PATH, Agent(), None)
     aloop = GLib.MainLoop()
     aloop.run()
     print('Agent Registered')

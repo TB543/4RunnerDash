@@ -1,4 +1,4 @@
-from DataManagers import Cache
+from DataManagers import AlbumArtCache
 from base64 import b64encode
 from requests import get, post
 from threading import Timer
@@ -10,7 +10,7 @@ class SpotifyAPI:
     additionally uses cache for offline calls
     """
 
-    cache = Cache("AppData/songs", "AppData/albums")
+    cache = AlbumArtCache("AppData/songs", "AppData/albums")
 
     def __init__(self, client_id, client_secret):
         """
@@ -44,7 +44,8 @@ class SpotifyAPI:
             return SpotifyAPI.cache.default_art
         
         # checks cache
-        title, artist = title.rsplit(" • ", 1) if " • " in title else (title, artist)
+        split = title.rsplit(" • ")
+        title, artist = (split[0], split[-1]) if " • " in title else (title, artist)
         if image := SpotifyAPI.cache.fetch_image(title, artist):
             self.attempt_query_pending()
             return image
