@@ -1,3 +1,2 @@
 add gps for lat long data in app settings
 thread api requests
-add way to clear cache (only ones that havent been accessed in a long time)

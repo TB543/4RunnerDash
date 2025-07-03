@@ -9,7 +9,7 @@ class AlbumArt(CTkImage):
     """
 
     api = SpotifyAPI(environ['CLIENT_ID'], environ['CLIENT_SECRET'])
-    api.get_album_art(None, None)  # clears pending queries
+    api.get_album_art(None, None)  # clears pending queries with @cache.use
 
     def __init__(self, title, artist):
         """

@@ -1,9 +1,11 @@
 from io import BytesIO
 from PIL.Image import open as open_img, new as new_img
-from AppData import IMAGE_RESOLUTION
+from AppData import IMAGE_RESOLUTION, CACHE_CLEAN_THRESHOLD, CACHE_CLEAN_AMOUNT
 from PIL.ImageDraw import Draw
 from shelve import open as open_db
 from os import remove
+from psutil import virtual_memory
+from collections import OrderedDict
 
 
 class AlbumArtCache:
@@ -27,7 +29,7 @@ class AlbumArtCache:
         with open("AppData/default_album_art.png", "rb") as f:
             self.default_art = self.format_bytes(f.read())
 
-    def cache_decorator(self, function):
+    def use(self, function):
         """
         a cache decorator function that will automatically open and close the cache before
         and after that function call. This decorator is needed for any function that uses
@@ -35,7 +37,7 @@ class AlbumArtCache:
 
         ** note: cache can become corrupted if pi loses power on one of the close functions
         but the odds of this happening are extremely small so a backup will not be made,
-        instead cache will be deleted **
+        instead cache will be cleared in this case **
 
         @param function: the function to decorate
         """
@@ -57,11 +59,11 @@ class AlbumArtCache:
 
 
             # sets values and runs function
-            self.songs = db.get("songs", {})
-            self.albums = db.get("albums", {})
-
-            # stores new values to function and returns
+            self.songs = db.get("songs", {"default": []})
+            self.albums = db.get("albums", OrderedDict())
             result = function(*args, **kwargs)
+
+            # stores new values to db and returns
             db["songs"] = self.songs
             db["albums"] = self.albums
             db.close()
@@ -93,7 +95,8 @@ class AlbumArtCache:
         @return the cached album art or None if not stored
         """
 
-        if (album := self.songs.get(f"{title}\n{artist}")) and (image := self.albums.get(album, self.default_art)):
+        if (album := self.songs.get((title, artist))) and (image := self.albums.get(album, {"art": self.default_art})["art"]):
+            self.albums.move_to_end(album) if album in self.albums else None
             return image
 
     def store_formatted_image(self, title, artist, album=None, art=None):
@@ -108,11 +111,23 @@ class AlbumArtCache:
         @return the stored album art (default if not art is given)
         """
 
-        self.songs[f"{title}\n{artist}"] = f"{album}\n{artist.split(',')[0]}"
-        if art and (not f"{album}\n{artist.split(',')[0]}" in self.albums):
-            self.albums[f"{album}\n{artist.split(',')[0]}"] = self.format_bytes(art)
+        # stores data
+        key, value = (title, artist), (album, artist.split(',')[0])
+        self.songs[key] = value
+        if art and (not value in self.albums):
+            self.albums[value] = {"songs": [key]}
+            self.albums[value]["art"] = self.format_bytes(art)
+        
+        # associates song with album
+        elif not art:
+            self.songs["default"].append(key)
+        else:
+            self.albums[value]["songs"].append(key)
 
-        return self.albums.get(f"{album}\n{artist.split(',')[0]}") if art else self.default_art
+        # cleans cache if needed and returns
+        self.albums.move_to_end(value) if value in self.albums else None
+        self.clean()
+        return self.albums.get(value)["art"] if art else self.default_art
     
     @property
     def pending_queries(self):
@@ -129,3 +144,19 @@ class AlbumArtCache:
         """
 
         self.songs["pending queries"] = value
+
+    def clean(self):
+        """
+        frees up some of the cache by removing elements in order of least recently accessed
+        """
+
+        # checks if clean is needed
+        if virtual_memory().percent < CACHE_CLEAN_THRESHOLD:
+            return
+
+        # removes the album and any associated songs from the cache
+        [self.songs.pop(song) for song in self.songs["default"]]
+        for _ in range(int(CACHE_CLEAN_AMOUNT * len(self.albums))):
+            for song in self.albums.popitem(last=False)[1]["songs"]:
+                self.songs.pop(song)
+        

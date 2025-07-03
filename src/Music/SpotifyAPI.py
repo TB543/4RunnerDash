@@ -24,7 +24,7 @@ class SpotifyAPI:
         self.client_secret = client_secret
         self.token = None
 
-    @cache.cache_decorator
+    @cache.use
     def get_album_art(self, title, artist):
         """
         attempts to retrieve the data in the following order:
