@@ -2,8 +2,8 @@
 PI_WIDTH = 1024
 PI_HEIGHT = 600
 MAX_VOLUME = 100
-CACHE_CLEAN_THRESHOLD = 80  # the percentage of system memory usage threshold to clean the cache (0-100)
-CACHE_CLEAN_AMOUNT = .25    # the percentage of the cache to clear on clean (0-1)
+MAX_CACHE_SIZE = 5_368_709_120  # 5 gb in bytes
+MIN_CACHE_SIZE = 4_294_967_296  # albums will be removed until this value (4 gb) is met if max size is exceeded
 
 # default fonts and resolution
 MENU_ICON_FONT = ("Arial", 100)

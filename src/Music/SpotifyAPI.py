@@ -10,8 +10,6 @@ class SpotifyAPI:
     additionally uses cache for offline calls
     """
 
-    cache = AlbumArtCache()
-
     def __init__(self, client_id, client_secret):
         """
         initializes the spotify api
@@ -22,9 +20,9 @@ class SpotifyAPI:
 
         self.client_id = client_id
         self.client_secret = client_secret
+        self.cache = AlbumArtCache("AppData/image_cache", "AppData/default_album_art.png")
         self.token = None
 
-    @cache.use
     def get_album_art(self, title, artist):
         """
         attempts to retrieve the data in the following order:
@@ -41,12 +39,12 @@ class SpotifyAPI:
         # handles when no song is playing
         if not (title and artist):
             self.attempt_query_pending()
-            return SpotifyAPI.cache.default_art
+            return self.cache.default_art
         
         # checks cache
         split = title.rsplit(" • ")
         title, artist = (split[0], split[-1]) if " • " in title else (title, artist)
-        if image := SpotifyAPI.cache.fetch_image(title, artist):
+        if image := self.cache.fetch(title, artist):
             self.attempt_query_pending()
             return image
 
@@ -56,10 +54,8 @@ class SpotifyAPI:
             return image
         
         # adds to pending queries and returns default image
-        pending = SpotifyAPI.cache.pending_queries
-        pending.add((title, artist))
-        SpotifyAPI.cache.pending_queries = pending
-        return SpotifyAPI.cache.default_art
+        self.cache.pending = (title, artist)
+        return self.cache.default_art
 
     def request_token(self):
         """
@@ -119,12 +115,12 @@ class SpotifyAPI:
                     track = response.get("tracks", {}).get("items", [])[0]
                     album_name = track["album"]["name"]
                     album_art = get(track["album"]["images"][0]["url"]).content
-                    return SpotifyAPI.cache.store_formatted_image(title, artist, album_name, album_art)
+                    return self.cache.store_formatted(title, artist, album_name, album_art)
                 
                 # handles art doesn't exist
                 except IndexError:
                     if i == 2 and j == 2:
-                        return SpotifyAPI.cache.store_formatted_image(title, artist)
+                        return self.cache.store_formatted(title, artist)
                 
                 # handles query failures
                 except:
@@ -136,13 +132,5 @@ class SpotifyAPI:
         """
 
         # iterates over every song
-        pending = SpotifyAPI.cache.pending_queries
-        for query in tuple(pending):
-
-            # attempts query and exits if attempt fails
-            if self.request_data(*query):
-                pending.remove(query)
-            else:
-                break
-
-        SpotifyAPI.cache.pending_queries = pending
+        for query in self.cache.pending:
+            self.request_data(*query)

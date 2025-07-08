@@ -1,11 +1,10 @@
 from io import BytesIO
 from PIL.Image import open as open_img, new as new_img
-from AppData import IMAGE_RESOLUTION, CACHE_CLEAN_THRESHOLD, CACHE_CLEAN_AMOUNT
+from AppData import IMAGE_RESOLUTION, MAX_CACHE_SIZE, MIN_CACHE_SIZE
 from PIL.ImageDraw import Draw
-from shelve import open as open_db
-from os import remove
-from psutil import virtual_memory
+from diskcache import Cache
 from collections import OrderedDict
+from threading import Lock
 
 
 class AlbumArtCache:
@@ -19,57 +18,19 @@ class AlbumArtCache:
     image_mask = new_img("L", (IMAGE_RESOLUTION, IMAGE_RESOLUTION), 0)
     Draw(image_mask).rounded_rectangle([0, 0, IMAGE_RESOLUTION, IMAGE_RESOLUTION], radius=10, fill=255)
 
-    def __init__(self):
+    def __init__(self, cache_path, default_path):
         """
         initializes the cache variables
+
+        @param path the file path to the image cache
+        @param default_path the path to the default image cache
         """
 
-        self.songs = None
-        self.albums = None
-        with open("AppData/default_album_art.png", "rb") as f:
+        self.cache = Cache(cache_path)
+        self.LRU_lock = Lock()
+        self.pending_lock = Lock()
+        with open(default_path, "rb") as f:
             self.default_art = self.format_bytes(f.read())
-
-    def use(self, function):
-        """
-        a cache decorator function that will automatically open and close the cache before
-        and after that function call. This decorator is needed for any function that uses
-        the cache to make sure the data is properly read/written
-
-        ** note: cache can become corrupted if pi loses power on one of the close functions
-        but the odds of this happening are extremely small so a backup will not be made,
-        instead cache will be cleared in this case **
-
-        @param function: the function to decorate
-        """
-
-        def wrapper(*args, **kwargs):
-            """
-            opens the cache, runs the function, closes the cache and returns
-
-            @param args: the args of the function
-            @param kwargs: the kwargs of the function
-            """
-
-            # opens cache
-            try:
-                db = open_db("AppData/album_art_cache")
-            except:
-                remove("AppData/album_art_cache.db")
-                db = open_db("AppData/album_art_cache")
-
-
-            # sets values and runs function
-            self.songs = db.get("songs", {"default": []})
-            self.albums = db.get("albums", OrderedDict())
-            result = function(*args, **kwargs)
-
-            # stores new values to db and returns
-            db["songs"] = self.songs
-            db["albums"] = self.albums
-            db.close()
-            return result
-
-        return wrapper
 
     @classmethod
     def format_bytes(cls, image_bytes):
@@ -84,8 +45,29 @@ class AlbumArtCache:
         image = open_img(BytesIO(image_bytes)).resize((IMAGE_RESOLUTION, IMAGE_RESOLUTION)).convert("RGBA")
         image.putalpha(cls.image_mask)
         return image
+    
+    def read_album(self, album):
+        """
+        marks an album as most recently used (MRU) and reads the data it stores
 
-    def fetch_image(self, title, artist):
+        @param album the album to read the data of
+
+        @return the album art for the album or the default album art if it does not have any
+        """
+
+        # handles no album art
+        if not (art := self.cache.get(album)):
+            return self.default_art
+        
+        # marks art album as MRU and returns
+        with self.LRU_lock:
+            LRU_dict = self.cache.get("LRU", OrderedDict())
+            LRU_dict[album] = None
+            LRU_dict.move_to_end(album)
+            self.cache.set("LRU", LRU_dict)
+        return art
+
+    def fetch(self, title, artist):
         """
         attempts to fetch data from the cache 
 
@@ -95,11 +77,10 @@ class AlbumArtCache:
         @return the cached album art or None if not stored
         """
 
-        if (album := self.songs.get((title, artist))) and (image := self.albums.get(album, {"art": self.default_art})["art"]):
-            self.albums.move_to_end(album) if album in self.albums else None
+        if (album := self.cache.get(f"songs:{title}\n{artist}")) and (image := self.read_album(album)):
             return image
 
-    def store_formatted_image(self, title, artist, album=None, art=None):
+    def store_formatted(self, title, artist, album=None, art=None):
         """
         formats and caches the results of an api query
 
@@ -111,52 +92,61 @@ class AlbumArtCache:
         @return the stored album art (default if not art is given)
         """
 
-        # stores data
-        key, value = (title, artist), (album, artist.split(',')[0])
-        self.songs[key] = value
-        if art and (not value in self.albums):
-            self.albums[value] = {"songs": [key]}
-            self.albums[value]["art"] = self.format_bytes(art)
-        
         # associates song with album
+        key, value = f"{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
+        self.cache.set(f"songs:{key}", value, tag=value)
+
+        # sets album art
+        if art and (not value in self.cache):
+            self.cache.set(value, self.format_bytes(art), tag=value)
+        
+        # handles when song has default album art
         elif not art:
-            self.songs["default"].append(key)
-        else:
-            self.albums[value]["songs"].append(key)
+            self.cache.set(f"songs:{key}", f"albums:{None}", tag="default")
 
         # cleans cache if needed and returns
-        self.albums.move_to_end(value) if value in self.albums else None
         self.clean()
-        return self.albums.get(value)["art"] if art else self.default_art
+        return self.read_album(value)
     
     @property
-    def pending_queries(self):
+    def pending(self):
         """
-        gets the set of pending api queries
-        """
-
-        return self.songs.get("pending queries", set())
-
-    @pending_queries.setter
-    def pending_queries(self, value):
-        """
-        sets the pending api queries
+        @return after removing the set of all the queries that are pending
         """
 
-        self.songs["pending queries"] = value
+        return self.cache.pop("pending", OrderedDict())
+
+    @pending.setter
+    def pending(self, value):
+        """
+        adds to the list of pending queries
+
+        @param value: a pending query
+        """
+
+        with self.pending_lock:
+            pending = self.cache.get("pending", OrderedDict())
+            pending[value] = None
+            pending.move_to_end(value)
+            self.cache.set(f"pending", pending)
 
     def clean(self):
         """
         frees up some of the cache by removing elements in order of least recently accessed
         """
 
-        # checks if clean is needed
-        if virtual_memory().percent < CACHE_CLEAN_THRESHOLD:
+        # handles when cache size has not exceeded max
+        if self.cache.volume() <= MAX_CACHE_SIZE:
             return
 
-        # removes the album and any associated songs from the cache
-        [self.songs.pop(song) for song in self.songs["default"]]
-        for _ in range(int(CACHE_CLEAN_AMOUNT * len(self.albums))):
-            for song in self.albums.popitem(last=False)[1]["songs"]:
-                self.songs.pop(song)
-        
+        # removes defaults and pending songs
+        with self.LRU_lock, self.cache.transact():
+            self.cache.evict(tag="default")
+            self.cache.set("pending", set())
+
+            # removes album art in LRU fashion
+            LRU = self.cache.get("LRU", OrderedDict())
+            while self.cache.volume() >= MIN_CACHE_SIZE and LRU:
+                tag, _ = LRU.popitem(last=False)
+                self.cache.evict(tag=tag)
+            self.cache.set("LRU", LRU)
