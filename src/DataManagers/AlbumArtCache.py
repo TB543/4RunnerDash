@@ -46,17 +46,19 @@ class AlbumArtCache:
         image.putalpha(cls.image_mask)
         return image
     
-    def read_album(self, album):
+    def touch_album(self, album, read=True):
         """
         marks an album as most recently used (MRU) and reads the data it stores
 
-        @param album the album to read the data of
+        @param album: the album to read the data of
+        @param read: determines if the album should be read and touched or just touched
 
         @return the album art for the album or the default album art if it does not have any
         """
 
         # handles no album art
-        if not (art := self.cache.get(album)):
+        art = None
+        if read and (not (art := self.cache.get(album))):
             return self.default_art
         
         # marks art album as MRU and returns
@@ -67,18 +69,27 @@ class AlbumArtCache:
             self.cache.set("LRU", LRU_dict)
         return art
 
-    def fetch(self, title, artist):
+    def fetch(self, title, artist, album):
         """
         attempts to fetch data from the cache 
 
         @param title: the title of the song
         @param artist: the artist of the song
+        @param album: the album of the track
 
         @return the cached album art or None if not stored
         """
 
-        if (album := self.cache.get(f"songs:{title}\n{artist}")) and (image := self.read_album(album)):
+        # checks cache with song and artist
+        key, value = f"songs:{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
+        if (album := self.cache.get(key)) and (image := self.touch_album(album)):
             return image
+        
+        # checks cache with album and artist
+        with self.cache.transact():
+            if ((image := self.cache.get(value)) and self.cache.set(key, value, tag=value)):
+                self.touch_album(value, False)
+                return image
 
     def store_formatted(self, title, artist, album=None, art=None):
         """
@@ -93,8 +104,8 @@ class AlbumArtCache:
         """
 
         # associates song with album
-        key, value = f"{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
-        self.cache.set(f"songs:{key}", value, tag=value)
+        key, value = f"songs:{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
+        self.cache.set(key, value, tag=value)
 
         # sets album art
         if art and (not value in self.cache):
@@ -102,11 +113,11 @@ class AlbumArtCache:
         
         # handles when song has default album art
         elif not art:
-            self.cache.set(f"songs:{key}", f"albums:{None}", tag="default")
+            self.cache.set(key, f"albums:{None}", tag="default")
 
         # cleans cache if needed and returns
         self.clean()
-        return self.read_album(value)
+        return self.touch_album(value)
     
     @property
     def pending(self):
@@ -129,6 +140,24 @@ class AlbumArtCache:
             pending[value] = None
             pending.move_to_end(value)
             self.cache.set(f"pending", pending)
+
+    @property
+    def token(self):
+        """
+        gets the api token if it has not expired
+        """
+
+        return self.cache.get("token")
+    
+    @token.setter
+    def token(self, value):
+        """
+        caches the token until it expires
+
+        @param value: the json response from spotify api token request
+        """
+
+        self.cache.set("token", value["access_token"], expire=value["expires_in"] - 60)
 
     def clean(self):
         """

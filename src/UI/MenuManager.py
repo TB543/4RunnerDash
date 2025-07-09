@@ -43,4 +43,3 @@ class MenuManager(CTk):
         self.active_menu = menu_name
         self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
         set_widget_scaling(self.appearance_manager.scaling)
-

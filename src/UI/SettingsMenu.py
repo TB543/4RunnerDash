@@ -19,9 +19,9 @@ class SettingsMenu(CTkFrame):
         """
 
         super().__init__(master, **kwargs)
-        appearance_text = AppearanceManager.MODES[appearance_manager.mode].ICON
-        theme_text = AppearanceManager.THEMES[appearance_manager.theme].ICON
-        scale_text = AppearanceManager.SCALES[appearance_manager.scaling].ICON
+        appearance_text = AppearanceManager.MODES[appearance_manager.mode].icon
+        theme_text = AppearanceManager.THEMES[appearance_manager.theme].icon
+        scale_text = AppearanceManager.SCALES[appearance_manager.scaling].icon
 
         # creates the labels for the buttons
         appearance_label = CTkLabel(self, text="Appearance", font=MENU_LABEL_FONT)

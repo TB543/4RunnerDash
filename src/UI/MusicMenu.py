@@ -120,7 +120,7 @@ class MusicMenu(CTkFrame):
 
         # updates image
         if old_data != (self.title.get(), self.artist.get()):
-            self.image_container.configure(image=AlbumArt(title, artist))
+            self.image_container.configure(image=AlbumArt(title, artist, self.api.album))
             self.update_idletasks()
 
     def place(self, **kwargs):

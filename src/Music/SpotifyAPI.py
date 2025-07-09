@@ -1,7 +1,6 @@
 from DataManagers import AlbumArtCache
 from base64 import b64encode
 from requests import get, post
-from threading import Timer
 
 
 class SpotifyAPI:
@@ -21,9 +20,8 @@ class SpotifyAPI:
         self.client_id = client_id
         self.client_secret = client_secret
         self.cache = AlbumArtCache("AppData/image_cache", "AppData/default_album_art.png")
-        self.token = None
 
-    def get_album_art(self, title, artist):
+    def get_album_art(self, title, artist, album):
         """
         attempts to retrieve the data in the following order:
             -> checks cache
@@ -32,6 +30,7 @@ class SpotifyAPI:
 
         @param title: the title of the track
         @param artist: the artist of the track
+        @param album: the album of the track
 
         @return image representing the album art
         """
@@ -44,7 +43,7 @@ class SpotifyAPI:
         # checks cache
         split = title.rsplit(" • ")
         title, artist = (split[0], split[-1]) if " • " in title else (title, artist)
-        if image := self.cache.fetch(title, artist):
+        if image := self.cache.fetch(title, artist, album):
             self.attempt_query_pending()
             return image
 
@@ -65,8 +64,8 @@ class SpotifyAPI:
         """
 
         # handles when token is already held
-        if self.token:
-            return self.token
+        if token := self.cache.token:
+            return token
 
         # prepares api call
         credentials = f"{self.client_id}:{self.client_secret}"
@@ -80,12 +79,9 @@ class SpotifyAPI:
                 data={"grant_type": "client_credentials"},
             ).json()
 
-            # sets token and schedules next call
-            self.token = response["access_token"]
-            thread = Timer(response["expires_in"] - 60, lambda: setattr(self, "token", None))
-            thread.daemon = True
-            thread.start()
-            return self.token
+            # sets token and returns
+            self.cache.token = response
+            return response["access_token"]
         except:
             return None
 

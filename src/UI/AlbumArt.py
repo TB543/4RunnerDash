@@ -9,16 +9,17 @@ class AlbumArt(CTkImage):
     """
 
     api = SpotifyAPI(environ['CLIENT_ID'], environ['CLIENT_SECRET'])
-    api.get_album_art(None, None)  # clears pending queries with @cache.use
+    api.get_album_art(None, None, None)  # clears pending queries
 
-    def __init__(self, title, artist):
+    def __init__(self, title, artist, album):
         """
         initializes the image by fetching the album art from the api with the
         title and artist
 
         @param title: the title of the track
         @param artist: the artist of the track
+        @param album: the album for the track
         """
 
-        image = AlbumArt.api.get_album_art(title, artist)
+        image = AlbumArt.api.get_album_art(title, artist, album)
         super().__init__(image, image, (200, 200))

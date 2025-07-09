@@ -95,6 +95,13 @@ class BluezAPI:
         except:
             self.update_player()
         return self._artist
+    
+    @property
+    def album(self):
+        try:
+            return self.player.Track["Album"]
+        except:
+            return None
 
     @property
     def elapsed_time_str(self):

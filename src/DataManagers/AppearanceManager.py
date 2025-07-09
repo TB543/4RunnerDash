@@ -12,8 +12,8 @@ class AppearanceManager:
     # class to hold metadata for each value used by the UI to cycle through options and display the current value
     class MetaData:
         def __init__(self, next_value, icon):
-            self.NEXT = next_value
-            self.ICON = icon
+            self.next = next_value
+            self.icon = icon
 
     MODES = {
         "light": MetaData("dark", "🔆"),
@@ -36,24 +36,24 @@ class AppearanceManager:
     # ======================================= CYCLERS ========================================
 
     def cycle_mode(self):
-        self.mode = self.MODES[self.mode].NEXT
+        self.mode = self.MODES[self.mode].next
         self.root.after_cancel(self.after_change_mode)
         set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
         self.save()
-        return self.MODES[self.mode].ICON
+        return self.MODES[self.mode].icon
         
     def cycle_theme(self):
-        self.theme = self.THEMES[self.theme].NEXT
+        self.theme = self.THEMES[self.theme].next
         set_default_color_theme(self.theme)
         self.change_theme(self.root) if self.root else None
         self.save()
-        return self.THEMES[self.theme].ICON
+        return self.THEMES[self.theme].icon
 
     def cycle_scaling(self):
-        self.scaling = self.SCALES[self.scaling].NEXT
+        self.scaling = self.SCALES[self.scaling].next
         set_widget_scaling(self.scaling)
         self.save()
-        return self.SCALES[self.scaling].ICON
+        return self.SCALES[self.scaling].icon
 
     # ======================================= LOAD/SAVE ======================================
 
@@ -103,8 +103,6 @@ class AppearanceManager:
         """
 
         # gets the sunrise and sunset times for the current location
-        # location = ip("me")
-        # cls.lat, cls.long = location.latlng if location.latlng else (cls.lat, cls.long)
         city = LocationInfo(latitude=self.lat, longitude=self.long)
         now = datetime.now().astimezone()
         s = sun(city.observer, date=now.date(), tzinfo=now.tzinfo)
