@@ -1,2 +1,1 @@
 add gps for lat long data in app settings
-thread api requests

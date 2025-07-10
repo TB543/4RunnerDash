@@ -1,7 +1,7 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
 from Music import BluezAPI
 from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, SONG_TITLE_LABEL_KWARGS, SONG_ARTIST_LABEL_KWARGS, SONG_TIME_LABEL_KWARGS, TRACK_CONTROL_BUTTON_KWARGS, TRACK_SEEK_BUTTON_KWARGS, VOLUME_BUTTON_KWARGS, MAX_VOLUME
-from UI.AlbumArt import AlbumArt
+from DataManagers import AlbumArtManager
 
 
 class MusicMenu(CTkFrame):
@@ -22,6 +22,8 @@ class MusicMenu(CTkFrame):
 
         # initializes fields
         super().__init__(master, **kwargs)
+        self.art_manager = AlbumArtManager("AppData/default_album_art.png")
+        self.art_job = self.art_manager.queue_job(None, None, None)
         self.api = BluezAPI()
         self.fps_counter = None  # will be set on place
 
@@ -120,8 +122,11 @@ class MusicMenu(CTkFrame):
 
         # updates image
         if old_data != (self.title.get(), self.artist.get()):
-            self.image_container.configure(image=AlbumArt(title, artist, self.api.album))
+            self.art_job = self.art_manager.queue_job(title, artist, self.api.album)
+        if self.art_job and self.art_job.done():
+            self.image_container.configure(image=CTkImage(self.art_job.result(), size=(200, 200)))
             self.update_idletasks()
+            self.art_job = None
 
     def place(self, **kwargs):
         """
@@ -140,3 +145,11 @@ class MusicMenu(CTkFrame):
 
         super().place_forget()
         self.after_cancel(self.fps_counter)
+
+    def destroy(self):
+        """
+        overrides the destroy method to also shut down the album art job manager
+        """
+
+        self.art_manager.shutdown()
+        super().destroy()

@@ -1,2 +1,2 @@
 from DataManagers.AppearanceManager import AppearanceManager
-from DataManagers.AlbumArtCache import AlbumArtCache
+from DataManagers.AlbumArtManager import AlbumArtManager

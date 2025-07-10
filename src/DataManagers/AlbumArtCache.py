@@ -1,7 +1,4 @@
-from io import BytesIO
-from PIL.Image import open as open_img, new as new_img
-from AppData import IMAGE_RESOLUTION, MAX_CACHE_SIZE, MIN_CACHE_SIZE
-from PIL.ImageDraw import Draw
+from AppData import MAX_CACHE_ALBUMS
 from diskcache import Cache
 from collections import OrderedDict
 from threading import Lock
@@ -13,94 +10,89 @@ class AlbumArtCache:
     with efficient storage by only storing 1 image per album
     and each song within the album references the same image
     """
-    
-    # initializes global fields
-    image_mask = new_img("L", (IMAGE_RESOLUTION, IMAGE_RESOLUTION), 0)
-    Draw(image_mask).rounded_rectangle([0, 0, IMAGE_RESOLUTION, IMAGE_RESOLUTION], radius=10, fill=255)
 
-    def __init__(self, cache_path, default_path):
+    def __init__(self, cache_path, default):
         """
         initializes the cache variables
 
-        @param path the file path to the image cache
-        @param default_path the path to the default image cache
+        @param path: the file path to the image cache
+        @param default: the default album art to use when none is found
         """
 
         self.cache = Cache(cache_path)
+        self.default_art = default
         self.LRU_lock = Lock()
         self.pending_lock = Lock()
-        with open(default_path, "rb") as f:
-            self.default_art = self.format_bytes(f.read())
-
-    @classmethod
-    def format_bytes(cls, image_bytes):
-        """
-        compresses an images bytes to the correct resolution and adds rounded corners
-
-        @param bytes: the bytes to format
-        
-        @return the formatted bytes
-        """
-
-        image = open_img(BytesIO(image_bytes)).resize((IMAGE_RESOLUTION, IMAGE_RESOLUTION)).convert("RGBA")
-        image.putalpha(cls.image_mask)
-        return image
     
-    def touch_album(self, album, read=True):
+    def touch_album(self, album, song=None):
+        """
+        marks an album as most recently used (MRU) and reads the data it stores
+
+        @param album: the album to touch
+        @param song: the song to link to the album if it is not already
+        """
+
+        with self.LRU_lock:
+            LRU_dict = self.cache.get("LRU", OrderedDict())
+
+            # ensures song is not added with no matching album
+            if not song:
+                LRU_dict[album] = None
+                LRU_dict.move_to_end(album)
+                self.cache.set("LRU", LRU_dict)
+
+            # links song to album if needed
+            elif song and (album in LRU_dict):
+                self.cache.set(song, album, tag=album)
+                LRU_dict[album] = None
+                LRU_dict.move_to_end(album)
+                self.cache.set("LRU", LRU_dict)
+    
+    def read_album(self, album, pool, song=None):
         """
         marks an album as most recently used (MRU) and reads the data it stores
 
         @param album: the album to read the data of
-        @param read: determines if the album should be read and touched or just touched
+        @param pool: a thread pool owned by the cache manager to handle spawning new jobs if needed
+        @param song: the song to link to the album if it is not already
 
         @return the album art for the album or the default album art if it does not have any
         """
-
-        # handles no album art
-        art = None
-        if read and (not (art := self.cache.get(album))):
-            return self.default_art
         
-        # marks art album as MRU and returns
-        with self.LRU_lock:
-            LRU_dict = self.cache.get("LRU", OrderedDict())
-            LRU_dict[album] = None
-            LRU_dict.move_to_end(album)
-            self.cache.set("LRU", LRU_dict)
+        if not (art := self.cache.get(album)):
+            return None if song else self.default_art
+        pool.submit(self.touch_album, album, song)
         return art
-
-    def fetch(self, title, artist, album):
+        
+    def fetch(self, title, artist, album, pool):
         """
         attempts to fetch data from the cache 
 
         @param title: the title of the song
         @param artist: the artist of the song
         @param album: the album of the track
+        @param pool: a thread pool owned by the cache manager to handle spawning new jobs if needed
 
         @return the cached album art or None if not stored
         """
 
-        # checks cache with song and artist
-        key, value = f"songs:{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
-        if (album := self.cache.get(key)) and (image := self.touch_album(album)):
-            return image
-        
         # checks cache with album and artist
-        with self.cache.transact():
-            if ((image := self.cache.get(value)) and self.cache.set(key, value, tag=value)):
-                self.touch_album(value, False)
-                return image
+        song_key, album_key = f"songs:{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
+        if image := self.read_album(album_key, pool, song_key):
+            return image
 
-    def store_formatted(self, title, artist, album=None, art=None):
+        # checks cache with song and artist
+        if (album := self.cache.get(song_key)) and (image := self.read_album(album, pool)):
+            return image
+
+    def store(self, title, artist, album=None, art=None):
         """
-        formats and caches the results of an api query
+        caches the results of an api query
 
         @param title: the title of the song
         @param artist: the artist of the song
         @param album: the album fetched from an api query
         @param art: the art fetched from an api query
-
-        @return the stored album art (default if not art is given)
         """
 
         # associates song with album
@@ -109,15 +101,20 @@ class AlbumArtCache:
 
         # sets album art
         if art and (not value in self.cache):
-            self.cache.set(value, self.format_bytes(art), tag=value)
+            self.cache.set(value, art, tag=value)
         
         # handles when song has default album art
         elif not art:
             self.cache.set(key, f"albums:{None}", tag="default")
 
-        # cleans cache if needed and returns
+        # removes from pending queries
+        with self.pending_lock:
+            pending = self.cache.get("pending", OrderedDict())
+            pending.pop((title, artist), None)
+            self.cache.set(f"pending", pending)
+
+        self.touch_album(value)
         self.clean()
-        return self.touch_album(value)
     
     @property
     def pending(self):
@@ -125,7 +122,8 @@ class AlbumArtCache:
         @return after removing the set of all the queries that are pending
         """
 
-        return self.cache.pop("pending", OrderedDict())
+        with self.pending_lock:
+            return self.cache.get("pending", OrderedDict())
 
     @pending.setter
     def pending(self, value):
@@ -164,18 +162,15 @@ class AlbumArtCache:
         frees up some of the cache by removing elements in order of least recently accessed
         """
 
-        # handles when cache size has not exceeded max
-        if self.cache.volume() <= MAX_CACHE_SIZE:
-            return
+        # gets the LRU
+        with self.LRU_lock:
+            LRU_dict = self.cache.get("LRU", OrderedDict())
 
-        # removes defaults and pending songs
-        with self.LRU_lock, self.cache.transact():
-            self.cache.evict(tag="default")
-            self.cache.set("pending", set())
+            # removes the least recently accessed album
+            while len(LRU_dict) > MAX_CACHE_ALBUMS:
+                with self.cache.transact():
 
-            # removes album art in LRU fashion
-            LRU = self.cache.get("LRU", OrderedDict())
-            while self.cache.volume() >= MIN_CACHE_SIZE and LRU:
-                tag, _ = LRU.popitem(last=False)
-                self.cache.evict(tag=tag)
-            self.cache.set("LRU", LRU)
+                    # removed least recently accessed albums
+                    self.cache.evict("default")
+                    self.cache.evict(LRU_dict.popitem(last=False)[0])
+                    self.cache.set("LRU", LRU_dict)

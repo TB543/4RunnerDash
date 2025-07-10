@@ -2,8 +2,7 @@
 PI_WIDTH = 1024
 PI_HEIGHT = 600
 MAX_VOLUME = 100
-MAX_CACHE_SIZE = 5_368_709_120  # 5 gb in bytes
-MIN_CACHE_SIZE = 4_294_967_296  # albums will be removed until this value (4 gb) is met if max size is exceeded
+MAX_CACHE_ALBUMS = 100_000  # less than 70 Gb. I have a lot of extra storage, feel free to adjust if needed
 
 # default fonts and resolution
 MENU_ICON_FONT = ("Arial", 100)
