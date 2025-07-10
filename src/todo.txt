@@ -1,1 +1,5 @@
 add gps for lat long data in app settings
+add dashcam
+add analog volume knob
+external battery
+note I also have an amplifier module if needed

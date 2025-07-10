@@ -123,12 +123,12 @@ class AppearanceManager:
 
         # finds the widget type and its respective theme in the ThemeManager
         for superclass in type(root).mro():
-            if superclass.__name__ in ThemeManager.theme:
+            if superclass.__name__ in ThemeManager.theme and root.cget("fg_color") != "transparent":
                 for key, value in ThemeManager.theme[superclass.__name__].items():
 
                     # only applies the theme if the key is a valid configuration option for the widget
                     try:
-                        root.configure(**{key: value}) if root.cget("fg_color") != "transparent" else None
+                        root.configure(**{key: value}) if key != "corner_radius" else None
                     except ValueError:
                         continue
                 break

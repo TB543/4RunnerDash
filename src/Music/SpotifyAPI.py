@@ -35,6 +35,7 @@ class SpotifyAPI:
                 "https://accounts.spotify.com/api/token",
                 headers={"Authorization": f"Basic {credentials}"},
                 data={"grant_type": "client_credentials"},
+                timeout=5
             ).json()
 
             # sets token and returns
@@ -63,7 +64,8 @@ class SpotifyAPI:
                     response = get(
                         "https://api.spotify.com/v1/search", 
                         headers={"Authorization": f"Bearer {token}"}, 
-                        params={"q": f'track:"{title_option}" artist:"{artist_option}"', "type": "track", "limit": 1}
+                        params={"q": f'track:"{title_option}" artist:"{artist_option}"', "type": "track", "limit": 1},
+                        timeout=5
                     ).json()
 
                     # pulls the album name and album art from the response

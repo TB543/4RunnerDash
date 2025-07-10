@@ -106,6 +106,7 @@ class AlbumArtCache:
         # handles when song has default album art
         elif not art:
             self.cache.set(key, f"albums:{None}", tag="default")
+        self.touch_album(value)
 
         # removes from pending queries
         with self.pending_lock:
@@ -113,7 +114,6 @@ class AlbumArtCache:
             pending.pop((title, artist), None)
             self.cache.set(f"pending", pending)
 
-        self.touch_album(value)
         self.clean()
     
     @property

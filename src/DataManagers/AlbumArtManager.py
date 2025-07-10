@@ -66,9 +66,13 @@ class AlbumArtManager:
         if not (title and artist):
             return self.default_art
         
-        # checks cache
+        # handles songs with no artists
         split = title.rsplit(" • ")
         title, artist = (split[0], split[-1]) if " • " in title else (title, artist)
+        if not artist:
+            return self.default_art
+
+        # checks cache
         if image := self.cache.fetch(title, artist, album, self.pool):
             return image
 

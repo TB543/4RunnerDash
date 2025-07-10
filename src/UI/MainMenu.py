@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton
+from Dev import CTkButtonFixed
 from AppData import MENU_ICON_FONT, MENU_LABEL_FONT
 from subprocess import run
-from time import sleep
 from evdev import list_devices, InputDevice, ecodes
 from os import environ
 
@@ -32,10 +32,10 @@ class MainMenu(CTkFrame):
         settings_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        maps_button = CTkButton(self, text="🧭", font=MENU_ICON_FONT, command=lambda: master.change_menu("maps"))
-        music_button = CTkButton(self, text="🎧", font=MENU_ICON_FONT, command=lambda: master.change_menu("music"))
-        obd_button = CTkButton(self, text="🚙", font=MENU_ICON_FONT, command=lambda: master.change_menu("obd"))
-        settings_button = CTkButton(self, text="🛠️", font=MENU_ICON_FONT, command=lambda: master.change_menu("settings"))
+        maps_button = CTkButtonFixed(self, text="🧭", font=MENU_ICON_FONT, command=lambda: master.change_menu("maps"))
+        music_button = CTkButtonFixed(self, text="🎧", font=MENU_ICON_FONT, command=lambda: master.change_menu("music"))
+        obd_button = CTkButtonFixed(self, text="🚙", font=MENU_ICON_FONT, command=lambda: master.change_menu("obd"))
+        settings_button = CTkButtonFixed(self, text="🛠️", font=MENU_ICON_FONT, command=lambda: master.change_menu("settings"))
         sleep_button = CTkButton(self, text="Display Sleep", font=MENU_LABEL_FONT, command=self.sleep)
         maps_button.grid(row=1, column=1)
         music_button.grid(row=1, column=3)
@@ -62,7 +62,6 @@ class MainMenu(CTkFrame):
         # Hide the main window and turn off the HDMI output
         self.winfo_toplevel().withdraw()
         run(["xrandr", "--output", "HDMI-1", "--off", "--output", "HDMI-2", "--off"])
-        sleep(1)
 
         # gets the touch screen device
         device_name = environ["TOUCH_SCREEN"]
@@ -74,7 +73,7 @@ class MainMenu(CTkFrame):
 
         # Wait for a touch event to wake up the display
         for event in touch_screen.read_loop():
-            if event.code == ecodes.BTN_TOUCH:
+            if event.code == ecodes.BTN_TOUCH and event.value == 1:
                 break
         
         # Re-enable the HDMI output and show the main window again

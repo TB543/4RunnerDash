@@ -23,7 +23,7 @@ class MusicMenu(CTkFrame):
         # initializes fields
         super().__init__(master, **kwargs)
         self.art_manager = AlbumArtManager("AppData/default_album_art.png")
-        self.art_job = self.art_manager.queue_job(None, None, None)
+        self.art_job = None
         self.api = BluezAPI()
         self.fps_counter = None  # will be set on place
 
@@ -43,14 +43,14 @@ class MusicMenu(CTkFrame):
         music_container.grid_propagate(False)
 
         # creates vars to hold metadata
-        self.title = StringVar(self)
-        self.artist = StringVar(self)
+        self.title = StringVar(self, "N/A")
+        self.artist = StringVar(self, "N/A")
         self.elapsed_time = StringVar(self)
         self.playback_ratio = DoubleVar(self)
         self.remaining_time = StringVar(self)
         self.player_status = StringVar(self)
         self.volume = IntVar(self, self.api.volume)
-        self.image_container = CTkLabel(music_container, text="")
+        self.image_container = CTkLabel(music_container, text="", image=CTkImage(self.art_manager.queue_job(None, None, None).result(), size=(200, 200)))
         self.volume.trace_add("write", lambda *args: self.api.set_volume(self.volume.get()))
 
         # creates metadata
@@ -125,7 +125,6 @@ class MusicMenu(CTkFrame):
             self.art_job = self.art_manager.queue_job(title, artist, self.api.album)
         if self.art_job and self.art_job.done():
             self.image_container.configure(image=CTkImage(self.art_job.result(), size=(200, 200)))
-            self.update_idletasks()
             self.art_job = None
 
     def place(self, **kwargs):
