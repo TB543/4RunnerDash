@@ -1,6 +1,6 @@
 from threading import Thread
-from Music import start_bluetooth
-from UI import *
+from Music.BluezAgent import my_app as start_bluetooth
+from UI.MenuManager import MenuManager
 from Dev import KeyboardController
 
 

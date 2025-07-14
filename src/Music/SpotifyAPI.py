@@ -71,7 +71,7 @@ class SpotifyAPI:
                     # pulls the album name and album art from the response
                     track = response.get("tracks", {}).get("items", [])[0]
                     album_name = track["album"]["name"]
-                    album_art = get(track["album"]["images"][0]["url"], timeout=5).content
+                    album_art = get(track["album"]["images"][0]["url"]).content
                     return [title, artist, album_name, album_art]
                 
                 # handles art doesn't exist

@@ -41,7 +41,7 @@ class AppearanceManager:
         set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
         self.save()
         return self.MODES[self.mode].icon
-        
+
     def cycle_theme(self):
         self.theme = self.THEMES[self.theme].next
         set_default_color_theme(self.theme)
@@ -76,7 +76,7 @@ class AppearanceManager:
                 self.scaling = data["scaling"]
                 self.lat = data["lat"]
                 self.long = data["long"]
-        
+
         # If the file does not exist, create it with default values
         except FileNotFoundError:
             self.save()
@@ -103,21 +103,21 @@ class AppearanceManager:
         """
 
         # gets the sunrise and sunset times for the current location
-        city = LocationInfo(latitude=self.lat, longitude=self.long)
+        city = LocationInfo(latitude=self.lat, longitude=self.long) # get gps coords here
         now = datetime.now().astimezone()
         s = sun(city.observer, date=now.date(), tzinfo=now.tzinfo)
         sunrise = s["sunrise"]
         sunset = s["sunset"]
 
-        # sets the mode based on the current time and schedules the next update in 30 minutes
-        self.save()
+        # sets the mode based on the current time and schedules the next update in 5 minutes
+        # self.save() do this when we get gps coords
         set_appearance_mode("light" if sunrise < now < sunset else "dark")
-        self.after_change_mode = self.root.after(1_800_000, self.apply_system_mode)
+        self.after_change_mode = self.root.after(300_000, self.apply_system_mode)
 
     def change_theme(self, root):
         """
         Changes the theme of the application.
-        
+
         @param root: the root widget to apply the theme to
         """
 

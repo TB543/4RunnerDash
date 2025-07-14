@@ -1,8 +1,8 @@
 from pydbus import SystemBus
 from time import sleep
 from subprocess import run, PIPE
-from os import environ
 from time import strftime, gmtime
+from DataManagers.AlbumArtManager import AlbumArtManager
 
 
 class BluezAPI:
@@ -17,13 +17,39 @@ class BluezAPI:
         Initializes the AudioAPI by connecting to the system bus and retrieving the MediaPlayer1 interface.
         """
 
+        # initializes the fields
         self.bus = SystemBus()
         self.player = None
+        self.art_manager = AlbumArtManager("AppData/default_album_art.png")
         self._title = None
         self._artist = None
         self._playback_ratio = 0
         self._elapsed_time_str = "00:00"
         self._remaining_time_str = "00:00"
+
+        # gets album art
+        self.update_player()
+        self.art_job = self.art_manager.queue_job(self.title, self.artist, self.album)
+        self.art_job.result()
+        self.last_property_params = None
+
+        # sets listener for track change
+        self.bus.subscribe(
+            iface="org.freedesktop.DBus.Properties",
+            signal="PropertiesChanged",
+            signal_fired=lambda *args: self.update_album_art(args[4][1])
+        )
+
+    def update_album_art(self, params):
+        """
+        updates album art if track changes
+
+        @param params: the parameters for the property change
+        """
+
+        if "Track" in params and self.last_property_params != (params["Track"]["Title"], params["Track"]["Artist"]):
+            self.last_property_params = (params["Track"]["Title"], params["Track"]["Artist"])
+            self.art_job = self.art_manager.queue_job(self.title, self.artist, self.album)
 
     def update_player(self):
         """
@@ -50,6 +76,13 @@ class BluezAPI:
         
         except:
             self.player = None
+
+    def shutdown(self):
+        """
+        shuts down the album art manager
+        """
+
+        self.art_manager.shutdown()
             
     # ========================================== PLAYBACK CONTROLS ==========================================
 
@@ -102,7 +135,15 @@ class BluezAPI:
             return self.player.Track["Album"]
         except:
             return None
-
+        
+    @property
+    def album_art(self):
+        art = None
+        if self.art_job and self.art_job.done():
+            art = self.art_job.result()
+            self.art_job = None
+        return art
+    
     @property
     def elapsed_time_str(self):
         try:

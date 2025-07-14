@@ -1,6 +1,6 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton
 from Dev import CTkButtonFixed
-from DataManagers import AppearanceManager
+from DataManagers.AppearanceManager import AppearanceManager
 from AppData import MENU_ICON_FONT, MENU_LABEL_FONT
 from subprocess import run
 

@@ -199,3 +199,5 @@ cython_debug/
 *.val
 *.db-shm
 *.db-wal
+*.db-journal
+*.osm.pbf

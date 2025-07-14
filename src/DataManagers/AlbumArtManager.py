@@ -1,10 +1,10 @@
 from concurrent.futures import ThreadPoolExecutor
 from DataManagers.AlbumArtCache import AlbumArtCache
-from Music import SpotifyAPI
+from Music.SpotifyAPI import SpotifyAPI
 from os import environ
 from io import BytesIO
 from PIL.Image import open as open_img, new as new_img
-from AppData import IMAGE_RESOLUTION
+from AppData import IMAGE_RESOLUTION, IMAGE_CORNER_RADIUS
 from PIL.ImageDraw import Draw
 from threading import Lock
 
@@ -16,7 +16,7 @@ class AlbumArtManager:
 
     # initializes global fields
     image_mask = new_img("L", (IMAGE_RESOLUTION, IMAGE_RESOLUTION), 0)
-    Draw(image_mask).rounded_rectangle([0, 0, IMAGE_RESOLUTION, IMAGE_RESOLUTION], radius=15, fill=255)
+    Draw(image_mask).rounded_rectangle([0, 0, IMAGE_RESOLUTION, IMAGE_RESOLUTION], radius=IMAGE_CORNER_RADIUS, fill=255)
 
     def __init__(self, default_path):
         """
