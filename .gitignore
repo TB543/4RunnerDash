@@ -201,3 +201,7 @@ cython_debug/
 *.db-wal
 *.db-journal
 *.osm.pbf
+*.osrm.timestamp
+
+# include OSRM lib folder
+!resources/OSRM_profile/lib
