@@ -46,7 +46,7 @@ todo add hardware list here and hardware installation guide
     ```bash
     ./setup.sh
     ```
-5. When the setup is finished it will display a list of connected devices like so:
+5. it will display a list of connected devices like so:
     ```bash
     N: Name="pwr_button"
     N: Name="QDTECH̐MPI700 MPI7002"
@@ -59,7 +59,11 @@ todo add hardware list here and hardware installation guide
 
 6. Next you will be asked for your [Spotify API](https://developer.spotify.com/dashboard) client ID and client secret. This is needed for viewing album art in the music menu.
 
-7. The Raspberry Pi will automatically reboot and start the program.
+7. Run the dependency install script:
+    ```bash
+    ./install_dependencies.sh
+    ```
+    This will take a really long time to run as it has to download map data and format it but you do not to be present while it is running. The Raspberry Pi will automatically shutdown when complete to not waste power.
 
 
 ## Album Art Handling
@@ -73,3 +77,14 @@ To ensure smooth performance and offline capability:
 - On the next internet-connected session, the app will automatically fetch and save any missing album art for previously played tracks.
 
 This approach ensures a seamless user experience, with album visuals displayed even when the device is offline, after being seen once online.
+
+
+## Maps Credits
+
+Map data from [©OpenStreetMap](https://www.openstreetmap.org/) contributors, available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/).
+
+Navigation is powered by [OSRM (Open Source Routing Machine)](https://project-osrm.org/).
+
+Address search is provided by [Nominatim](https://nominatim.org/).
+
+
