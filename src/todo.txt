@@ -4,6 +4,7 @@ add analog volume knob
 external battery
 note I also have an amplifier module if needed
 
-use localhost as connection. use downloaded map data. use Nominatim for address -> coords. use osrm for shortest path calculations
-download map data from wget -O ../src/AppData/maps.osm.pbf https://download.geofabrik.de/north-america/us-latest.osm.pbf
-add map to requeirements.txt
+Nominatim start with:       venv/bin/nominatim serve
+OSRM start with:            osrm-routed src/AppData/map.osrm
+
+maybe need nominatim additional files?  https://nominatim.org/downloads/
