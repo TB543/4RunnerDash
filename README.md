@@ -63,7 +63,7 @@ todo add hardware list here and hardware installation guide
     ```bash
     ./install_dependencies.sh
     ```
-    This will take a really long time to run as it has to download map data and format it but you do not to be present while it is running. The Raspberry Pi will automatically shutdown when complete to not waste power.
+    This will take a really long time to run (sometimes days) as it has to download large map data files and format it but you do not to be present while it is running. The Raspberry Pi will automatically shutdown when complete to not waste power.
 
 
 ## Album Art Handling
@@ -83,8 +83,6 @@ This approach ensures a seamless user experience, with album visuals displayed e
 
 Map data from [©OpenStreetMap](https://www.openstreetmap.org/) contributors, available under the [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/).
 
-Navigation is powered by [OSRM (Open Source Routing Machine)](https://project-osrm.org/).
+Navigation is powered by [GraphHopper](https://www.graphhopper.com/), an open-source routing engine.
 
 Address search is provided by [Nominatim](https://nominatim.org/).
-
-

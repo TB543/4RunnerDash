@@ -201,7 +201,6 @@ cython_debug/
 *.db-wal
 *.db-journal
 src/AppData/map_data
-*.log
 
-# include OSRM lib folder
-!resources/OSRM_profile/lib
+# external libraries folder
+src/Lib
