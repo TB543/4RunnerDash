@@ -29,9 +29,9 @@ sudo swapon swapfile
 
 # installs and configures map database
 wget -O ../src/AppData/map.osm.pbf https://download.geofabrik.de/north-america/us-latest.osm.pbf # only US, feel free to change to a different region if needed
-osrm-extract -p OSRM_profile/car.lua ../src/AppData/map.osm.pbf
-osrm-partition ../src/AppData/map.osrm
-osrm-customize ../src/AppData/map.osrm
+osrm-extract -p OSRM_profile/car.lua ../src/AppData/map.osm.pbf 2>&1 | tee osrm-extract.log  # 2>&1 | tee osrm-extract.log only for debugging
+osrm-partition ../src/AppData/map.osrm 2>&1 | tee osrm-partition.log  # 2>&1 | tee osrm-partition.log only for debugging
+osrm-customize ../src/AppData/map.osrm 2>&1 | tee osrm-customize.log  # 2>&1 | tee osrm-customize.log only for debugging
 
 # installs Nominatim (used to get gps coordinates from address)
 wget https://www.nominatim.org/release/Nominatim-5.1.0.tar.bz2
@@ -42,7 +42,9 @@ rm -rf ../Nominatim-5.1.0
 cd ../src
 sudo -u postgres createuser -s $(whoami)
 sudo -u postgres createuser www-data
-../venv/bin/nominatim import --osm-file ../src/AppData/map.osm.pbf
+export NOMINATIM_FLATNODE_FILE=../src/AppData/flatnode.file
+export NOMINATIM_IMPORT_STYLE=full
+../venv/bin/nominatim import --osm-file ../src/AppData/map.osm.pbf --no-updates 2>&1 | tee nominatim.log  # 2>&1 | tee nominatim.log only for debugging
 cd ../resources
 ../venv/bin/pip install uvicorn falcon
 
