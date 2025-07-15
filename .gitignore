@@ -200,9 +200,8 @@ cython_debug/
 *.db-shm
 *.db-wal
 *.db-journal
-*.osm.pbf
-*.osrm.timestamp
-*.file
+src/AppData/map_data
+*.log
 
 # include OSRM lib folder
 !resources/OSRM_profile/lib

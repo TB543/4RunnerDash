@@ -4,6 +4,8 @@ add analog volume knob
 external battery
 note I also have an amplifier module if needed
 
+500 gb drive used for map data  add to readme
+
 Nominatim start with:       venv/bin/nominatim serve
 OSRM start with:            osrm-routed src/AppData/map.osrm
 
