@@ -3,7 +3,7 @@ graphhopper:
   # OpenStreetMap input file PBF or XML, can be changed via command line -Ddw.graphhopper.datareader.file=some.pbf
   datareader.file: "AppData/map_data/map.osm.pbf"
   # Local folder used by graphhopper to store its data
-  graph.location: AppData/map_data/graphhopper_graph
+  graph.location: AppData/map_data/graphhopper
 
 
   ##### Routing Profiles ####

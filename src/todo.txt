@@ -6,7 +6,7 @@ note I also have an amplifier module if needed
 
 500 gb drive used for map data  add to readme
 
-Nominatim start with (I think):     venv/bin/nominatim query
+Nominatim start with (I think):     venv/bin/nominatim search --query 
 graphhopper start with:             java -jar Lib/graphhopper.jar server ../resources/graphhopper_config.yml
 
 maybe need nominatim additional files?  https://nominatim.org/downloads/
@@ -14,3 +14,4 @@ find out how to import osm.pbf on windows with drive for more speed
 make sure servers dont cache data ^^
 try just:                           pip install nominatim-db nominatim-api
 nominatim on small file
+gps module install and obs scan code
