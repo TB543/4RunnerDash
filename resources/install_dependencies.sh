@@ -14,13 +14,6 @@ python3 -m venv ../venv --system-site-packages
 mkdir ../src/Lib
 wget -O ../src/Lib/graphhopper.jar https://github.com/graphhopper/graphhopper/releases/download/10.2/graphhopper-web-10.2.jar
 
-# installs Nominatim (used to get gps coordinates from address)
-wget https://www.nominatim.org/release/Nominatim-5.1.0.tar.bz2
-tar xvf Nominatim-5.1.0.tar.bz2 -C ..
-rm Nominatim-5.1.0.tar.bz2
-../venv/bin/pip install ../Nominatim-5.1.0/packaging/nominatim-{api,db}
-rm -rf ../Nominatim-5.1.0
-
 # installs map database
 mkdir -p ../src/AppData/map_data
 wget -O ../src/AppData/map_data/map.osm.pbf https://download.geofabrik.de/north-america/us-latest.osm.pbf # only US, feel free to change to a different region if needed
