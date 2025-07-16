@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # installs dependencies
-sudo apt install -y xserver-xorg x11-xserver-utils # display 
-sudo apt install -y python3.11-dev python3-tk python3-gi fonts-noto-color-emoji # python src
+sudo apt install -y xserver-xorg x11-xserver-utils fonts-noto-color-emoji # display 
+sudo apt install -y python3.11-dev python3-tk python3-gi # python src dependencies
 sudo apt install -y bluez pulseaudio pulseaudio-module-bluetooth # bluetooth/audio system
-sudo apt install -y openjdk-17-jdk postgresql postgis osm2pgsql # navigation system
+sudo apt install -y openjdk-17-jdk postgresql postgis osm2pgsql libicu-dev # navigation system
 
 # installs python modules
 python3 -m venv ../venv --system-site-packages
@@ -41,7 +41,7 @@ sudo -u postgres createuser -s $(whoami)
 sudo -u postgres createuser www-data
 export NOMINATIM_FLATNODE_FILE=../src/AppData/map_data/flatnode.file
 export NOMINATIM_IMPORT_STYLE=full
-../venv/bin/nominatim import --osm-file ../src/AppData/map_data/map.osm.pbf --no-updates
+../venv/bin/nominatim import --osm-file ../src/AppData/map_data/map.osm.pbf --no-updates 
 
 # removes swapfile and shuts down system
 sudo swapoff swapfile
