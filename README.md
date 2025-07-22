@@ -38,7 +38,7 @@
    - Other options can be left as default.
 6. Wait for the flashing process to complete.
 
->**Note:** Whatever name you give the Pi will be the name of the bluetooth connection to the i.
+>**Note:** Whatever name you give the Pi will be the name of the bluetooth connection to the Pi.
 
 ## Initial Boot and Configuration
 1. Plug the SD card into the Pi, boot the Raspberry Pi and wait for the initial setup to finish.
