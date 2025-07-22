@@ -202,5 +202,6 @@ cython_debug/
 *.db-journal
 src/AppData/map_data
 
-# external libraries folder
-src/Lib
+# external libraries
+src/Lib/tileserver
+src/Lib/graphhopper.jar

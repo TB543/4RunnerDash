@@ -2,7 +2,7 @@ from pydbus import SystemBus
 from time import sleep
 from subprocess import run, PIPE
 from time import strftime, gmtime
-from DataManagers.AlbumArtManager import AlbumArtManager
+from DataManagers.AlbumJobManager import AlbumJobManager
 
 
 class BluezAPI:
@@ -20,7 +20,7 @@ class BluezAPI:
         # initializes the fields
         self.bus = SystemBus()
         self.player = None
-        self.art_manager = AlbumArtManager("AppData/default_album_art.png")
+        self.art_manager = AlbumJobManager("AppData/default_album_art.png")
         self._title = None
         self._artist = None
         self._playback_ratio = 0
@@ -87,6 +87,11 @@ class BluezAPI:
     # ========================================== PLAYBACK CONTROLS ==========================================
 
     def previous_track(self):
+        """
+        attempts to skip to the previous track.
+        if it fails, it attempts to update the player.
+        """
+
         try:
             self.player.Previous()
             self.player.Pause()
@@ -96,12 +101,22 @@ class BluezAPI:
             self.update_player()
 
     def track_control(self):
+        """
+        attempts to toggle play/pause.
+        if it fails, it attempts to update the player.
+        """
+
         try:
             self.player.Pause() if self.player.Status == "playing" else self.player.Play()
         except:
             self.update_player()
 
     def next_track(self):
+        """
+        attempts to skip to the next track.
+        if it fails, it attempts to update the player.
+        """
+
         try:
             self.player.Next()
         except:
@@ -109,12 +124,25 @@ class BluezAPI:
 
     @staticmethod
     def set_volume(percent):
+        """
+        changes the volume to the specified value
+
+        @param percent: the volume percentage to update to 
+        """
+
         run(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{percent}%"])
         
     # ========================================== METADATA RETRIEVAL =========================================
 
     @property
     def title(self):
+        """
+        attempts to get the title of the current track.
+        attempts to update the player if it fails.
+
+        @return: the title of the current track
+        """
+
         try:
             self._title = self.player.Track["Title"]
         except:
@@ -123,6 +151,13 @@ class BluezAPI:
 
     @property
     def artist(self):
+        """
+        attempts to get the artist of the current track.
+        attempts to update the player if it fails.
+
+        @return: the artist of the current track
+        """
+        
         try:
             self._artist = self.player.Track["Artist"]
         except:
@@ -131,6 +166,12 @@ class BluezAPI:
     
     @property
     def album(self):
+        """
+        attempts to get the album of the current track.
+
+        @return: the album of the current track
+        """
+
         try:
             return self.player.Track["Album"]
         except:
@@ -138,6 +179,15 @@ class BluezAPI:
         
     @property
     def album_art(self):
+        """
+        attempts to get the album art of the current track.
+        only retrieves the art if the queued job has completed
+        additionally this method will only return the art for 
+        the current track once to avoid repeat calling the expensive job
+
+        @return: the album of the current track
+        """
+
         art = None
         if self.art_job and self.art_job.done():
             art = self.art_job.result()
@@ -146,6 +196,13 @@ class BluezAPI:
     
     @property
     def elapsed_time_str(self):
+        """
+        attempts to get the elapsed time of the current track.
+        attempts to update the player if it fails
+
+        @return: the elapsed time of the current track
+        """
+
         try:
             self._elapsed_time_str = strftime("%M:%S", gmtime(self.player.Position / 1000))
         except:
@@ -154,6 +211,13 @@ class BluezAPI:
 
     @property
     def playback_ratio(self):
+        """
+        attempts to get the playback ratio of the current track.
+        attempts to update the player if it fails
+
+        @return: a value between 0 and 1 to represent the playback ratio
+        """
+
         try:
             self._playback_ratio = self.player.Position / self.player.Track["Duration"]
         except:
@@ -162,6 +226,13 @@ class BluezAPI:
 
     @property
     def remaining_time_str(self):
+        """
+        attempts to get the remaining time of the current track.
+        attempts to update the player if it fails
+
+        @return: the remaining time of the current track
+        """
+
         try:
             self._remaining_time_str = strftime("%M:%S", gmtime((self.player.Track["Duration"] - self.player.Position) / 1000))
         except:
@@ -170,6 +241,13 @@ class BluezAPI:
 
     @property
     def playback_mode(self):
+        """
+        attempts to get the player status.
+        attempts to update the player if it fails
+
+        @return: a string to represent either "playing" or "paused"
+        """
+
         try:
             return "❚❚" if self.player.Status == "playing" else "▶"
         except:
@@ -178,6 +256,13 @@ class BluezAPI:
         
     @property
     def volume(self):
+        """
+        attempts to get the current volume
+        attempts to update the player if it fails
+
+        @return: the current volume
+        """
+
         command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
         result = command.stdout
         volume = result.split("%")

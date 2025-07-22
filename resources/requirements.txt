@@ -7,6 +7,8 @@ darkdetect==0.8.0
 decorator==5.2.1
 diskcache==5.6.3
 evdev==1.9.2
+flexcache==0.3
+flexparser==0.4
 future==1.0.0
 geocoder==1.38.1
 greenlet==3.2.3
@@ -15,13 +17,17 @@ Jinja2==3.1.6
 MarkupSafe==3.0.2
 nominatim-api==5.1.0
 nominatim-db==5.1.0
+obd==0.7.3
 packaging==25.0
 pillow==11.3.0
+Pint==0.24.4
+platformdirs==4.3.8
 psutil==7.0.0
 psycopg==3.2.9
 pydbus==0.6.0
 pyicu==2.15.2
 pyperclip==1.9.0
+pyserial==3.5
 python-dotenv==1.1.1
 PyYAML==6.0.2
 ratelim==0.1.6

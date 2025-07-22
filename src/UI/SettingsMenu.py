@@ -1,7 +1,6 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton
-from Dev import CTkButtonFixed
+from Dev.CTkButtonFixed import CTkButtonFixed
 from DataManagers.AppearanceManager import AppearanceManager
-from AppData import MENU_ICON_FONT, MENU_LABEL_FONT
 from subprocess import run
 
 
@@ -20,26 +19,26 @@ class SettingsMenu(CTkFrame):
         """
 
         super().__init__(master, **kwargs)
-        appearance_text = AppearanceManager.MODES[appearance_manager.mode].icon
-        theme_text = AppearanceManager.THEMES[appearance_manager.theme].icon
-        scale_text = AppearanceManager.SCALES[appearance_manager.scaling].icon
+        appearance_text = AppearanceManager.MODES[appearance_manager.mode]["icon"]
+        theme_text = AppearanceManager.THEMES[appearance_manager.theme]["icon"]
+        scale_text = AppearanceManager.SCALES[appearance_manager.scaling]["icon"]
 
         # creates the labels for the buttons
-        appearance_label = CTkLabel(self, text="Appearance", font=MENU_LABEL_FONT)
-        theme_label = CTkLabel(self, text="Theme", font=MENU_LABEL_FONT)
-        scale_label = CTkLabel(self, text="Zoom", font=MENU_LABEL_FONT)
-        shell_label = CTkLabel(self, text="Open Shell", font=MENU_LABEL_FONT)
+        appearance_label = CTkLabel(self, text="Appearance", font=("Arial", 20))
+        theme_label = CTkLabel(self, text="Theme", font=("Arial", 20))
+        scale_label = CTkLabel(self, text="Zoom", font=("Arial", 20))
+        shell_label = CTkLabel(self, text="Open Shell", font=("Arial", 20))
         appearance_label.grid(row=0, column=1, sticky="s")
         theme_label.grid(row=0, column=3, sticky="s")
         scale_label.grid(row=0, column=5, sticky="s")
         shell_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        appearance_button = CTkButtonFixed(self, text=appearance_text, font=MENU_ICON_FONT, command=lambda: appearance_button.configure(text=appearance_manager.cycle_mode()))
-        theme_button = CTkButtonFixed(self, text=theme_text, font=MENU_ICON_FONT, command=lambda: theme_button.configure(text=appearance_manager.cycle_theme()))
-        scale_button = CTkButtonFixed(self, text=scale_text, font=MENU_ICON_FONT, command=lambda: scale_button.configure(text=appearance_manager.cycle_scaling()))
-        shell_button = CTkButtonFixed(self, text="🖥️", font=MENU_ICON_FONT, command=self.open_shell)
-        back_button = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
+        appearance_button = CTkButtonFixed(self, text=appearance_text, font=("Arial", 100), command=lambda: appearance_button.configure(text=appearance_manager.cycle_mode()))
+        theme_button = CTkButtonFixed(self, text=theme_text, font=("Arial", 100), command=lambda: theme_button.configure(text=appearance_manager.cycle_theme()))
+        scale_button = CTkButtonFixed(self, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=appearance_manager.cycle_scaling()))
+        shell_button = CTkButtonFixed(self, text="🖥️", font=("Arial", 100), command=self.open_shell)
+        back_button = CTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
         appearance_button.grid(row=1, column=1)
         theme_button.grid(row=1, column=3)
         scale_button.grid(row=1, column=5)

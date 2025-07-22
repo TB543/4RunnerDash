@@ -79,6 +79,8 @@ class KeyboardController:
     def arrows(self, event):
         """
         handles when the user presses the arrow keys: moves a slider if it is focused
+
+        @param event: the event that triggered the arrow key press
         """
 
         # no slider selected

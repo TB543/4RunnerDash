@@ -35,15 +35,12 @@ class AlbumArtCache:
         with self.LRU_lock:
             LRU_dict = self.cache.get("LRU", OrderedDict())
 
-            # ensures song is not added with no matching album
-            if not song:
-                LRU_dict[album] = None
-                LRU_dict.move_to_end(album)
-                self.cache.set("LRU", LRU_dict)
-
             # links song to album if needed
-            elif song and (album in LRU_dict):
+            if song and (album in LRU_dict):
                 self.cache.set(song, album, tag=album)
+
+            # touches the album
+            if (not song) or (song and (album in LRU_dict)):
                 LRU_dict[album] = None
                 LRU_dict.move_to_end(album)
                 self.cache.set("LRU", LRU_dict)
@@ -60,7 +57,7 @@ class AlbumArtCache:
         """
         
         if not (art := self.cache.get(album)):
-            return None if song else self.default_art
+            return None if song or album != f"albums:{None}" else self.default_art
         pool.submit(self.touch_album, album, song)
         return art
         
@@ -96,6 +93,7 @@ class AlbumArtCache:
         """
 
         # associates song with album
+        self.touch_album(value) # ensures no hanging album upon system crash
         key, value = f"songs:{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
         self.cache.set(key, value, tag=value)
 
@@ -106,7 +104,7 @@ class AlbumArtCache:
         # handles when song has default album art
         elif not art:
             self.cache.set(key, f"albums:{None}", tag="default")
-        self.touch_album(value)
+        self.touch_album(value) # ensures no hanging album upon clean
 
         # removes from pending queries
         with self.pending_lock:
@@ -119,7 +117,7 @@ class AlbumArtCache:
     @property
     def pending(self):
         """
-        @return after removing the set of all the queries that are pending
+        @return the set of all the queries that are pending
         """
 
         with self.pending_lock:
@@ -168,9 +166,7 @@ class AlbumArtCache:
 
             # removes the least recently accessed album
             while len(LRU_dict) > MAX_CACHE_ALBUMS:
-                with self.cache.transact():
-
-                    # removed least recently accessed albums
+                with self.cache.transact():  # ensures atomicity
                     self.cache.evict("default")
                     self.cache.evict(LRU_dict.popitem(last=False)[0])
                     self.cache.set("LRU", LRU_dict)

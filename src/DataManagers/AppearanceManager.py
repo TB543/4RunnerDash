@@ -8,56 +8,40 @@ from datetime import datetime
 class AppearanceManager:
 
     # ====================================== ALL VALUES ======================================
-
-    # class to hold metadata for each value used by the UI to cycle through options and display the current value
-    class MetaData:
-        def __init__(self, next_value, icon):
-            self.next = next_value
-            self.icon = icon
-
+    """
+    contains the cycle values for the appearance settings.
+    Each value has a "next" key that points to the next value in the cycle,
+    and an "icon" key that points to the icon to be displayed for that value.
+    """
+    
     MODES = {
-        "light": MetaData("dark", "🔆"),
-        "dark": MetaData("system", "🌙"),
-        "system": MetaData("light", "🕒")
+        "light": {"next": "dark", "icon": "🔆"},
+        "dark": {"next": "system", "icon": "🌙"},
+        "system": {"next": "light", "icon": "🕒"}
     }
 
     THEMES = {
-        "blue": MetaData("green", "💧"),
-        "green": MetaData("dark-blue", "🍃"),
-        "dark-blue": MetaData("blue", "🌊"),
+        "blue": {"next": "green", "icon": "💧"},
+        "green": {"next": "dark-blue", "icon": "🍃"},
+        "dark-blue": {"next": "blue", "icon": "🌊"}
     }
 
     SCALES = {
-        1.000: MetaData(1.375, "👁️"),
-        1.375: MetaData(1.750, "🔍"),
-        1.750: MetaData(1.000, "🔭")
+        1.000: {"next": 1.375, "icon": "👁️"},
+        1.375: {"next": 1.750, "icon": "🔍"},
+        1.750: {"next": 1.000, "icon": "🔭"}
     }
-
-    # ======================================= CYCLERS ========================================
-
-    def cycle_mode(self):
-        self.mode = self.MODES[self.mode].next
-        self.root.after_cancel(self.after_change_mode)
-        set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
-        self.save()
-        return self.MODES[self.mode].icon
-
-    def cycle_theme(self):
-        self.theme = self.THEMES[self.theme].next
-        set_default_color_theme(self.theme)
-        self.change_theme(self.root) if self.root else None
-        self.save()
-        return self.THEMES[self.theme].icon
-
-    def cycle_scaling(self):
-        self.scaling = self.SCALES[self.scaling].next
-        set_widget_scaling(self.scaling)
-        self.save()
-        return self.SCALES[self.scaling].icon
 
     # ======================================= LOAD/SAVE ======================================
 
     def __init__(self, root):
+        """
+        initializes the AppearanceManager with default values and attempts to load the appearance settings from a file.
+
+        @param root: the root widget of the application, used to apply themes and modes
+            additionally the root widget is used to schedule the system mode update
+        """
+
         self.mode = "system"
         self.theme = "blue"
         self.scaling = 1.375
@@ -68,6 +52,12 @@ class AppearanceManager:
         self.load()
 
     def load(self):
+        """
+        attempts to load the appearance settings from a JSON file.
+        If the file does not exist, it creates a new file with default values.
+        """
+
+        # attempts to load the appearance settings from a JSON file
         try:
             with open("AppData/appearance_settings.json", "r") as f:
                 data = load(f)
@@ -77,15 +67,20 @@ class AppearanceManager:
                 self.lat = data["lat"]
                 self.long = data["long"]
 
-        # If the file does not exist, create it with default values
-        except FileNotFoundError:
+        # If the file does not exist or is corrupted, create it with default values
+        except:
             self.save()
 
+        # updates the appearance settings based on the loaded values
         set_default_color_theme(self.theme)
         set_widget_scaling(self.scaling)
         set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
 
     def save(self):
+        """
+        saves the current appearance settings to a JSON file.
+        """
+        
         with open("AppData/appearance_settings.json", "w") as f:
             dump({
                 "mode": self.mode,
@@ -94,6 +89,46 @@ class AppearanceManager:
                 "lat": self.lat,
                 "long": self.long
             }, f, indent=4)
+
+    # ======================================= CYCLERS ========================================
+
+    def cycle_mode(self):
+        """
+        cycles through the appearance modes and applies the selected mode.
+
+        @return: the icon representing the current mode
+        """
+        
+        self.mode = self.MODES[self.mode]["next"]
+        self.root.after_cancel(self.after_change_mode)
+        set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
+        self.save()
+        return self.MODES[self.mode]["icon"]
+
+    def cycle_theme(self):
+        """
+        cycles through the appearance themes and applies the selected theme.
+
+        @return: the icon representing the current theme
+        """
+
+        self.theme = self.THEMES[self.theme]["next"]
+        set_default_color_theme(self.theme)
+        self.change_theme(self.root) if self.root else None
+        self.save()
+        return self.THEMES[self.theme]["icon"]
+
+    def cycle_scaling(self):
+        """
+        cycles through the scaling options and applies the selected scale.
+
+        @return: the icon representing the current scale
+        """
+
+        self.scaling = self.SCALES[self.scaling]["next"]
+        set_widget_scaling(self.scaling)
+        self.save()
+        return self.SCALES[self.scaling]["icon"]
 
     # ======================================= HELPERS ========================================
 
@@ -128,7 +163,7 @@ class AppearanceManager:
 
                     # only applies the theme if the key is a valid configuration option for the widget
                     try:
-                        root.configure(**{key: value}) if key != "corner_radius" else None
+                        root.configure(**{key: value}) if key != "corner_radius" and key != "border_width" else None
                     except ValueError:
                         continue
                 break

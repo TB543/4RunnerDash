@@ -1,6 +1,6 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
-from Music.BluezAPI import BluezAPI
-from AppData import MENU_ICON_FONT, MENU_LABEL_FONT, MAX_VOLUME
+from Connections.BluezAPI import BluezAPI
+from AppData import MAX_VOLUME
 
 
 class MusicMenu(CTkFrame):
@@ -28,13 +28,13 @@ class MusicMenu(CTkFrame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
         for col in range(1, 8, 2):
-            spacer = CTkButton(self, text="", font=MENU_ICON_FONT, fg_color="transparent", hover=False, height=0)
+            spacer = CTkButton(self, text="", font=("Arial", 100), fg_color="transparent", hover=False, height=0)
             spacer.grid(row=1, column=col)
             self.columnconfigure(col + 1, weight=1)
 
         # creates the container and main menu widgets
         music_container = CTkFrame(self, fg_color=self.cget("fg_color"))
-        main_menu = CTkButton(self, text="Main Menu", font=MENU_LABEL_FONT, command=lambda: master.change_menu("main"))
+        main_menu = CTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
         music_container.grid(row=1, column=1, columnspan=7, sticky="nsew", pady=10)
         main_menu.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
         music_container.grid_propagate(False)
@@ -101,7 +101,7 @@ class MusicMenu(CTkFrame):
         title.grid_propagate(False)
         artist.grid_propagate(False)
 
-    def update_metadata(self):
+    def update_loop(self):
         """
         updates all of the metadata display widgets each frame
         """
@@ -114,7 +114,9 @@ class MusicMenu(CTkFrame):
         self.elapsed_time.set(self.api.elapsed_time_str)
         self.remaining_time.set(self.api.remaining_time_str)
         self.player_status.set(self.api.playback_mode)
-        self.fps_counter = self.after(MusicMenu.FPS, self.update_metadata)
+
+        # queues next update and updates album art if available
+        self.fps_counter = self.after(MusicMenu.FPS, self.update_loop)
         if (art := self.api.album_art):
             self.image_container.configure(image=CTkImage(art, size=(200, 200)))
 
@@ -126,7 +128,7 @@ class MusicMenu(CTkFrame):
         """
 
         super().place(**kwargs)
-        self.update_metadata()
+        self.update_loop()
 
     def place_forget(self):
         """

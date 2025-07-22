@@ -1,4 +1,4 @@
-from customtkinter import CTk, set_widget_scaling
+from customtkinter import CTk, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
 from UI.MainMenu import MainMenu
@@ -27,11 +27,12 @@ class MenuManager(CTk):
         self.active_menu = "main"
 
         # creates the various menus
+        temp = StringVar(self, "°F")
         self.menus = {
-            "main": MainMenu(self),
+            "main": MainMenu(self, temp),
             "maps": MapsMenu(self),
             "music": MusicMenu(self),
-            "obd": OBDMenu(self),
+            "obd": OBDMenu(self, temp, self.appearance_manager),
             "settings": SettingsMenu(self, self.appearance_manager)
         }
         self.change_menu(self.active_menu)

@@ -1,17 +1,18 @@
 from tkintermapview import TkinterMapView
+from tkintermapview import convert_address_to_coordinates  # todo test offline
 
 
 class MapWidget(TkinterMapView):
     """
     a subclass of TkinterMapView with pi touch screen support
+
+    todo cache requests
     """
 
-    def __init__(self, master, **kwargs):
-        """
-        Initializes the settings menu frame.
-        
-        @param master: the parent widget
-        @param kwargs: additional keyword arguments for CTkFrame
-        """
 
-        super().__init__(master, **kwargs)
+# from customtkinter import CTk
+# root = CTk()
+# map = MapWidget(root)
+# map.pack(fill="both", expand=True)
+# map.set_tile_server("http://localhost:8080/styles/test-style/256/{z}/{x}/{y}.png")
+# root.mainloop()

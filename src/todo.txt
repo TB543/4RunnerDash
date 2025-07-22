@@ -1,17 +1,11 @@
-add gps for lat long data in app settings
 add dashcam
-add analog volume knob
-external battery
-note I also have an amplifier module if needed
 
-500 gb drive used for map data  add to readme
-
-Nominatim start with (I think):     venv/bin/nominatim search --query 
-graphhopper start with:             java -jar Lib/graphhopper.jar server ../resources/graphhopper_config.yml
-
-maybe need nominatim additional files?  https://nominatim.org/downloads/
-find out how to import osm.pbf on windows with drive for more speed
-make sure servers dont cache data ^^
-try just:                           pip install nominatim-db nominatim-api
-nominatim on small file
-gps module install and obs scan code
+finish map menu and boot nomatium on startup
+test odm, odm oil/filter/trans change warning on main menu
+gracefully shutdown on power loss with kill_backend.sh and destroy tkinter root. monitor 12v vcc for shutdown signal
+make system appearance mode use dimmer and wire amp on for when audio is playing
+test if mount permissions are needed every boot in startup.sh
+hardware wiring
+add things that need to be changed based on time (inspection, radiator fluid, etc)
+check manual for actual values to change fluids
+wired audio in?

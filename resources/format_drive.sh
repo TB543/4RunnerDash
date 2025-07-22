@@ -6,7 +6,7 @@ lsblk
 read -p "Above is a list of connected devices, copy and paste the one for the drive (just the text after the "└─" character): " DRIVE
 
 # mounts drive and makes mount persist over reboots
-sudo mkfs.ext4 /dev/"$DRIVE"
+sudo mkfs.ext4 /dev/"$DRIVE" # enter no when drive already stores map data
 mkdir -p ../src/AppData/map_data
 sudo mount /dev/"$DRIVE" ../src/AppData/map_data
 echo "/dev/$DRIVE  $(realpath ../src/AppData/map_data)  ext4  defaults,noatime  0  2" | sudo tee -a /etc/fstab
