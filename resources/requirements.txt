@@ -7,11 +7,13 @@ darkdetect==0.8.0
 decorator==5.2.1
 diskcache==5.6.3
 evdev==1.9.2
+falcon==4.0.2
 flexcache==0.3
 flexparser==0.4
 future==1.0.0
 geocoder==1.38.1
 greenlet==3.2.3
+h11==0.16.0
 idna==3.10
 Jinja2==3.1.6
 MarkupSafe==3.0.2
@@ -37,3 +39,4 @@ SQLAlchemy==2.0.41
 tkintermapview==1.29
 typing_extensions==4.14.1
 urllib3==2.5.0
+uvicorn==0.35.0
