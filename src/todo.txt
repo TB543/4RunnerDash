@@ -9,3 +9,5 @@ hardware wiring
 add things that need to be changed based on time (inspection, radiator fluid, etc)
 check manual for actual values to change fluids
 wired audio in?
+add commas for mile counters
+mile counter reset buttons don't unclick because of touch screen
