@@ -93,7 +93,6 @@ class AlbumArtCache:
         """
 
         # associates song with album
-        self.touch_album(value) # ensures no hanging album upon system crash
         key, value = f"songs:{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
         self.cache.set(key, value, tag=value)
 
@@ -104,7 +103,7 @@ class AlbumArtCache:
         # handles when song has default album art
         elif not art:
             self.cache.set(key, f"albums:{None}", tag="default")
-        self.touch_album(value) # ensures no hanging album upon clean
+        self.touch_album(value)
 
         # removes from pending queries
         with self.pending_lock:
