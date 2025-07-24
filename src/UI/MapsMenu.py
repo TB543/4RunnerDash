@@ -2,6 +2,7 @@ from customtkinter import CTkFrame, CTkButton, CTkEntry, CTkScrollableFrame, CTk
 from UI.MapWidget import MapWidget
 from Connections.NavigationAPI import NavigationAPI
 from json import dumps, loads
+from UI.VirtualKeyBoard import VirtualKeyboard
 
 
 class MapsMenu(CTkFrame):
@@ -37,12 +38,16 @@ class MapsMenu(CTkFrame):
 
         # creates search container
         search_container = CTkFrame(container, fg_color=self.cget("fg_color"))
-        self.search_entry = CTkEntry(search_container, placeholder_text="Enter Your Destination...", font=("Arial", 20))
-        self.search_entry._is_focused = False
+        self.search_entry = CTkEntry(search_container, placeholder_text="Enter Your Destination...", font=("Arial", 20), takefocus=0)
         search_button = CTkButton(search_container, text="Search", font=("Arial", 20), width=80, command=self.search)
         search_container.pack(fill="x", padx=10)
         self.search_entry.pack(side="left", fill="x", expand=True)
         search_button.pack(side="right", padx=(5, 0))
+
+        # configures search entry settings and adds a virtual keyboard for it
+        self.search_entry._is_focused = False
+        self.search_entry._entry.configure(cursor="none")
+        self.keyboard = VirtualKeyboard(self, self.search_entry, self.search)
 
         # creates map container
         map_container = CTkFrame(container, fg_color=self.cget("fg_color"))
@@ -70,6 +75,17 @@ class MapsMenu(CTkFrame):
         self.position_marker = self.map_widget.set_position(*NavigationAPI.GPS_COORDS, "You", True, text_color="#87CEFA", marker_color_circle="white", marker_color_outside="#1E90FF")
         self.search_marker = None
         self.navigation_marker = None
+        self.bind_focus(self)
+
+    def bind_focus(self, root):
+        """
+        recursively ensures that every element gains focus when it is clicked so entry can be clicked out of 
+        """
+
+        root.bind("<Button-1>", lambda e: self.focus(), add="+")
+        for widget in root.winfo_children():
+            if widget != self.keyboard and widget != self.search_entry:
+                self.bind_focus(widget)
 
     def start_navigation(self):
         """
@@ -111,7 +127,6 @@ class MapsMenu(CTkFrame):
         """
 
         # clears old results
-        self.focus()
         self.selected_waypoint.set("")
         self.search_results_popup.pack(side="right", fill="y", padx=(5, 0))
         self.start_navigation_button.configure(state="disabled")

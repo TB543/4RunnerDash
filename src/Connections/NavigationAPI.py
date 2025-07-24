@@ -23,7 +23,7 @@ class NavigationAPI:
         """
 
         map_widget = map_widget
-        # map_widget.set_tile_server("http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png", MAP_TILE_RESOLUTION)
+        map_widget.set_tile_server("http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png", MAP_TILE_RESOLUTION)
 
     def geocode(self, query):
         """
@@ -35,11 +35,12 @@ class NavigationAPI:
         """
 
         try:
-            return get(
+            results = get(
                 NavigationAPI.NOMINATIM_URL, 
                 params={"q": query}, 
                 timeout=15
             ).json()
+            return "Error Processing Request, Try Again..." if "error" in results else results
 
         # handles errors
         except:
@@ -64,7 +65,7 @@ class NavigationAPI:
                     "profile": "car",
                     "points_encoded": "false"
                 },
-                timeout=60
+                timeout=15
             ).json()["paths"][0]
 
         except:

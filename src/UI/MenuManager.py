@@ -24,6 +24,7 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(**kwargs)
+        self.configure(cursor="none")
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.active_menu = "main"
