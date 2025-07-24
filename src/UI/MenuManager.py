@@ -1,6 +1,8 @@
 from customtkinter import CTk, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
+from evdev import list_devices, InputDevice
+from os import environ
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
 from UI.MusicMenu import MusicMenu
@@ -22,16 +24,23 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(**kwargs)
-        self.appearance_manager = AppearanceManager(self)
-        self.update_idletasks()
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
+        self.appearance_manager = AppearanceManager(self)
         self.active_menu = "main"
+
+        # gets the touch screen device
+        device_name = environ["TOUCH_SCREEN"]
+        touch_screen = None
+        for path in list_devices():
+            touch_screen = InputDevice(path)
+            if device_name == touch_screen.name:
+                break
 
         # creates the various menus
         temp = StringVar(self, "°F")
         self.menus = {
-            "main": MainMenu(self, temp),
-            "maps": MapsMenu(self),
+            "main": MainMenu(self, temp, touch_screen),
+            "maps": MapsMenu(self, self.appearance_manager),
             "music": MusicMenu(self),
             "obd": OBDMenu(self, temp, self.appearance_manager),
             "settings": SettingsMenu(self, self.appearance_manager)

@@ -1,4 +1,5 @@
-from customtkinter import set_appearance_mode, set_default_color_theme, set_widget_scaling, ThemeManager
+from customtkinter import set_appearance_mode, set_default_color_theme, set_widget_scaling, ThemeManager, CTkFrame
+from tkintermapview import TkinterMapView
 from json import dump, load
 from astral import LocationInfo
 from astral.sun import sun
@@ -112,9 +113,10 @@ class AppearanceManager:
         @return: the icon representing the current theme
         """
 
+        old_theme = ThemeManager.theme
         self.theme = self.THEMES[self.theme]["next"]
         set_default_color_theme(self.theme)
-        self.change_theme(self.root) if self.root else None
+        self.change_theme(self.root, old_theme) if self.root else None
         self.save()
         return self.THEMES[self.theme]["icon"]
 
@@ -138,36 +140,45 @@ class AppearanceManager:
         """
 
         # gets the sunrise and sunset times for the current location
-        city = LocationInfo(latitude=self.lat, longitude=self.long) # get gps coords here
+        city = LocationInfo(latitude=self.lat, longitude=self.long) # get gps coords here and save them
         now = datetime.now().astimezone()
         s = sun(city.observer, date=now.date(), tzinfo=now.tzinfo)
         sunrise = s["sunrise"]
         sunset = s["sunset"]
 
         # sets the mode based on the current time and schedules the next update in 5 minutes
-        # self.save() do this when we get gps coords
         set_appearance_mode("light" if sunrise < now < sunset else "dark")
         self.after_change_mode = self.root.after(300_000, self.apply_system_mode)
 
-    def change_theme(self, root):
+    def change_theme(self, root, old_theme):
         """
         Changes the theme of the application.
 
         @param root: the root widget to apply the theme to
+        @param old_top_fg_color: the old theme, used to keep settings not
+            auto applied by theme manager
         """
 
         # finds the widget type and its respective theme in the ThemeManager
         for superclass in type(root).mro():
-            if superclass.__name__ in ThemeManager.theme and root.cget("fg_color") != "transparent":
+            if superclass.__name__ in ThemeManager.theme:
                 for key, value in ThemeManager.theme[superclass.__name__].items():
 
                     # only applies the theme if the key is a valid configuration option for the widget
                     try:
-                        root.configure(**{key: value}) if key != "corner_radius" and key != "border_width" else None
+                        if superclass == CTkFrame and key == "fg_color" and root.cget("fg_color") == old_theme["CTkFrame"]["top_fg_color"]:
+                            value = ThemeManager.theme["CTkFrame"]["top_fg_color"]
+                        root.configure(**{key: value}) if root.cget(key) == old_theme[superclass.__name__][key] else None
                     except ValueError:
                         continue
                 break
 
+            # ensures map theme changes
+            if superclass == TkinterMapView:
+                root.bg_color = root.master._apply_appearance_mode(root.master.cget("fg_color"))
+                root.draw_rounded_corners()
+                break
+
         # recursively applies the theme to all child widgets
         for widget in root.winfo_children():
-            self.change_theme(widget)
+            self.change_theme(widget, old_theme)

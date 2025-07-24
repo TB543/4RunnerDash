@@ -75,7 +75,7 @@ class OBDAPI(Async):
 
         with self.paused():
             codes = super(Async, self).query(commands.GET_DTC)
-        return codes.value
+        return codes.value if codes.value else []
 
     def clear_codes(self):
         """

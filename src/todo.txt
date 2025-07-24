@@ -11,3 +11,5 @@ wired audio in?
 add commas for mile counters
 mile counter reset buttons don't unclick because of touch screen
 make time label based on gps location
+map pinch to zoom - make map take vector tiles and render them directly on the canvas for easy scaling - also makes it so dark mode can be applied to map
+frames on frames lose color on theme change

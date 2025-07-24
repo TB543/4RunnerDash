@@ -1,6 +1,6 @@
 from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
 from Connections.BluezAPI import BluezAPI
-from AppData import MAX_VOLUME
+from AppData import MAX_VOLUME, FPS
 
 
 class MusicMenu(CTkFrame):
@@ -8,7 +8,6 @@ class MusicMenu(CTkFrame):
     a class to represent the music menu
     """
 
-    FPS = 30
     FPS = int(1000 / FPS)
 
     def __init__(self, master, **kwargs):

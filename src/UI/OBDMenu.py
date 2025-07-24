@@ -112,7 +112,7 @@ class OBDMenu(CTkFrame):
         close_codes.grid(row=0, column=2, pady=5, padx=5)
         code.grid(row=0, column=0, sticky="s", padx=15)
         description.grid(row=0, column=1, sticky="sw")
-        self.codes_container.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=2)
+        self.codes_container.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=2, pady=(0, 2))
         clear_codes.grid(row=2, column=0, columnspan=3, sticky="ew", pady=(0, 3), padx=3)
 
         # configures grid for the codes popup
@@ -126,12 +126,12 @@ class OBDMenu(CTkFrame):
         """
 
         # places popup and clears old codes
-        wraplength = 560 * (1 / self.appearance_manager.scaling)
         self.codes_popup.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center")
         for widget in self.codes_container.winfo_children():
             widget.destroy()
 
         # gets the new codes and populates the container
+        wraplength = 560 * (1 / self.appearance_manager.scaling)
         for row, (code, description) in enumerate(self.obd_connection.get_codes()):
             code = CTkLabel(self.codes_container, text=code, font=("Arial", 10))
             description = CTkLabel(self.codes_container, text=description, font=("Arial", 10), wraplength=wraplength, justify="left")

@@ -34,7 +34,7 @@ export NOMINATIM_IMPORT_STYLE=full
 
 # configures map for tilemaker and removes tilemaker
 cd ../src/Lib/tilemaker
-build/tilemaker --input ../../AppData/map_data/map.osm.pbf --output ../../AppData/map_data/map.mbtiles --config config.json --process process.lua
+build/tilemaker --input ../../AppData/map_data/map.osm.pbf --output ../../AppData/map_data/map.mbtiles --config config.json --process process.lua --bbox -180,-90,180,90
 cd ../../../resources
 rm -rf ../src/Lib/tilemaker/
 

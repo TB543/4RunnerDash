@@ -126,9 +126,11 @@
 8. The **4RunnerDash/src/AppData/__init__.py** file contains configuration settings that can be changed as needed to fit your car/hardware. These settings include:
 
     - Pi screen resolution
+    - FPS option
     - Max volume percentage
     - Number of cached album art images
     - Album art image resolution
+    - Map tile resolution
     - Data for how often various car parts/fluids should be replaced
     - Car gas tank capacity
 
