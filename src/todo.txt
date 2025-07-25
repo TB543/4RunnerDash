@@ -4,6 +4,7 @@ add dashcam
 finish map menu
 test odm, odm oil/filter/trans change warning on main menu
 add things that need to be changed based on time (inspection, radiator fluid, etc)
+update readme for working hardware
 
 # ======================================================== HARDWARE ========================================================
 gracefully shutdown on power loss with kill_backend.sh and destroy tkinter root. monitor 12v vcc for shutdown signal

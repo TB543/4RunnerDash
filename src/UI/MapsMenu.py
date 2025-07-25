@@ -1,8 +1,9 @@
-from customtkinter import CTkFrame, CTkButton, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar
+from customtkinter import CTkFrame, CTkButton, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar, DoubleVar
 from UI.MapWidget import MapWidget
 from Connections.NavigationAPI import NavigationAPI
 from json import dumps, loads
 from UI.VirtualKeyBoard import VirtualKeyboard
+from DataManagers.RouteManager import RouteManager
 
 
 class MapsMenu(CTkFrame):
@@ -19,7 +20,7 @@ class MapsMenu(CTkFrame):
         """
 
         super().__init__(master, **kwargs)
-        self.navigating = False
+        self.active_route = None
 
         # creates spacer widgets and sets grid layout
         self.rowconfigure(1, weight=1)
@@ -37,11 +38,14 @@ class MapsMenu(CTkFrame):
 
         # creates search container
         search_container = CTkFrame(container, fg_color=self.cget("fg_color"))
+        focus_position_button = CTkButton(search_container, text="◉", width=12, font=("Arial", 20), command=lambda: self.map_widget.lock_position())
         self.search_entry = CTkEntry(search_container, placeholder_text="Enter Your Destination...", font=("Arial", 20), takefocus=0)
         search_button = CTkButton(search_container, text="Search", font=("Arial", 20), width=80, command=self.populate_search_results)
         search_container.pack(fill="x", padx=10)
-        self.search_entry.pack(side="left", fill="x", expand=True)
-        search_button.pack(side="right", padx=(5, 0))
+        search_container.columnconfigure(1, weight=1)
+        focus_position_button.grid(row=0, column=0)
+        self.search_entry.grid(row=0, column=1, sticky="ew", padx=5)
+        search_button.grid(row=0, column=2)
 
         # configures search entry settings and adds a virtual keyboard for it
         self.search_entry._is_focused = False
@@ -67,9 +71,9 @@ class MapsMenu(CTkFrame):
 
         # places the search results menu and configures the grid
         self.search_results_menu.grid_propagate(False)
-        self.start_navigation_button.grid(row=0, column=0, sticky="ew", pady=5, padx=5)
-        close.grid(row=0, column=1, sticky="ne", pady=5, padx=(0, 5))
-        self.search_results_container.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=2, pady=(0, 2))
+        self.start_navigation_button.grid(row=0, column=0, sticky="ew", pady=(5, 0), padx=5)
+        close.grid(row=0, column=1, sticky="ne", pady=(5, 0), padx=(0, 5))
+        self.search_results_container.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
         self.search_results_menu.rowconfigure(1, weight=1)
         self.search_results_menu.columnconfigure(0, weight=1)
         self.search_results_container.columnconfigure(1, weight=1)
@@ -78,14 +82,38 @@ class MapsMenu(CTkFrame):
         self.navigation_menu = CTkFrame(map_container)
         self.end_navigation_button = CTkButton(self.navigation_menu, text="End Navigation", font=("Arial", 20), command=self.end_navigation)
         self.hide_navigation_button = CTkButton(self.navigation_menu, width=12, font=("Arial", 20))
+        self.route_data = CTkFrame(self.navigation_menu, fg_color=map_container.cget("fg_color"))
         self.navigation_container = CTkScrollableFrame(self.navigation_menu, fg_color=self.navigation_menu.cget("fg_color"))
 
         # places the navigation menu and configures the grid
-        self.hide_navigation_button.grid(row=0, column=0, rowspan=2, sticky="ns", pady=5, padx=5)
+        self.hide_navigation_button.grid(row=0, column=0, rowspan=3, sticky="nsew", pady=5, padx=5)
         self.show_navigation_menu()
-        self.navigation_menu.rowconfigure(1, weight=1)
+        self.navigation_menu.rowconfigure(2, weight=1)
         self.navigation_menu.columnconfigure(1, weight=1)
         self.navigation_container.columnconfigure(1, weight=1)
+
+        # creates route data widgets
+        self.route_eta = StringVar(self)
+        self.route_time = StringVar(self)
+        self.route_miles = DoubleVar(self)
+        route_eta = CTkLabel(self.route_data, textvariable=self.route_eta, font=("Arial", 12, "bold"))
+        route_time = CTkLabel(self.route_data, textvariable=self.route_time, font=("Arial", 12, "bold"))
+        route_miles = CTkLabel(self.route_data, textvariable=self.route_miles, font=("Arial", 12, "bold"))
+        route_eta_label = CTkLabel(self.route_data, text="ETA", font=("Arial", 10))
+        route_time_label = CTkLabel(self.route_data, text="Hrs", font=("Arial", 10))
+        route_miles_label = CTkLabel(self.route_data, text="Miles", font=("Arial", 10))
+
+        # places route data widgets
+        self.route_data.rowconfigure(0, weight=1)
+        self.route_data.columnconfigure(0, weight=1, uniform="col")
+        self.route_data.columnconfigure(1, weight=1, uniform="col")
+        self.route_data.columnconfigure(2, weight=1, uniform="col")
+        route_eta.grid(row=0, column=0, stick="s",)
+        route_time.grid(row=0, column=1, stick="s")
+        route_miles.grid(row=0, column=2, stick="s")
+        route_eta_label.grid(row=1, column=0, stick="n")
+        route_time_label.grid(row=1, column=1, stick="n")
+        route_miles_label.grid(row=1, column=2, stick="n")
         self.bind_focus(self)
 
     def bind_focus(self, root):
@@ -103,7 +131,7 @@ class MapsMenu(CTkFrame):
         ends the current navigation
         """
 
-        self.navigating = False
+        self.active_route.end()
         self.navigation_menu.pack_forget()
         self.map_widget.delete_destination()
 
@@ -112,29 +140,26 @@ class MapsMenu(CTkFrame):
         starts the navigation to the selected waypoint
         """
 
-        # handles no route found 
-        waypoint = loads(self.selected_waypoint.get())
-        navigation = self.api.navigate(NavigationAPI.GPS_COORDS, (float(waypoint["lat"]), float(waypoint["lon"])))
-        if not navigation:
-            return
+        # starts the routing and displays route on UI
+        self.active_route.end() if self.active_route else None
+        self.active_route = self.map_widget.promote_POI()
+        self.active_route.start(
+            lambda e: self.after(0, lambda: self.route_eta.set(e)),
+            lambda h: self.after(0, lambda: self.route_time.set(h)),
+            lambda m: self.after(0, lambda: self.route_miles.set(m)),
+        )
 
-        # ends previous navigation
-        if self.navigating:
-            self.end_navigation()
-
-        # adds path to the map
-        self.navigating = True
-        self.map_widget.promote_POI(navigation["points"]["coordinates"])
-
-        # populates the navigation widgets
+        # removes old instructions
         self.search_results_menu.pack_forget()
         self.navigation_menu.pack(side="right", fill="y", padx=(5, 0))
         self.show_navigation_menu()
+        for widget in self.navigation_container.winfo_children():
+            widget.destroy()
 
-        # loads the directions
-        dist = navigation["distance"]
-        time = navigation["time"]
-        instructions = navigation["instructions"]
+        # populates the navigation container
+
+
+        self.bind_focus(self.navigation_container)
 
     def hide_navigation_menu(self):
         """
@@ -143,6 +168,7 @@ class MapsMenu(CTkFrame):
 
         self.navigation_menu.grid_propagate(True)
         self.navigation_container.grid_forget()
+        self.route_data.grid_forget()
         self.end_navigation_button.grid_forget()
         self.hide_navigation_button.configure(text="◂", command=self.show_navigation_menu)
 
@@ -153,8 +179,9 @@ class MapsMenu(CTkFrame):
 
         self.navigation_menu.grid_propagate(False)
         self.navigation_menu.configure(width=250)
-        self.end_navigation_button.grid(row=0, column=1, sticky="ew", pady=5, padx=(0, 5))
-        self.navigation_container.grid(row=1, column=1, sticky="nsew", padx=2, pady=(0, 2))
+        self.end_navigation_button.grid(row=0, column=1, sticky="nsew", pady=5, padx=(0, 5))
+        self.route_data.grid(row=1, column=1, sticky="nsew", padx=(0, 5), pady=(0, 5))
+        self.navigation_container.grid(row=2, column=1, sticky="nsew", padx=(0, 5), pady=(0, 5))
         self.hide_navigation_button.configure(text="▸", command=self.hide_navigation_menu)
 
     def select_search_result(self):
@@ -162,9 +189,16 @@ class MapsMenu(CTkFrame):
         updates the UI when the user selects a search result
         """
 
-        self.start_navigation_button.configure(state="normal")
+        # handles no route found 
         waypoint = loads(self.selected_waypoint.get())
-        self.map_widget.set_POI(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"])
+        navigation = self.api.navigate(NavigationAPI.GPS_COORDS, (float(waypoint["lat"]), float(waypoint["lon"])))
+        if not navigation:
+            return
+
+        # updates UI with selected search result
+        route = RouteManager(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"], navigation["points"]["coordinates"], navigation["distance"], navigation["time"], navigation["instructions"])
+        self.start_navigation_button.configure(state="normal")
+        self.map_widget.set_POI(route)
 
     def populate_search_results(self):
         """
@@ -196,7 +230,7 @@ class MapsMenu(CTkFrame):
         separator = None
         for row, result in enumerate(results):
             button = CTkRadioButton(self.search_results_container, text="", width=10, variable=self.selected_waypoint, value=dumps(result), command=self.select_search_result)
-            label = CTkLabel(self.search_results_container, text=result["display_name"], font=("Arial", 10), wraplength=165, justify="left")
+            label = CTkLabel(self.search_results_container, text=result["display_name"], font=("Arial", 10), wraplength=190, justify="left")
             label.bind("<Button-1>", lambda e, btn=button: btn.invoke())
             separator = CTkFrame(self.search_results_container, height=2)
             button.grid(row=row * 2, column=0, sticky="ns")
@@ -213,9 +247,9 @@ class MapsMenu(CTkFrame):
         closes the search menu popup
         """
 
-        self.map_widget.POI_marker.delete() if self.map_widget.POI_marker else None
+        self.map_widget.delete_POI()
         self.search_results_menu.pack_forget()
-        self.navigation_menu.pack(side="right", fill="y", padx=(5, 0)) if self.navigating else None
+        self.navigation_menu.pack(side="right", fill="y", padx=(5, 0)) if self.active_route else None
 
     def destroy(self):
         """

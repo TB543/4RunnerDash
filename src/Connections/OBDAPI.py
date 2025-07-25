@@ -8,25 +8,26 @@ class OBDAPI(Async):
     a class to communicate with the OBD-II interface of a vehicle.
     """
 
-    def __init__(self, mpg, miles_until_empty, temp, root):
+    def __init__(self, mpg, miles_until_empty, temp):
         """
         initializes the OBDAPI class.
 
-        @param mpg: a DoubleVar to hold the miles per gallon value
-        @param miles_until_empty: a DoubleVar to hold the miles until empty value
-        @param temp: a StringVar to hold the temperature
-        @param root: a tkinter widget for scheduling variable updates
+        @param mpg: the callback function for updating the mpg
+        @param miles_until_empty: the callback function for updating miles until empty
+        @param temp: the callback function for updating the temperature
+            ** note: temp callback should never raise errors, python-obd does not support error handling **
+
+            ** note: all of these callbacks take 1 parameter for the new value **
         """
 
         # initializes the class and its fields
         super().__init__()
         self.mpg = mpg
         self.miles_until_empty = miles_until_empty
-        self.root = root
         self.speed_time = None
 
         # sets the codes to watch
-        self.watch(commands.AMBIANT_AIR_TEMP, callback=lambda r: self.root.after(0, lambda: temp.set(f"{round(r.to('degF').magnitude)} °F")))
+        self.watch(commands.AMBIANT_AIR_TEMP, callback=lambda r: temp(f"{round(r.value.to('degF').magnitude)} °F" if r.value else "°F"))
         self.watch(commands.SPEED)
         self.watch(commands.FUEL_RATE)
         self.watch(commands.FUEL_LEVEL)
@@ -61,8 +62,11 @@ class OBDAPI(Async):
         miles_until_empty = mpg * fuel_level.value.to("ratio").magnitude * TANK_CAPACITY
 
         # sends updates to the UI
-        self.root.after(0, lambda: self.mpg.set(round(mpg, 2)))
-        self.root.after(0, lambda: self.miles_until_empty.set(round(miles_until_empty, 2)))
+        try:
+            self.mpg(round(mpg, 2))
+            self.miles_until_empty(round(miles_until_empty, 2))
+        except:
+            pass
         MileManger.add_miles(mph * (dt / 3600))
         
     def get_codes(self):
@@ -85,16 +89,19 @@ class OBDAPI(Async):
         with self.paused():
             super(Async, self).query(commands.CLEAR_DTC)
 
-    def shutdown(self):
+    def shutdown(self, root):
         """
         shuts down the OBD-II interface.
+
+        @param root: the root window to update to ensure
+            callbacks are processed while shutting down
         """
 
         # closes while preventing race conditions
         if self._Async__thread is not None:
             self._Async__running = False
             while self._Async__thread.is_alive():
-                self.root.update()
+                root.update()
             self._Async__thread = None
 
         self.close()

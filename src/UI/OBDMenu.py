@@ -40,7 +40,11 @@ class OBDMenu(CTkFrame):
         # creates vars to hold obd data and binds them to the API
         mpg = DoubleVar(self)
         miles_until_empty = DoubleVar(self)
-        self.obd_connection = OBDAPI(mpg, miles_until_empty, temp, self)
+        self.api = OBDAPI(
+            lambda m: self.after(0, lambda: mpg.set(m)),
+            lambda e: self.after(0, lambda: miles_until_empty.set(e)),
+            lambda t: self.after(0, lambda: temp.set(t))
+        )
 
         # creates widgets for mpg
         mpg_container = CTkFrame(container)
@@ -66,9 +70,9 @@ class OBDMenu(CTkFrame):
         oil_change = DoubleVar(self)
         filter_change = DoubleVar(self)
         transmission_change = DoubleVar(self)
-        oil_change_manager = MileManger("change_oil_at", oil_change, self)
-        filter_change_manager = MileManger("change_filter_at", filter_change, self)
-        transmission_change_manager = MileManger("change_transmission_at", transmission_change, self)
+        oil_change_manager = MileManger("change_oil_at", lambda o: self.after(0, oil_change.set(o)))
+        filter_change_manager = MileManger("change_filter_at", lambda f: self.after(0, filter_change.set(f)))
+        transmission_change_manager = MileManger("change_transmission_at", lambda t: self.after(0, transmission_change.set(t)))
 
         # creates widgets for oil change
         oil_change_container = CTkFrame(container)
@@ -133,7 +137,7 @@ class OBDMenu(CTkFrame):
 
         # gets the new codes and populates the container
         wraplength = 560 * (1 / self.appearance_manager.scaling)
-        for row, (code, description) in enumerate(self.obd_connection.get_codes()):
+        for row, (code, description) in enumerate(self.api.get_codes()):
             code = CTkLabel(self.codes_container, text=code, font=("Arial", 10))
             description = CTkLabel(self.codes_container, text=description, font=("Arial", 10), wraplength=wraplength, justify="left")
             code.grid(row=row, column=0, padx=10)
@@ -144,7 +148,7 @@ class OBDMenu(CTkFrame):
         clears the diagnostic trouble codes (DTCs) from the OBD-II interface
         """
 
-        self.obd_connection.clear_codes()
+        self.api.clear_codes()
         self.get_codes()
 
     def destroy(self):
@@ -152,5 +156,5 @@ class OBDMenu(CTkFrame):
         overrides the destroy method to also shut down the OBD connection
         """
 
-        self.obd_connection.shutdown()
+        self.api.shutdown(self)
         super().destroy()

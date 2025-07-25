@@ -37,21 +37,23 @@ class MileManger:
     current_miles = load_key("current_miles", file_lock)
     managers = []
 
-    def __init__(self, key, delta, root):
+    def __init__(self, key, callback):
         """
         initializes the MileManager class.
 
         @param key: the key for the data stored in the miles.json file
-        @param delta: a tkinter variable to hold how much longer the fluid/part should last
-        @param root: a tkinter widget for scheduling variable updates
+        @param callback: the callback function for when the value updates
+            ** note: it should take 1 parameter for the new value **
         """
 
         self.key = key
         self.value = self.load_key(self.key)
-        self.delta = delta
-        self.delta.set(round(self.value - MileManger.current_miles, 2))
-        self.root = root
+        self.callback = callback
         MileManger.managers.append(self)
+        try:
+            self.callback(round(self.value - MileManger.current_miles, 2))
+        except:
+            return
 
     def reset(self):
         """
@@ -59,7 +61,10 @@ class MileManger:
         """
 
         self.value = MileManger.current_miles + MILE_DELTAS[self.key]
-        self.root.after(0, lambda: self.delta.set(round(MILE_DELTAS[self.key], 2)))
+        try:
+            self.callback(round(MILE_DELTAS[self.key], 2))
+        except:
+            pass
         MileManger.save()
 
     @classmethod
@@ -72,7 +77,10 @@ class MileManger:
 
         cls.current_miles += miles
         for manager in cls.managers:
-            manager.root.after(0, lambda: manager.delta.set(round(manager.value - cls.current_miles, 2)))
+            try:
+                manager.callback(round(manager.value - cls.current_miles, 2))
+            except:
+                continue
         cls.save()
 
     @classmethod
