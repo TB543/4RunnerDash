@@ -11,6 +11,22 @@ class MapsMenu(CTkFrame):
     map menu for the 4runner dashboard
     """
 
+    # a dict of graphhopper signs and their text to display
+    SIGNS = {
+        -7: "⬉",  # keep left
+        -3: "↰",  # turn sharp left
+        -2: "←",  # turn left
+        -1: "⤣",  # turn slight left
+        0:  "↑",  # continue on street
+        1:  "⤤",  # turn slight right
+        2:  "→",  # turn right
+        3:  "↱",  # turn sharp right
+        4:  "⚑",  # finish
+        5:  "⚐",  # via reached
+        6:  "⥀",  # use roundabout
+        7:  "⬈",  # keep right
+    }
+
     def __init__(self, master, **kwargs):
         """
         Initializes the settings menu frame.
@@ -143,11 +159,6 @@ class MapsMenu(CTkFrame):
         # starts the routing and displays route on UI
         self.active_route.end() if self.active_route else None
         self.active_route = self.map_widget.promote_POI()
-        self.active_route.start(
-            lambda e: self.after(0, lambda: self.route_eta.set(e)),
-            lambda h: self.after(0, lambda: self.route_time.set(h)),
-            lambda m: self.after(0, lambda: self.route_miles.set(m)),
-        )
 
         # removes old instructions
         self.search_results_menu.pack_forget()
@@ -157,9 +168,31 @@ class MapsMenu(CTkFrame):
             widget.destroy()
 
         # populates the navigation container
+        separator = None
+        callbacks = []
+        for row, instruction in enumerate(self.active_route.instructions):
+            sign = CTkLabel(self.navigation_container, text=MapsMenu.SIGNS[instruction["sign"]], font=("Arial", 20))
+            text = CTkLabel(self.navigation_container, text=instruction["text"], font=("Arial", 10), wraplength=120, justify="left")
+            miles = DoubleVar(self)
+            callbacks.append(lambda m: self.after(0, lambda v=miles: v.set(m)))
+            miles = CTkLabel(self.navigation_container, textvariable=miles, font=("Arial", 15))
+            separator = CTkFrame(self.navigation_container, height=2)
 
+            # places widgets
+            sign.grid(row=row * 2, column=0, sticky="ns")
+            text.grid(row=row * 2, column=1, sticky="w", padx=5)
+            miles.grid(row=row * 2, column=2, sticky="ns")
+            separator.grid(row=(row * 2) + 1, column=0, columnspan=3, sticky="ew", pady=5)
 
+        # clean up
+        separator.destroy() if separator else None
         self.bind_focus(self.navigation_container)
+        self.active_route.start(
+            lambda e: self.after(0, lambda: self.route_eta.set(e)),
+            lambda h: self.after(0, lambda: self.route_time.set(h)),
+            lambda m: self.after(0, lambda: self.route_miles.set(m)),
+            callbacks
+        )
 
     def hide_navigation_menu(self):
         """
@@ -230,7 +263,7 @@ class MapsMenu(CTkFrame):
         separator = None
         for row, result in enumerate(results):
             button = CTkRadioButton(self.search_results_container, text="", width=10, variable=self.selected_waypoint, value=dumps(result), command=self.select_search_result)
-            label = CTkLabel(self.search_results_container, text=result["display_name"], font=("Arial", 10), wraplength=190, justify="left")
+            label = CTkLabel(self.search_results_container, text=result["display_name"], font=("Arial", 10), wraplength=185, justify="left")
             label.bind("<Button-1>", lambda e, btn=button: btn.invoke())
             separator = CTkFrame(self.search_results_container, height=2)
             button.grid(row=row * 2, column=0, sticky="ns")

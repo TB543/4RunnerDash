@@ -26,3 +26,5 @@ shortcuts for addresses like work home etc
 caps lock shouldnt shift numbers
 add way to make current navigation presist across reboot
 handle route not found
+set map zoom based on velocity
+add way to add stops

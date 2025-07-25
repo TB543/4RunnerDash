@@ -36,12 +36,14 @@ class NavigationAPI:
                 lon = int(lon[:3]) + float(lon[3:]) / 60
                 NavigationAPI.GPS_COORDS = (-lat if lat_dir == 'S' else lat, -lon if lon_dir == 'W' else lon)
 
-                # sends new GPS coords via callback functions
-                for callback in NavigationAPI.callbacks:
-                    try:
-                        callback(NavigationAPI.GPS_COORDS)
-                    except:
-                        continue
+            # sends new GPS coords via callback functions
+            for callback in NavigationAPI.callbacks:
+                try:
+                    from AppData import INITIAL_MAP_COORDS
+                    NavigationAPI.GPS_COORDS = INITIAL_MAP_COORDS
+                    callback(INITIAL_MAP_COORDS)
+                except:
+                    continue
         gps.close()
 
     TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"

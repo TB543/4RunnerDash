@@ -115,10 +115,12 @@ class MapWidget(TkinterMapView):
         @param coords: the new coordinates for the position marker
         """
 
+        # updates position marker
         if not self.position_marker:
             self.position_marker = self.set_marker(*coords, "You", text_color="#87CEFA", marker_color_circle="white", marker_color_outside="#1E90FF")
         self.position_marker.set_position(*coords)
 
+        # sets position if following
         if self.follow_position:
             self.set_position(*coords)
 

@@ -31,19 +31,23 @@ class RouteManager:
         self.eta_callback = None
         self.time_callback = None
         self.miles_callback = None
+        self.instruction_miles_callbacks = None
 
-    def start(self, eta, time, miles):
+    def start(self, eta, time, miles, callbacks):
         """
         starts the route
 
         @param eta: the callback function for updating the ETA
         @param time: the callback function for updating the time remaining
         @param miles: the callback function for updating the miles remaining
+        @param callbacks: a list of callbacks for updating the miles until each instruction
+            ** note: all of these functions should take 1 parameter for the new value **
         """
 
         self.eta_callback = eta
         self.time_callback = time
         self.miles_callback = miles
+        self.instruction_miles_callbacks = callbacks
 
     def end(self):
         """
