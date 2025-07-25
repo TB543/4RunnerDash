@@ -90,4 +90,11 @@ class OBDAPI(Async):
         shuts down the OBD-II interface.
         """
 
+        # closes while preventing race conditions
+        if self._Async__thread is not None:
+            self._Async__running = False
+            while self._Async__thread.is_alive():
+                self.root.update()
+            self._Async__thread = None
+
         self.close()

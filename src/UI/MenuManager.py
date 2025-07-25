@@ -41,7 +41,7 @@ class MenuManager(CTk):
         temp = StringVar(self, "°F")
         self.menus = {
             "main": MainMenu(self, temp, touch_screen),
-            "maps": MapsMenu(self, self.appearance_manager),
+            "maps": MapsMenu(self),
             "music": MusicMenu(self),
             "obd": OBDMenu(self, temp, self.appearance_manager),
             "settings": SettingsMenu(self, self.appearance_manager)

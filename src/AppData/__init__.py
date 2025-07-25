@@ -11,6 +11,10 @@ MAX_CACHE_ALBUMS = 100_000  # less than 70 Gb. I have a lot of extra storage, fe
 IMAGE_RESOLUTION = 512  # can be adjusted to change the quality of the album art, but will change the size of the image cache
 MAP_TILE_RESOLUTION = 256  # changes how big the map tiles are
 
+# default map view
+INITIAL_MAP_COORDS = (39.8283, -98.5795)
+INITIAL_MAP_ZOOM = 4
+
 # defines how often a fluid/part should be changed where key is the fluid/part and value is how often in miles it should be changed
 MILE_DELTAS = {
     "change_oil_at": 5_000,  # for example, this line means oil should be changed every 5000 miles

@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkButton, CTkLabel, DoubleVar, CTkScrollableFrame
+from customtkinter import CTkFrame, CTkButton, CTkLabel, DoubleVar, CTkScrollableFrame, set_widget_scaling
 from Connections.OBDAPI import OBDAPI
 from DataManagers.MileManager import MileManger
 
@@ -127,6 +127,7 @@ class OBDMenu(CTkFrame):
 
         # places popup and clears old codes
         self.codes_popup.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center")
+        set_widget_scaling(self.appearance_manager.scaling)
         for widget in self.codes_container.winfo_children():
             widget.destroy()
 
