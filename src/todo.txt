@@ -11,6 +11,8 @@ gracefully shutdown on power loss with kill_backend.sh and destroy tkinter root.
 make system appearance mode use dimmer and wire amp on for when audio is playing
 hardware wiring
 wired audio in?
+add way to reset miles when filled tank to get miles until empty
+add temp offset to account for engine temp
 
 # ======================================================== POLISHING ========================================================
 check manual for actual values to change fluids
@@ -28,3 +30,4 @@ add way to make current navigation presist across reboot
 handle route not found
 set map zoom based on velocity
 add way to add stops
+search for POI like gas stations in maps

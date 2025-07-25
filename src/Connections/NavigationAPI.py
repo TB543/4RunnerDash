@@ -34,22 +34,20 @@ class NavigationAPI:
                 # converts lat lon to coordinates
                 lat = int(lat[:2]) + float(lat[2:]) / 60
                 lon = int(lon[:3]) + float(lon[3:]) / 60
-                NavigationAPI.GPS_COORDS = (-lat if lat_dir == 'S' else lat, -lon if lon_dir == 'W' else lon)
+                NavigationAPI.gps_coords = (-lat if lat_dir == 'S' else lat, -lon if lon_dir == 'W' else lon)
 
-            # sends new GPS coords via callback functions
-            for callback in NavigationAPI.callbacks:
-                try:
-                    from AppData import INITIAL_MAP_COORDS
-                    NavigationAPI.GPS_COORDS = INITIAL_MAP_COORDS
-                    callback(INITIAL_MAP_COORDS)
-                except:
-                    continue
+                # sends new GPS coords via callback functions
+                for callback in NavigationAPI.callbacks[:]:
+                    try:
+                        callback(NavigationAPI.gps_coords)
+                    except:
+                        continue
         gps.close()
 
     TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
     NOMINATIM_URL = "http://localhost:8088/search"
     GRAPH_HOPPER_URL = "http://localhost:8989/route"
-    GPS_COORDS = (0, 0)
+    gps_coords = (0, 0)
     callbacks = []
     thread = Thread(target=gps_read_loop, daemon=True)
     running = True
@@ -119,9 +117,22 @@ class NavigationAPI:
 
         @param callback: the function to call when the GPS position updates
             this function should take 2 parameter, a tuple for the coordinates
+
+        @return: the index of the gps callback, used later in removing the callback 
         """
 
         cls.callbacks.append(callback)
+        return len(cls.callbacks) - 1
+
+    @classmethod
+    def remove_gps_callback(cls, index):
+        """
+        removes a callback when the GPS position updates
+
+        @param index: the index of the callback (given from add_gps_callback)
+        """
+
+        cls.callbacks.pop(index)
 
     @classmethod
     def shutdown(cls, root):

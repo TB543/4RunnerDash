@@ -224,7 +224,7 @@ class MapsMenu(CTkFrame):
 
         # handles no route found 
         waypoint = loads(self.selected_waypoint.get())
-        navigation = self.api.navigate(NavigationAPI.GPS_COORDS, (float(waypoint["lat"]), float(waypoint["lon"])))
+        navigation = self.api.navigate(NavigationAPI.gps_coords, (float(waypoint["lat"]), float(waypoint["lon"])))
         if not navigation:
             return
 

@@ -38,7 +38,7 @@ class MenuManager(CTk):
                 break
 
         # creates the various menus
-        temp = StringVar(self, "°F")
+        temp = StringVar(self, " °F")
         self.menus = {
             "main": MainMenu(self, temp, touch_screen),
             "maps": MapsMenu(self),

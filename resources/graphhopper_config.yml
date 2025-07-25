@@ -237,8 +237,8 @@ server:
       appenders: []
 # See https://www.dropwizard.io/en/latest/manual/core.html#logging
 logging:
-  appenders: []
-    # - type: console
-    #   time_zone: UTC
-    #   log_format: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  appenders:
+    - type: console
+      time_zone: UTC
+      log_format: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   loggers: {}
