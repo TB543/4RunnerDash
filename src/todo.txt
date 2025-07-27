@@ -1,10 +1,13 @@
 add dashcam
 
 # ======================================================== COMPLETE ========================================================
-finish map menu
+update readme to include the rust install - combine install dependencies with install maps
+get codes freezes, fix
 test odm, odm oil/filter/trans change warning on main menu
 add things that need to be changed based on time (inspection, radiator fluid, etc)
 update readme for working hardware
+tts announces decimals wrong 12.08 = "12.8"
+announce directions when close to instruction
 
 # ======================================================== HARDWARE ========================================================
 gracefully shutdown on power loss with kill_backend.sh and destroy tkinter root. monitor 12v vcc for shutdown signal
@@ -31,3 +34,4 @@ handle route not found
 set map zoom based on velocity
 add way to add stops
 search for POI like gas stations in maps
+reroute and start route race condition

@@ -116,7 +116,7 @@ class MapsMenu(CTkFrame):
         route_time = CTkLabel(self.route_data, textvariable=self.route_time, font=("Arial", 12, "bold"))
         route_miles = CTkLabel(self.route_data, textvariable=self.route_miles, font=("Arial", 12, "bold"))
         route_eta_label = CTkLabel(self.route_data, text="ETA", font=("Arial", 10))
-        route_time_label = CTkLabel(self.route_data, text="Hrs", font=("Arial", 10))
+        route_time_label = CTkLabel(self.route_data, text="Time", font=("Arial", 10))
         route_miles_label = CTkLabel(self.route_data, text="Miles", font=("Arial", 10))
 
         # places route data widgets
@@ -151,19 +151,26 @@ class MapsMenu(CTkFrame):
         self.navigation_menu.pack_forget()
         self.map_widget.delete_destination()
 
-    def start_navigation(self):
+    def start_navigation(self, reroute=False):
         """
         starts the navigation to the selected waypoint
+
+        @param reroute: determines if the current route needs to be rerouted
         """
+
+        # handles reroute
+        if reroute:
+            self.map_widget.destination_path.delete()
+            self.map_widget.destination_path = self.map_widget.set_path(self.active_route.path, color="#3E69CB")
 
         # starts the routing and displays route on UI
         self.active_route.end() if self.active_route else None
-        self.active_route = self.map_widget.promote_POI()
+        self.active_route = self.map_widget.promote_POI() if not reroute else self.active_route
 
         # removes old instructions
         self.search_results_menu.pack_forget()
         self.navigation_menu.pack(side="right", fill="y", padx=(5, 0))
-        self.show_navigation_menu()
+        self.show_navigation_menu() if not reroute else None
         for widget in self.navigation_container.winfo_children():
             widget.destroy()
 
@@ -173,16 +180,30 @@ class MapsMenu(CTkFrame):
         for row, instruction in enumerate(self.active_route.instructions):
             sign = CTkLabel(self.navigation_container, text=MapsMenu.SIGNS[instruction["sign"]], font=("Arial", 20))
             text = CTkLabel(self.navigation_container, text=instruction["text"], font=("Arial", 10), wraplength=120, justify="left")
-            miles = DoubleVar(self)
-            callbacks.append(lambda m: self.after(0, lambda v=miles: v.set(m)))
-            miles = CTkLabel(self.navigation_container, textvariable=miles, font=("Arial", 15))
+            var = DoubleVar(self)
+            miles = CTkLabel(self.navigation_container, textvariable=var, font=("Arial", 15))
             separator = CTkFrame(self.navigation_container, height=2)
 
-            # places widgets
-            sign.grid(row=row * 2, column=0, sticky="ns")
-            text.grid(row=row * 2, column=1, sticky="w", padx=5)
-            miles.grid(row=row * 2, column=2, sticky="ns")
-            separator.grid(row=(row * 2) + 1, column=0, columnspan=3, sticky="ew", pady=5)
+            # function for placing widgets
+            def place(s, t, m, p, r):
+                if not s.winfo_ismapped():
+                    s.grid(row=r * 2, column=0, sticky="ns")
+                    t.grid(row=r * 2, column=1, sticky="w", padx=5)
+                    m.grid(row=r * 2, column=2, sticky="ns")
+                    p.grid(row=(r * 2) + 1, column=0, columnspan=3, sticky="ew", pady=5) if p.winfo_exists() else None
+
+            # function for hiding the widgets
+            def hide(s, t, m, p):
+                if s.winfo_ismapped():
+                    s.grid_forget()
+                    t.grid_forget()
+                    m.grid_forget()
+                    p.grid_forget() if p.winfo_exists() else None
+                    self.navigation_container._parent_canvas.yview_moveto(0)
+
+            # ensures widgets get hidden if their mile value is negative (meaning instruction completed)
+            callbacks.append(lambda m, v=var: self.after(0, lambda: v.set(m)))
+            var.trace_add("write", lambda *args, v=var, s=sign, t=text, m=miles, p=separator, r=row: place(s, t, m, p, r) if v.get() >= 0 else hide(s, t, m, p))
 
         # clean up
         separator.destroy() if separator else None
@@ -191,6 +212,7 @@ class MapsMenu(CTkFrame):
             lambda e: self.after(0, lambda: self.route_eta.set(e)),
             lambda h: self.after(0, lambda: self.route_time.set(h)),
             lambda m: self.after(0, lambda: self.route_miles.set(m)),
+            lambda r: self.after(0, lambda: self.start_navigation(r)),
             callbacks
         )
 
@@ -224,12 +246,11 @@ class MapsMenu(CTkFrame):
 
         # handles no route found 
         waypoint = loads(self.selected_waypoint.get())
-        navigation = self.api.navigate(NavigationAPI.gps_coords, (float(waypoint["lat"]), float(waypoint["lon"])))
-        if not navigation:
+        if not (navigation := NavigationAPI.navigate((float(waypoint["lat"]), float(waypoint["lon"])))):
             return
 
         # updates UI with selected search result
-        route = RouteManager(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"], navigation["points"]["coordinates"], navigation["distance"], navigation["time"], navigation["instructions"])
+        route = RouteManager(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"], navigation)
         self.start_navigation_button.configure(state="normal")
         self.map_widget.set_POI(route)
 
@@ -248,7 +269,7 @@ class MapsMenu(CTkFrame):
             widget.destroy()
 
         # handles when results contains an error
-        results = self.api.geocode(self.search_entry.get())
+        results = NavigationAPI.geocode(self.search_entry.get())
         if isinstance(results, str):
             label = CTkLabel(self.search_results_container, text=results, font=("Arial", 10))
             label.grid(row=0, column=1)

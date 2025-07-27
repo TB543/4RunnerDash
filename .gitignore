@@ -200,6 +200,7 @@ cython_debug/
 *.db-shm
 *.db-wal
 *.db-journal
+*.wav
 src/AppData/map_data
 
 # external libraries

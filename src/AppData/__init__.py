@@ -12,7 +12,7 @@ IMAGE_RESOLUTION = 512  # can be adjusted to change the quality of the album art
 MAP_TILE_RESOLUTION = 256  # changes how big the map tiles are
 
 # default map view
-INITIAL_MAP_COORDS = (39.8283, -98.5795)
+INITIAL_MAP_COORDS = [39.8283, -98.5795]
 INITIAL_MAP_ZOOM = 4
 
 # defines how often a fluid/part should be changed where key is the fluid/part and value is how often in miles it should be changed

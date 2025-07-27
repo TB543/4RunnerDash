@@ -1,37 +1,65 @@
 from Connections.NavigationAPI import NavigationAPI
+from shapely import STRtree, LineString, Point
+from datetime import timedelta, datetime
+from TTS.api import TTS
+from playsound import playsound
 
 
 class RouteManager:
     """
-    a class to manage a route to a destination
+    a class to manage a route to a destination and announce instructions
     """
 
-    def __init__(self, lat, lon, name, path, distance, time, instructions):
+    tts = TTS("tts_models/en/ljspeech/speedy-speech")
+
+    def __init__(self, lat, lon, name, navigation):
         """
         creates the route object
 
         @param lat: the latitude of the destination
         @param lon: the longitude of the destination
         @param name: the name of the destination
-        @param path: a list of points to create the path to the destination in geojson format
-        @param distance: the distance to the destination
-        @param time: the time it will take to travel to the destination
-        @param instructions: a list of instructions for traveling to the destination
+        @param navigation: a navigation json response from graphhopper
         """
 
         # fields
         self.coords = (lat, lon)
         self.name = name
-        self.path = [(lat, lon) for lon, lat in path]
-        self.distance = distance
-        self.time = time
-        self.instructions = instructions
+        self.path = [(lat, lon) for lon, lat in navigation["points"]["coordinates"]]
+        self.distance = navigation["distance"]
+        self.time = navigation["time"]
+        self.instructions = navigation["instructions"]
+        self.instruction_index = -1
+
+        # adds additional data to instructions to make update loop more efficient
+        time_since_start = 0
+        distance_since_start = 0
+        for i, instruction in enumerate(self.instructions):
+            instruction["time_since_start"] = time_since_start
+            instruction["distance_since_start"] = distance_since_start
+            time_since_start += instruction["time"]
+            distance_since_start += instruction["distance"]
+
+            # modifies the text to display the next instruction
+            if i != len(self.instructions) - 1:
+                instruction["sign"] = self.instructions[i + 1]["sign"]
+                instruction["text"] = self.instructions[i + 1]["text"]
+        self.instructions.pop()
+
+        # creates objects for efficient coordinate "snapping"
+        segments = []
+        for instruction in self.instructions:
+            interval = instruction["interval"]
+            segment = LineString(self.path[interval[0]:interval[1] + 1]) if interval[0] != interval[1] else Point(*self.path[interval[0]])
+            segments.append(segment)
+        self.tree = STRtree(segments)
 
         # callback functions set on start
         self.gps_callback = None
         self.eta_callback = None
         self.time_callback = None
         self.miles_callback = None
+        self.reroute_callback = None if not hasattr(self, "reroute_callback") else self.reroute_callback
         self.instruction_miles_callbacks = None
 
     def update_loop(self, coords):
@@ -41,17 +69,55 @@ class RouteManager:
         @param coords: the current coordinates on the route
         """
 
-        print(coords)
+        # finds where the user is relative to the route
+        point = Point(*coords)
+        index = self.tree.nearest(point)
+        segment = self.tree.geometries[index]
+        instruction = self.instructions[index]
+        offset = point.distance(segment)
+        instruction_percent = segment.project(point) / segment.length if segment.geom_type == "LineString" else 1
 
-    def start(self, eta, time, miles, callbacks):
+        # handles when the user is too far off course
+        if offset > .0006:
+            if not (navigation := NavigationAPI.navigate(self.coords)):
+                return
+            self.__init__(*self.coords, self.name, navigation)
+            self.reroute_callback(True)
+            return
+        
+        # does nothing if previous instruction is called (can happen due to gps accuracy)
+        if index < self.instruction_index:
+            return
+        
+        # updates the time 
+        time_remaining = timedelta(milliseconds=self.time - ((instruction["time"] * instruction_percent) + instruction["time_since_start"]))
+        self.eta_callback((datetime.now() + time_remaining).strftime("%I:%M %p"))
+        self.time_callback(f"{int(time_remaining.total_seconds() / 3600)}:{int((time_remaining.total_seconds() % 3600) / 60):02d}")
+
+        # updates miles
+        distance_traveled = (instruction["distance"] * instruction_percent) + instruction["distance_since_start"]
+        self.miles_callback(round((self.distance - distance_traveled) / 1609.344, 2))
+        for instruction_loop, callback in zip(self.instructions, self.instruction_miles_callbacks):
+            callback(round(((instruction_loop["distance"] + instruction_loop["distance_since_start"]) - distance_traveled) / 1609.344, 2))
+
+        # announces the next instruction
+        if index > self.instruction_index:
+            self.instruction_index = index
+            text = f"in {round((instruction['distance'] * (1 - instruction_percent)) / 1609.344, 2)} miles {instruction['text']}"
+            RouteManager.tts.tts_to_file(text, file_path="AppData/tts.wav")
+            playsound("AppData/tts.wav")
+
+    def start(self, eta, time, miles, reroute, callbacks):
         """
         starts the route
 
         @param eta: the callback function for updating the ETA
         @param time: the callback function for updating the time remaining
         @param miles: the callback function for updating the miles remaining
+        @param reroute: the callback function when a reroute is needed
         @param callbacks: a list of callbacks for updating the miles until each instruction
-            ** note: all of these functions should take 1 parameter for the new value **
+            ** note: all of these functions should take 1 parameter for the new value                   **
+            ** the reroute callback will pass True as the parameter and modifies the current route data **
 
         @throws attribute error if already running
         """
@@ -64,9 +130,10 @@ class RouteManager:
         self.eta_callback = eta
         self.time_callback = time
         self.miles_callback = miles
+        self.reroute_callback = reroute
         self.instruction_miles_callbacks = callbacks
-        self.gps_callback = NavigationAPI.add_gps_callback(self.update_loop)
         self.update_loop(NavigationAPI.gps_coords)
+        self.gps_callback = NavigationAPI.add_gps_callback(self.update_loop)
 
     def end(self):
         """

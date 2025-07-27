@@ -1,6 +1,7 @@
 from tkintermapview import TkinterMapView
 from customtkinter import AppearanceModeTracker
 from AppData import INITIAL_MAP_COORDS, INITIAL_MAP_ZOOM
+from sys import argv
 
 
 class MapWidget(TkinterMapView):
@@ -34,6 +35,10 @@ class MapWidget(TkinterMapView):
         self.pending_route = None
         self.set_zoom(INITIAL_MAP_ZOOM)
         self.set_position(*INITIAL_MAP_COORDS)
+
+        # allows right click to change coords when in dev mode
+        if len(argv) == 2 and argv[1] == "dev":
+            self.add_right_click_menu_command("Set Coords", lambda coords: INITIAL_MAP_COORDS.__setitem__(slice(None), coords), pass_coords=True)
 
     def delete_destination(self):
         """

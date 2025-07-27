@@ -1,7 +1,8 @@
-from AppData import MAP_TILE_RESOLUTION
+from AppData import MAP_TILE_RESOLUTION, INITIAL_MAP_COORDS
 from requests import get
 from serial import Serial
 from threading import Thread
+from sys import argv
 
 
 class NavigationAPI:
@@ -23,7 +24,7 @@ class NavigationAPI:
         gps = Serial("/dev/ttyAMA0")
         while NavigationAPI.running:
             line = gps.readline().decode('ascii', errors='ignore').strip().split(",")
-            if len(line) == 13 and line[0] == "$GNRMC" and line[2] == "A":
+            if len(line) == 13 and line[0] == "$GNRMC" and line[2] == "A" and len(argv) == 1:
                 
                 # reads the useful data
                 lat = line[3]
@@ -42,6 +43,16 @@ class NavigationAPI:
                         callback(NavigationAPI.gps_coords)
                     except:
                         continue
+            
+            # changes coords to global initial coords when in dev mode
+            elif len(argv) == 2 and argv[1] == "dev":
+                for callback in NavigationAPI.callbacks[:]:
+                    try:
+                        NavigationAPI.gps_coords = INITIAL_MAP_COORDS
+                        callback(NavigationAPI.gps_coords)
+                    except:
+                        continue
+
         gps.close()
 
     TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
@@ -64,7 +75,8 @@ class NavigationAPI:
         if not NavigationAPI.thread.is_alive():
             NavigationAPI.thread.start()
 
-    def geocode(self, query):
+    @staticmethod
+    def geocode(query):
         """
         queries Nominatim for coordinate positions for a given point of interest
 
@@ -76,22 +88,24 @@ class NavigationAPI:
         try:
             results = get(
                 NavigationAPI.NOMINATIM_URL, 
-                params={"q": query}, 
+                params={
+                    "q": query
+                }, 
                 timeout=15
             ).json()
-            return "Error Processing Request, Try Again..." if "error" in results else results
+            return "Error Processing Request, Try Again..." if "error" in results or isinstance(results, dict)  else results
 
         # handles errors
         except:
             return "Error Processing Request, Try Again..."
 
-    def navigate(self, p1, p2):
+    @classmethod
+    def navigate(cls, point):
         """
-        queries GraphHopper for navigation instructions between 2 points
+        queries GraphHopper for navigation instructions between current location and
+        the given point
 
-        @param p1: the starting point
-        @param p2: the ending point
-            ** note: ordering matters **
+        @param point: the ending point
 
         @return: the json response from GraphHopper
         """
@@ -100,7 +114,7 @@ class NavigationAPI:
             return get(
                 NavigationAPI.GRAPH_HOPPER_URL,
                 params= {
-                    "point": [f"{p1[0]},{p1[1]}", f"{p2[0]},{p2[1]}"],
+                    "point": [f"{cls.gps_coords[0]},{cls.gps_coords[1]}", f"{point[0]},{point[1]}"],
                     "profile": "car",
                     "points_encoded": "false"
                 },
