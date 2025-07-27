@@ -11,6 +11,10 @@ class RouteManager:
     """
 
     tts = TTS("tts_models/en/ljspeech/speedy-speech")
+    ANNOUNCEMENTS = {
+        1609.344: "In 1 mile",
+        152.4: "In 500 feet"
+    }
 
     def __init__(self, lat, lon, name, navigation):
         """
@@ -35,6 +39,7 @@ class RouteManager:
         time_since_start = 0
         distance_since_start = 0
         for i, instruction in enumerate(self.instructions):
+            instruction["announcements"] = set(RouteManager.ANNOUNCEMENTS.keys())
             instruction["time_since_start"] = time_since_start
             instruction["distance_since_start"] = distance_since_start
             time_since_start += instruction["time"]
@@ -101,10 +106,23 @@ class RouteManager:
             callback(round(((instruction_loop["distance"] + instruction_loop["distance_since_start"]) - distance_traveled) / 1609.344, 2))
 
         # announces the next instruction
+        distance_left = instruction["distance"] * (1 - instruction_percent)
         if index > self.instruction_index:
             self.instruction_index = index
-            text = f"in {round((instruction['distance'] * (1 - instruction_percent)) / 1609.344, 2)} miles {instruction['text']}"
+            text = f"In {round(distance_left / 1609.344, 2)} miles {instruction['text']}"
             RouteManager.tts.tts_to_file(text, file_path="AppData/tts.wav")
+            playsound("AppData/tts.wav")
+
+        # checks if distance announcement threshold has been reached
+        announce = None
+        for distance, announcement in RouteManager.ANNOUNCEMENTS.items():
+            if distance_left <= distance and instruction["distance"] > distance and distance in instruction["announcements"]:
+                instruction["announcements"].remove(distance)
+                announce = announcement
+
+        # ensures only 1 announcement
+        if announce:
+            RouteManager.tts.tts_to_file(f"{announce} {instruction['text']}", file_path="AppData/tts.wav")
             playsound("AppData/tts.wav")
 
     def start(self, eta, time, miles, reroute, callbacks):

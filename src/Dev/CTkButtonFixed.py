@@ -1,4 +1,5 @@
 from customtkinter import CTkButton
+from AppData import PI_HEIGHT
 
 
 class CTkButtonFixed(CTkButton):
@@ -17,7 +18,7 @@ class CTkButtonFixed(CTkButton):
 
         super()._draw(no_color_updates)
         if self._text_label:
-            self._text_label.configure(pady=30)
+            self._text_label.configure(pady=PI_HEIGHT)
     
     def _create_grid(self):
         """
@@ -25,6 +26,6 @@ class CTkButtonFixed(CTkButton):
         """
 
         super()._create_grid()
-        self.configure(height=self._font[1] + 20)
-        self._text_label.place(relx=.5, rely=.5, y=15, anchor="center")
+        self.configure(height=self._font[1] + 15 + (5 * (PI_HEIGHT / 600)))
+        self._text_label.place(relx=.5, rely=.5, y=15 + (5 * (PI_HEIGHT / 600)), anchor="center")
     

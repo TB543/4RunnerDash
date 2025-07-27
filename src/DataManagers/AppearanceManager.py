@@ -4,6 +4,7 @@ from json import dump, load
 from astral import LocationInfo
 from astral.sun import sun
 from datetime import datetime
+from AppData import PI_WIDTH
 
 
 class AppearanceManager:
@@ -28,9 +29,9 @@ class AppearanceManager:
     }
 
     SCALES = {
-        1.000: {"next": 1.375, "icon": "👁️"},
-        1.375: {"next": 1.750, "icon": "🔍"},
-        1.750: {"next": 1.000, "icon": "🔭"}
+        PI_WIDTH / 1024: {"next": (PI_WIDTH / 1024) + .375, "icon": "👁️"},
+        (PI_WIDTH / 1024) + .375: {"next": (PI_WIDTH / 1024) + .75, "icon": "🔍"},
+        (PI_WIDTH / 1024) + .75: {"next": (PI_WIDTH / 1024), "icon": "🔭"}
     }
 
     # ======================================= LOAD/SAVE ======================================
@@ -45,7 +46,7 @@ class AppearanceManager:
 
         self.mode = "system"
         self.theme = "blue"
-        self.scaling = 1.375
+        self.scaling = list(AppearanceManager.SCALES.keys())[1]
         self.lat = 0
         self.long = 0
         self.root = root
@@ -62,6 +63,7 @@ class AppearanceManager:
         try:
             with open("AppData/appearance_settings.json", "r") as f:
                 data = load(f)
+                AppearanceManager.SCALES[data["scaling"]]  # ensures app settings reset if pi resolution settings change
                 self.mode = data["mode"]
                 self.theme = data["theme"]
                 self.scaling = data["scaling"]

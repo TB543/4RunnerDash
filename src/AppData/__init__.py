@@ -1,11 +1,11 @@
 # pi screen settings
-PI_WIDTH = 1024  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
-PI_HEIGHT = 600
+PI_WIDTH = 1920  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
+PI_HEIGHT = 1080
 FPS = 30
 
 # audio playback settings
 MAX_VOLUME = 100  # might take some adjusting based on cars sound system
-MAX_CACHE_ALBUMS = 100_000  # less than 70 Gb. I have a lot of extra storage, feel free to adjust if needed
+MAX_CACHE_ALBUMS = 90_000  # around 90 gb with 512 resolution, feel free to adjust if needed
 
 # image resolutions
 IMAGE_RESOLUTION = 512  # can be adjusted to change the quality of the album art, but will change the size of the image cache
