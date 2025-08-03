@@ -41,6 +41,7 @@ class OBDMenu(CTkFrame):
         mpg = DoubleVar(self)
         miles_until_empty = DoubleVar(self)
         self.api = OBDAPI(
+            self,
             lambda m: self.after(0, lambda: mpg.set(m)),
             lambda e: self.after(0, lambda: miles_until_empty.set(e)),
             lambda t: self.after(0, lambda: temp.set(t))
@@ -156,5 +157,5 @@ class OBDMenu(CTkFrame):
         overrides the destroy method to also shut down the OBD connection
         """
 
-        self.api.shutdown(self)
+        self.api.shutdown()
         super().destroy()

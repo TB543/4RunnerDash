@@ -12,7 +12,7 @@ class RouteManager:
 
     tts = TTS("tts_models/en/ljspeech/speedy-speech")
     ANNOUNCEMENTS = {
-        1609.344: "In 1 mile",
+        1609.344: "In 1 mile",  # note: keys here are in meters, ie 1609.344 meters is 1 mile
         152.4: "In 500 feet"
     }
 
@@ -107,14 +107,12 @@ class RouteManager:
 
         # announces the next instruction
         distance_left = instruction["distance"] * (1 - instruction_percent)
+        announce = None
         if index > self.instruction_index:
             self.instruction_index = index
-            text = f"In {round(distance_left / 1609.344, 2)} miles {instruction['text']}"
-            RouteManager.tts.tts_to_file(text, file_path="AppData/tts.wav")
-            playsound("AppData/tts.wav")
+            announce = f"In {round(distance_left / 1609.344, 2)} miles"
 
         # checks if distance announcement threshold has been reached
-        announce = None
         for distance, announcement in RouteManager.ANNOUNCEMENTS.items():
             if distance_left <= distance and instruction["distance"] > distance and distance in instruction["announcements"]:
                 instruction["announcements"].remove(distance)
@@ -122,7 +120,7 @@ class RouteManager:
 
         # ensures only 1 announcement
         if announce:
-            RouteManager.tts.tts_to_file(f"{announce} {instruction['text']}", file_path="AppData/tts.wav")
+            RouteManager.tts.tts_to_file(f"{announce} {instruction['text']}.", file_path="AppData/tts.wav")
             playsound("AppData/tts.wav")
 
     def start(self, eta, time, miles, reroute, callbacks):

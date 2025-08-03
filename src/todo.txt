@@ -1,21 +1,12 @@
-# ======================================================== COMPLETE ========================================================
-update readme to include the rust install - combine install dependencies with install maps
-get codes freezes, fix
-odm oil/filter/trans change warning on main menu
-add things that need to be changed based on time (inspection, radiator fluid, etc)
-update readme for working hardware
-tts announces decimals wrong 12.08 = "12.8"
-
 # ======================================================== HARDWARE ========================================================
 gracefully shutdown on power loss with kill_backend.sh and destroy tkinter root. monitor 12v vcc for shutdown signal
 make system appearance mode use dimmer and wire amp on for when audio is playing
 hardware wiring
 wired audio in?
-add way to reset miles when filled tank to get miles until empty
-add temp offset to account for engine temp
 
 # ======================================================== POLISHING ========================================================
-check manual for actual values to change fluids
+add way to reset miles when filled tank to get miles until empty
+add temp offset to account for engine tempcheck manual for actual values to change fluids
 add commas for mile counters
 mile counter reset buttons don't unclick because of touch screen
 make time label based on gps location
@@ -33,3 +24,10 @@ add way to add stops
 search for POI like gas stations in maps
 reroute and start route race condition
 add dashcam
+add dead reckoning - updating gps position based on speed and heading when no satellite lock
+update readme to include the rust install - combine install dependencies with install maps
+odm oil/filter/trans change warning on main menu
+add things that need to be changed based on time (inspection, radiator fluid, etc)
+update readme for working hardware
+tts announces decimals wrong 12.08 = "12.8"
+reroute is expensive and will keep trying if still to far from road

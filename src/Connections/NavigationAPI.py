@@ -3,6 +3,9 @@ from requests import get
 from serial import Serial
 from threading import Thread
 from sys import argv
+from time import sleep
+from bmm150 import BMM150, PresetMode
+from math import atan2, degrees
 
 
 class NavigationAPI:
@@ -11,8 +14,20 @@ class NavigationAPI:
         -> GraphHopper connection for routing       port: 8989
         -> TileServer-GL connection for map tiles   port: 8080
         -> Nominatim connection for geocoding       port: 8088
-        -> BN-220 GPS module for location           port: /dev/ttyAMA0
+        -> GPS module for location                  port: /dev/ttyAMA0
+        -> Compass module for dead reckoning        port: i2c
     """
+
+    @staticmethod
+    def get_heading():
+        """
+        gets the heading from the compass module
+
+        @return the heading the degrees
+        """
+
+        x, y, z = NavigationAPI.compass.read_mag_data()
+        return degrees(atan2(x, y))
 
     @staticmethod
     def gps_read_loop():
@@ -20,11 +35,21 @@ class NavigationAPI:
         reads the gps data and updates the gps coords attribute of the class
         """
 
-        # reads from the gps module
+        # changes coords to global initial coords when in dev mode
         gps = Serial("/dev/ttyAMA0")
+        while len(argv) == 2 and argv[1] == "dev" and NavigationAPI.running:
+            sleep(1)
+            for callback in NavigationAPI.callbacks[:]:
+                try:
+                    NavigationAPI.gps_coords = INITIAL_MAP_COORDS
+                    callback(NavigationAPI.gps_coords)
+                except:
+                    continue
+
+        # reads from the gps module
         while NavigationAPI.running:
-            line = gps.readline().decode('ascii', errors='ignore').strip().split(",")
-            if len(line) == 13 and line[0] == "$GNRMC" and line[2] == "A" and len(argv) == 1:
+            line = gps.readline().decode('ascii', errors='ignore').strip().split(",") if gps.in_waiting > 0 else sleep(1)
+            if line and line[0] == "$GPRMC" and line[2] == "A":
                 
                 # reads the useful data
                 lat = line[3]
@@ -43,21 +68,13 @@ class NavigationAPI:
                         callback(NavigationAPI.gps_coords)
                     except:
                         continue
-            
-            # changes coords to global initial coords when in dev mode
-            elif len(argv) == 2 and argv[1] == "dev":
-                for callback in NavigationAPI.callbacks[:]:
-                    try:
-                        NavigationAPI.gps_coords = INITIAL_MAP_COORDS
-                        callback(NavigationAPI.gps_coords)
-                    except:
-                        continue
 
         gps.close()
 
     TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
     NOMINATIM_URL = "http://localhost:8088/search"
     GRAPH_HOPPER_URL = "http://localhost:8989/route"
+    compass = None # BMM150(PresetMode.HIGHACCURACY)
     gps_coords = (0, 0)
     callbacks = []
     thread = Thread(target=gps_read_loop, daemon=True)

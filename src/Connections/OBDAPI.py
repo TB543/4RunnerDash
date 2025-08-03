@@ -8,10 +8,11 @@ class OBDAPI(Async):
     a class to communicate with the OBD-II interface of a vehicle.
     """
 
-    def __init__(self, mpg, miles_until_empty, temp):
+    def __init__(self, root, mpg, miles_until_empty, temp):
         """
         initializes the OBDAPI class.
 
+        @param root: the root window to update to prevent deadlocks
         @param mpg: the callback function for updating the mpg
         @param miles_until_empty: the callback function for updating miles until empty
         @param temp: the callback function for updating the temperature
@@ -20,6 +21,7 @@ class OBDAPI(Async):
 
         # initializes the class and its fields
         super().__init__()
+        self.root = root
         self.mpg = mpg
         self.miles_until_empty = miles_until_empty
         self.temp = temp
@@ -89,19 +91,25 @@ class OBDAPI(Async):
         with self.paused():
             super(Async, self).query(commands.CLEAR_DTC)
 
-    def shutdown(self, root):
+    def stop(self):
+        """
+        overrides the stop method to prevent deadlocks:
+            GUI waiting for async thread to join
+            async thread waiting to update GUI
+        """
+
+        if self._Async__thread is not None:
+            self._Async__running = False
+            while self._Async__thread.is_alive():
+                self.root.update()
+            self._Async__thread = None
+
+    def shutdown(self):
         """
         shuts down the OBD-II interface.
 
         @param root: the root window to update to ensure
             callbacks are processed while shutting down
         """
-
-        # closes while preventing race conditions
-        if self._Async__thread is not None:
-            self._Async__running = False
-            while self._Async__thread.is_alive():
-                root.update()
-            self._Async__thread = None
 
         self.close()
