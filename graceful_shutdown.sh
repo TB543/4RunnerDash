@@ -23,4 +23,4 @@ while [ "$(sudo docker ps -q -f name=tileserver)" != "" ]; do
     echo "Waiting for Docker container to stop..."
     sleep 1
 done
-sudo shutdown
+sudo shutdown -h now

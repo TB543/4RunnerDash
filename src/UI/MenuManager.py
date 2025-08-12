@@ -1,3 +1,4 @@
+from Connections.GPIOAPI import GPIOAPI
 from customtkinter import CTk, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
@@ -28,6 +29,7 @@ class MenuManager(CTk):
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.active_menu = "main"
+        GPIOAPI(self.destroy, self.appearance_manager.apply_system_mode)
 
         # gets the touch screen device
         device_name = environ["TOUCH_SCREEN"]

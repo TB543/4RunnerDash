@@ -1,9 +1,6 @@
 from customtkinter import set_appearance_mode, set_default_color_theme, set_widget_scaling, ThemeManager, CTkFrame
 from tkintermapview import TkinterMapView
 from json import dump, load
-from astral import LocationInfo
-from astral.sun import sun
-from datetime import datetime
 from AppData import PI_WIDTH
 
 
@@ -45,12 +42,12 @@ class AppearanceManager:
         """
 
         self.mode = "system"
+        self.system_mode = 0  # will be initialized by GPIOAPI
         self.theme = "blue"
         self.scaling = list(AppearanceManager.SCALES.keys())[1]
         self.lat = 0
         self.long = 0
         self.root = root
-        self.after_change_mode = root.after(0, lambda: None)
         self.load()
 
     def load(self):
@@ -103,8 +100,7 @@ class AppearanceManager:
         """
         
         self.mode = self.MODES[self.mode]["next"]
-        self.root.after_cancel(self.after_change_mode)
-        set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
+        set_appearance_mode(self.mode) if self.mode != "system" else self.apply_system_mode(self.system_mode)
         self.save()
         return self.MODES[self.mode]["icon"]
 
@@ -136,21 +132,16 @@ class AppearanceManager:
 
     # ======================================= HELPERS ========================================
 
-    def apply_system_mode(self):
+    def apply_system_mode(self, mode):
         """
         Applies the system appearance mode to the application.
+
+        @param mode: the new system mode: 0 for light, 1 for dark
         """
 
-        # gets the sunrise and sunset times for the current location
-        city = LocationInfo(latitude=self.lat, longitude=self.long) # get gps coords here and save them
-        now = datetime.now().astimezone()
-        s = sun(city.observer, date=now.date(), tzinfo=now.tzinfo)
-        sunrise = s["sunrise"]
-        sunset = s["sunset"]
-
-        # sets the mode based on the current time and schedules the next update in 5 minutes
-        set_appearance_mode("light" if sunrise < now < sunset else "dark")
-        self.after_change_mode = self.root.after(300_000, self.apply_system_mode)
+        self.system_mode = mode
+        if self.mode == "system":
+            set_appearance_mode("light" if self.system_mode == 0 else "dark")
 
     def change_theme(self, root, old_theme):
         """

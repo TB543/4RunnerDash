@@ -3,7 +3,6 @@ from Dev.CTkButtonFixed import CTkButtonFixed
 from subprocess import run
 from time import time
 from evdev.ecodes import BTN_TOUCH
-from os import environ
 from datetime import datetime
 
 

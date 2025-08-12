@@ -1,6 +1,6 @@
+from UI.MenuManager import MenuManager
 from threading import Thread
 from Lib.BluezAgent import my_app as start_bluetooth
-from UI.MenuManager import MenuManager
 from Dev.KeyboardController import KeyboardController
 
 

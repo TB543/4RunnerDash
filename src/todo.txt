@@ -1,8 +1,6 @@
 # ======================================================== HARDWARE ========================================================
-gracefully shutdown on power loss with kill_backend.sh and destroy tkinter root. monitor 12v vcc for shutdown signal
 make system appearance mode use dimmer and wire amp on for when audio is playing
 hardware wiring
-wired audio in?
 
 # ======================================================== POLISHING ========================================================
 add way to reset miles when filled tank to get miles until empty
@@ -31,3 +29,5 @@ add things that need to be changed based on time (inspection, radiator fluid, et
 update readme for working hardware
 tts announces decimals wrong 12.08 = "12.8"
 reroute is expensive and will keep trying if still to far from road
+car in reverse = negative miles?
+add temperature module?

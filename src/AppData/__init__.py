@@ -1,6 +1,6 @@
 # pi screen settings
-PI_WIDTH = 1920  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
-PI_HEIGHT = 1080
+PI_WIDTH = 1024  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
+PI_HEIGHT = 600
 FPS = 30
 
 # audio playback settings
