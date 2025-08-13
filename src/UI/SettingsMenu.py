@@ -60,4 +60,4 @@ class SettingsMenu(CTkFrame):
         """
         
         self.winfo_toplevel().destroy()
-        run(["sudo", "killall", "Xorg"])
+        run(["sudo", "pkill", "Xorg"])
