@@ -31,3 +31,4 @@ tts announces decimals wrong 12.08 = "12.8"
 reroute is expensive and will keep trying if still to far from road
 car in reverse = negative miles?
 add temperature module?
+redo requirements.txt - some modules deleted

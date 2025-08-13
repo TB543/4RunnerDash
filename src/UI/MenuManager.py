@@ -29,7 +29,7 @@ class MenuManager(CTk):
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.active_menu = "main"
-        GPIOAPI(self.destroy, self.appearance_manager.apply_system_mode)
+        GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode)
 
         # gets the touch screen device
         device_name = environ["TOUCH_SCREEN"]

@@ -74,7 +74,7 @@ class AppearanceManager:
         # updates the appearance settings based on the loaded values
         set_default_color_theme(self.theme)
         set_widget_scaling(self.scaling)
-        set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode()
+        set_appearance_mode(self.mode) if (self.mode != "system") else self.apply_system_mode(self.system_mode)
 
     def save(self):
         """
@@ -141,7 +141,7 @@ class AppearanceManager:
 
         self.system_mode = mode
         if self.mode == "system":
-            set_appearance_mode("light" if self.system_mode == 0 else "dark")
+            self.root.after(0, lambda: set_appearance_mode("light" if self.system_mode == 0 else "dark"))
 
     def change_theme(self, root, old_theme):
         """

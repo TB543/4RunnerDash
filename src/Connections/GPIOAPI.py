@@ -1,5 +1,6 @@
-from RPi.GPIO import setmode, BCM, setup, IN, OUT, HIGH, add_event_detect, FALLING, BOTH, input
+from RPi.GPIO import setmode, BCM, setup, IN, OUT, HIGH, add_event_detect, FALLING, BOTH, input as read
 from subprocess import run
+from AppData import IGNORE_SHUTDOWN
 
 
 class GPIOAPI:
@@ -26,12 +27,13 @@ class GPIOAPI:
         """
 
         # shutdown command
-        add_event_detect(12, FALLING, lambda e: self.shutdown(shutdown))
-        self.shutdown(shutdown) if input(12) == 0 else None
+        if not IGNORE_SHUTDOWN:
+            add_event_detect(12, FALLING, lambda e: self.shutdown(shutdown))
+            self.shutdown(shutdown) if read(12) == 0 else None
 
         # dimmer command
-        add_event_detect(13 , BOTH, dimmer)
-        dimmer(input(13))
+        add_event_detect(13, BOTH, lambda e: dimmer(read(13)))
+        dimmer(read(13))
 
     def shutdown(self, callback):
         """
@@ -42,5 +44,6 @@ class GPIOAPI:
 
         try:
             callback()
-        finally:
-            run(["../graceful_shutdown.sh"])
+        except:
+            pass
+        run(["../graceful_shutdown.sh"])

@@ -4,7 +4,7 @@ from serial import Serial
 from threading import Thread
 from sys import argv
 from time import sleep
-from bmm150 import BMM150, PresetMode
+# from bmm150 import BMM150, PresetMode
 from math import atan2, degrees
 
 

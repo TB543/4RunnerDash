@@ -202,6 +202,7 @@ cython_debug/
 *.db-journal
 *.wav
 src/AppData/map_data
+*.lgd-nfy0
 
 # external libraries
 src/Lib/tileserver
