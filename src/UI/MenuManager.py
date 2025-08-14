@@ -9,6 +9,7 @@ from UI.SettingsMenu import SettingsMenu
 from UI.MusicMenu import MusicMenu
 from UI.MapsMenu import MapsMenu
 from UI.OBDMenu import OBDMenu
+from threading import Lock
 
 
 class MenuManager(CTk):
@@ -28,8 +29,9 @@ class MenuManager(CTk):
         self.configure(cursor="none")
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
+        self.shutdown_lock = Lock()
+        GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, self.shutdown_lock)
         self.active_menu = "main"
-        GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode)
 
         # gets the touch screen device
         device_name = environ["TOUCH_SCREEN"]
@@ -61,3 +63,13 @@ class MenuManager(CTk):
         self.active_menu = menu_name
         self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
         set_widget_scaling(self.appearance_manager.scaling)
+
+    def mainloop(self):
+        """
+        overrides the mainloop to prevent program exit before shutdown command
+        is finished executing
+        """
+
+        super().mainloop()
+        with self.shutdown_lock:
+            return
