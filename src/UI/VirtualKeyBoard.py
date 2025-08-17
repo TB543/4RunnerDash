@@ -1,4 +1,5 @@
-from customtkinter import CTkFrame, CTkButton
+from customtkinter import CTkFrame
+from Dev.TSCTkButton import TSCTkButton
 
 
 class VirtualKeyboard(CTkFrame):
@@ -75,7 +76,7 @@ class VirtualKeyboard(CTkFrame):
             column = 0
             for key in keys:
                 command = VirtualKeyboard.COMMANDS[key](self) if key in VirtualKeyboard.COMMANDS else lambda k=key: self.key(k)
-                button = CTkButton(self, text=key[0], font=("Arial", 20), command=command)
+                button = TSCTkButton(self, text=key[0], font=("Arial", 20), command=command)
                 button.metadata = key
                 columns = VirtualKeyboard.COLUMNS[key] if key in VirtualKeyboard.COLUMNS else 4
                 button.grid(row=row, column=column, columnspan=columns, sticky="nsew", padx=3, pady=3)

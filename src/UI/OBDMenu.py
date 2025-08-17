@@ -1,4 +1,5 @@
-from customtkinter import CTkFrame, CTkButton, CTkLabel, DoubleVar, CTkScrollableFrame, set_widget_scaling
+from customtkinter import CTkFrame, CTkLabel, DoubleVar, CTkScrollableFrame, set_widget_scaling
+from Dev.TSCTkButton import TSCTkButton
 from Connections.OBDAPI import OBDAPI
 from DataManagers.MileManager import MileManger
 
@@ -25,13 +26,13 @@ class OBDMenu(CTkFrame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
         for col in range(1, 8, 2):
-            spacer = CTkButton(self, text="", font=("Arial", 100), fg_color="transparent", hover=False, height=0)
+            spacer = TSCTkButton(self, text="", font=("Arial", 100), fg_color="transparent", hover=False, height=0)
             spacer.grid(row=1, column=col)
             self.columnconfigure(col + 1, weight=1)
 
         # creates toplevel widgets
-        main_menu = CTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
-        get_codes_button = CTkButton(self, text="Get Codes", font=("Arial", 20), command=self.get_codes)
+        main_menu = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
+        get_codes_button = TSCTkButton(self, text="Get Codes", font=("Arial", 20), command=self.get_codes)
         container = CTkFrame(self, fg_color=self.cget("fg_color"))
         main_menu.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
         get_codes_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")
@@ -51,7 +52,7 @@ class OBDMenu(CTkFrame):
         mpg_container = CTkFrame(container)
         mpg_label = CTkLabel(mpg_container, text="Miles Per Gallon:", font=("Arial", 20))
         mpg_label.pack(side="left", padx=10, pady=5)
-        spacer = CTkButton(mpg_container, text="", fg_color="transparent", width=70, hover=False)
+        spacer = TSCTkButton(mpg_container, text="", fg_color="transparent", width=70, hover=False)
         spacer.pack(side="right", padx=10, pady=5)
         mpg_label = CTkLabel(mpg_container, textvariable=mpg, font=("Arial", 20))
         mpg_label.pack(side="right", pady=5)
@@ -61,7 +62,7 @@ class OBDMenu(CTkFrame):
         miles_until_empty_container = CTkFrame(container)
         miles_until_empty_label = CTkLabel(miles_until_empty_container, text="Miles Until Empty:", font=("Arial", 20))
         miles_until_empty_label.pack(side="left", padx=10, pady=5)
-        spacer = CTkButton(miles_until_empty_container, text="", fg_color="transparent", width=70, hover=False)
+        spacer = TSCTkButton(miles_until_empty_container, text="", fg_color="transparent", width=70, hover=False)
         spacer.pack(side="right", padx=10, pady=5)
         miles_until_empty_label = CTkLabel(miles_until_empty_container, textvariable=miles_until_empty, font=("Arial", 20))
         miles_until_empty_label.pack(side="right", pady=5)
@@ -79,7 +80,7 @@ class OBDMenu(CTkFrame):
         oil_change_container = CTkFrame(container)
         oil_change_label = CTkLabel(oil_change_container, text="Miles Until Oil Change:", font=("Arial", 20))
         oil_change_label.pack(side="left", padx=10, pady=5)
-        oil_change_button = CTkButton(oil_change_container, text="Reset", font=("Arial", 20), width=70, command=oil_change_manager.reset)
+        oil_change_button = TSCTkButton(oil_change_container, text="Reset", font=("Arial", 20), width=70, command=oil_change_manager.reset)
         oil_change_button.pack(side="right", padx=10, pady=5)
         oil_change_label = CTkLabel(oil_change_container, textvariable=oil_change, font=("Arial", 20))
         oil_change_label.pack(side="right", pady=5)
@@ -89,7 +90,7 @@ class OBDMenu(CTkFrame):
         filter_change_container = CTkFrame(container)
         filter_change_label = CTkLabel(filter_change_container, text="Miles Until Air Filter Change:", font=("Arial", 20))
         filter_change_label.pack(side="left", padx=10, pady=5)
-        filter_change_button = CTkButton(filter_change_container, text="Reset", font=("Arial", 20), width=70, command=filter_change_manager.reset)
+        filter_change_button = TSCTkButton(filter_change_container, text="Reset", font=("Arial", 20), width=70, command=filter_change_manager.reset)
         filter_change_button.pack(side="right", padx=10, pady=5)
         filter_change_label = CTkLabel(filter_change_container, textvariable=filter_change, font=("Arial", 20))
         filter_change_label.pack(side="right", pady=5)
@@ -99,7 +100,7 @@ class OBDMenu(CTkFrame):
         transmission_change_container = CTkFrame(container)
         transmission_change_label = CTkLabel(transmission_change_container, text="Miles Until Transmission Fluid Change:", font=("Arial", 20))
         transmission_change_label.pack(side="left", padx=10, pady=5)
-        transmission_change_button = CTkButton(transmission_change_container, text="Reset", font=("Arial", 20), width=70, command=transmission_change_manager.reset)
+        transmission_change_button = TSCTkButton(transmission_change_container, text="Reset", font=("Arial", 20), width=70, command=transmission_change_manager.reset)
         transmission_change_button.pack(side="right", padx=10, pady=5)
         transmission_change_label = CTkLabel(transmission_change_container, textvariable=transmission_change, font=("Arial", 20))
         transmission_change_label.pack(side="right", pady=5)
@@ -109,9 +110,9 @@ class OBDMenu(CTkFrame):
         self.codes_popup = CTkFrame(self, border_width=2)
         code = CTkLabel(self.codes_popup, text="Code:", font=("Arial", 20))
         description = CTkLabel(self.codes_popup, text="Description:", font=("Arial", 20))
-        close_codes = CTkButton(self.codes_popup, text="x", width=12, font=("Arial", 20), command=self.codes_popup.place_forget)
+        close_codes = TSCTkButton(self.codes_popup, text="x", width=12, font=("Arial", 20), command=self.codes_popup.place_forget)
         self.codes_container = CTkScrollableFrame(self.codes_popup)
-        clear_codes = CTkButton(self.codes_popup, text="Clear Codes", font=("Arial", 20), command=self.clear_codes)
+        clear_codes = TSCTkButton(self.codes_popup, text="Clear Codes", font=("Arial", 20), command=self.clear_codes)
 
         # places codes widgets
         close_codes.grid(row=0, column=2, pady=5, padx=5)

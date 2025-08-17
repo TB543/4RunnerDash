@@ -1,13 +1,10 @@
 # ======================================================== HARDWARE ========================================================
-make system appearance mode use dimmer and wire amp on for when audio is playing
-hardware wiring
+wire amp on for when audio is playing
 
 # ======================================================== POLISHING ========================================================
 add way to reset miles when filled tank to get miles until empty
 add temp offset to account for engine tempcheck manual for actual values to change fluids
 add commas for mile counters
-mile counter reset buttons don't unclick because of touch screen
-make time label based pihat clock
 map pinch to zoom - make map take vector tiles and render them directly on the canvas for easy scaling - also makes it so dark mode can be applied to map
 add visuals for virtual keyboard for caps lock and shift and gray out blank keys
 media player bg same color as album art
@@ -31,5 +28,8 @@ tts announces decimals wrong 12.08 = "12.8"
 reroute is expensive and will keep trying if still to far from road
 car in reverse = negative miles?
 add temperature module?
+make boot-up faster at least for UI
+make time label based pihat clock
 add error logging
 add software update detection
+make display sleep non blocking

@@ -1,4 +1,5 @@
-from customtkinter import CTkFrame, CTkButton, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar, DoubleVar
+from customtkinter import CTkFrame, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar, DoubleVar
+from Dev.TSCTkButton import TSCTkButton
 from UI.MapWidget import MapWidget
 from Connections.NavigationAPI import NavigationAPI
 from json import dumps, loads
@@ -42,21 +43,21 @@ class MapsMenu(CTkFrame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
         for col in range(1, 8, 2):
-            spacer = CTkButton(self, text="", font=("Arial", 100), fg_color="transparent", hover=False, height=0)
+            spacer = TSCTkButton(self, text="", font=("Arial", 100), fg_color="transparent", hover=False, height=0)
             spacer.grid(row=1, column=col)
             self.columnconfigure(col + 1, weight=1)
 
         # creates top level widgets
-        main_menu = CTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
+        main_menu = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
         container = CTkFrame(self, fg_color=self.cget("fg_color"))
         main_menu.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
         container.grid(row=1, column=1, columnspan=7, sticky="nsew", pady=10)
 
         # creates search container
         search_container = CTkFrame(container, fg_color=self.cget("fg_color"))
-        focus_position_button = CTkButton(search_container, text="◉", width=12, font=("Arial", 20), command=lambda: self.map_widget.lock_position())
+        focus_position_button = TSCTkButton(search_container, text="◉", width=12, font=("Arial", 20), command=lambda: self.map_widget.lock_position())
         self.search_entry = CTkEntry(search_container, placeholder_text="Enter Your Destination...", font=("Arial", 20), takefocus=0)
-        search_button = CTkButton(search_container, text="Search", font=("Arial", 20), width=80, command=self.populate_search_results)
+        search_button = TSCTkButton(search_container, text="Search", font=("Arial", 20), width=80, command=self.populate_search_results)
         search_container.pack(fill="x", padx=10)
         search_container.columnconfigure(1, weight=1)
         focus_position_button.grid(row=0, column=0)
@@ -81,8 +82,8 @@ class MapsMenu(CTkFrame):
 
         # creates search results menu
         self.search_results_menu = CTkFrame(map_container, width=250)
-        self.start_navigation_button = CTkButton(self.search_results_menu, text="Start Navigation", font=("Arial", 20), command=self.start_navigation)
-        close = CTkButton(self.search_results_menu, text="x", width=12, font=("Arial", 20), command=self.close_search_menu)
+        self.start_navigation_button = TSCTkButton(self.search_results_menu, text="Start Navigation", font=("Arial", 20), command=self.start_navigation)
+        close = TSCTkButton(self.search_results_menu, text="x", width=12, font=("Arial", 20), command=self.close_search_menu)
         self.search_results_container = CTkScrollableFrame(self.search_results_menu, fg_color=self.search_results_menu.cget("fg_color"))
 
         # places the search results menu and configures the grid
@@ -96,8 +97,8 @@ class MapsMenu(CTkFrame):
 
         # creates the navigation menu
         self.navigation_menu = CTkFrame(map_container)
-        self.end_navigation_button = CTkButton(self.navigation_menu, text="End Navigation", font=("Arial", 20), command=self.end_navigation)
-        self.hide_navigation_button = CTkButton(self.navigation_menu, width=12, font=("Arial", 20))
+        self.end_navigation_button = TSCTkButton(self.navigation_menu, text="End Navigation", font=("Arial", 20), command=self.end_navigation)
+        self.hide_navigation_button = TSCTkButton(self.navigation_menu, width=12, font=("Arial", 20))
         self.route_data = CTkFrame(self.navigation_menu, fg_color=map_container.cget("fg_color"))
         self.navigation_container = CTkScrollableFrame(self.navigation_menu, fg_color=self.navigation_menu.cget("fg_color"))
 

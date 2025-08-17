@@ -1,6 +1,7 @@
 from RPi.GPIO import setmode, BCM, setup, IN, OUT, HIGH, add_event_detect, FALLING, BOTH, input as read
 from subprocess import run
 from AppData import IGNORE_SHUTDOWN
+from time import sleep
 
 
 class GPIOAPI:
@@ -45,6 +46,12 @@ class GPIOAPI:
         @param callback: the shutdown callback to run
         """
 
+        # ensures pi stays on throughout short power loss (switch from battery to engine power)
+        sleep(5)
+        if read(12) == 1:
+            return
+
+        # gracefully shuts down
         with self.lock:
             try:
                 callback()

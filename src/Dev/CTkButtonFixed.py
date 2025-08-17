@@ -1,8 +1,8 @@
-from customtkinter import CTkButton
 from AppData import PI_HEIGHT
+from Dev.TSCTkButton import TSCTkButton
 
 
-class CTkButtonFixed(CTkButton):
+class CTkButtonFixed(TSCTkButton):
     """
     sometimes customtkinter has a glitch where the label is shorter than it needs to be
     to fit the text. This results in a render glitch where the text is cut off at the top.

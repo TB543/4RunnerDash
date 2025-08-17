@@ -1,4 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
+from customtkinter import CTkFrame, CTkLabel, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
+from Dev.TSCTkButton import TSCTkButton
 from Connections.BluezAPI import BluezAPI
 from AppData import MAX_VOLUME, FPS
 
@@ -27,13 +28,13 @@ class MusicMenu(CTkFrame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
         for col in range(1, 8, 2):
-            spacer = CTkButton(self, text="", font=("Arial", 100), fg_color="transparent", hover=False, height=0)
+            spacer = TSCTkButton(self, text="", font=("Arial", 100), fg_color="transparent", hover=False, height=0)
             spacer.grid(row=1, column=col)
             self.columnconfigure(col + 1, weight=1)
 
         # creates the container and main menu widgets
         music_container = CTkFrame(self, fg_color=self.cget("fg_color"))
-        main_menu = CTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
+        main_menu = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
         music_container.grid(row=1, column=1, columnspan=7, sticky="nsew", pady=10)
         main_menu.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
         music_container.grid_propagate(False)
@@ -57,15 +58,15 @@ class MusicMenu(CTkFrame):
         remaining_time = CTkLabel(music_container, textvariable=self.remaining_time, height=8, font=("Arial", 8))
 
         # creates playback control widgets
-        previous_track = CTkButton(music_container, text="◀◀", command=self.api.previous_track, width=50, height=20, font=("Arial", 10), corner_radius=float("inf"))
-        track_control = CTkButton(music_container, textvariable=self.player_status, command=self.api.track_control, width=75, height=35, font=("Arial", 15), corner_radius=float("inf"))
-        next_track = CTkButton(music_container, text="▶▶", command=self.api.next_track, width=50, height=20, font=("Arial", 10), corner_radius=float("inf"))
+        previous_track = TSCTkButton(music_container, text="◀◀", command=self.api.previous_track, width=50, height=20, font=("Arial", 10), corner_radius=float("inf"))
+        track_control = TSCTkButton(music_container, textvariable=self.player_status, command=self.api.track_control, width=75, height=35, font=("Arial", 15), corner_radius=float("inf"))
+        next_track = TSCTkButton(music_container, text="▶▶", command=self.api.next_track, width=50, height=20, font=("Arial", 10), corner_radius=float("inf"))
 
         # creates volume container
         volume_container = CTkFrame(music_container, fg_color=self.cget("fg_color"))
-        volume_up = CTkButton(volume_container, text="🔊", command=lambda: self.volume.set(self.volume.get() + 5), width=17, height=15, font=("Arial", 15), corner_radius=float("inf"))
+        volume_up = TSCTkButton(volume_container, text="🔊", command=lambda: self.volume.set(self.volume.get() + 5), width=17, height=15, font=("Arial", 15), corner_radius=float("inf"))
         volume_slider = CTkSlider(volume_container, from_=0, to=MAX_VOLUME, variable=self.volume, orientation="vertical")
-        volume_down = CTkButton(volume_container, text="🔉", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), width=17, height=15, font=("Arial", 15), corner_radius=float("inf"))
+        volume_down = TSCTkButton(volume_container, text="🔉", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), width=17, height=15, font=("Arial", 15), corner_radius=float("inf"))
 
         # places metadata widgets
         self.image_container.grid(row=0, column=2, columnspan=3, pady=(0, 6))

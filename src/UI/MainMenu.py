@@ -1,4 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, StringVar
+from customtkinter import CTkFrame, CTkLabel, StringVar
+from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
 from subprocess import run
 from time import time
@@ -39,7 +40,7 @@ class MainMenu(CTkFrame):
         music_button = CTkButtonFixed(self, text="🎧", font=("Arial", 100), command=lambda: master.change_menu("music"))
         obd_button = CTkButtonFixed(self, text="🚙", font=("Arial", 100), command=lambda: master.change_menu("obd"))
         settings_button = CTkButtonFixed(self, text="🛠️", font=("Arial", 100), command=lambda: master.change_menu("settings"))
-        sleep_button = CTkButton(self, text="Display Sleep", font=("Arial", 20), command=self.sleep)
+        sleep_button = TSCTkButton(self, text="Display Sleep", font=("Arial", 20), command=self.sleep)
         maps_button.grid(row=1, column=1)
         music_button.grid(row=1, column=3)
         obd_button.grid(row=1, column=5)

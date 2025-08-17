@@ -1,4 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton
+from customtkinter import CTkFrame, CTkLabel
+from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
 from DataManagers.AppearanceManager import AppearanceManager
 from subprocess import run
@@ -38,7 +39,7 @@ class SettingsMenu(CTkFrame):
         theme_button = CTkButtonFixed(self, text=theme_text, font=("Arial", 100), command=lambda: theme_button.configure(text=appearance_manager.cycle_theme()))
         scale_button = CTkButtonFixed(self, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=appearance_manager.cycle_scaling()))
         shell_button = CTkButtonFixed(self, text="🖥️", font=("Arial", 100), command=self.open_shell)
-        back_button = CTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
+        back_button = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
         appearance_button.grid(row=1, column=1)
         theme_button.grid(row=1, column=3)
         scale_button.grid(row=1, column=5)
