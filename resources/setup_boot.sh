@@ -5,9 +5,9 @@ sudo cp startup@.service /etc/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable startup@$(whoami).service
 
-# configures PiCarHAT DAC
+# configures PiCarHAT
 sudo sed -i 's/^dtparam=audio=on/#dtparam=audio=on/' /boot/firmware/config.txt
-echo -e "\ndtoverlay=hifiberry-dacplus-std\ndtoverlay=vc4-kms-v3d,noaudio" | sudo tee -a /boot/firmware/config.txt
+echo -e "\ndtoverlay=hifiberry-dacplus-std\ndtoverlay=vc4-kms-v3d,noaudio\nusb_max_current_enable=1" | sudo tee -a /boot/firmware/config.txt
 
 # gets environment variables
 clear
