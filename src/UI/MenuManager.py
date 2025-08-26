@@ -10,6 +10,7 @@ from UI.MusicMenu import MusicMenu
 from UI.MapsMenu import MapsMenu
 from UI.OBDMenu import OBDMenu
 from threading import Lock
+from subprocess import run
 
 
 class MenuManager(CTk):
@@ -73,3 +74,11 @@ class MenuManager(CTk):
         super().mainloop()
         with self.shutdown_lock:
             return
+        
+    def destroy(self):
+        """
+        overrides the destroy method to also ensure the backend is stopped before shutdown
+        """
+
+        run(["../stop_backend.sh"])
+        return super().destroy()

@@ -7,6 +7,9 @@ class SpotifyAPI:
     a class to handles calls to the Spotify API to get album art
     """
 
+    TOKEN_URL = "https://accounts.spotify.com/api/token"
+    SEARCH_URL = "https://api.spotify.com/v1/search"
+
     def __init__(self, client_id, client_secret):
         """
         initializes the spotify api
@@ -32,7 +35,7 @@ class SpotifyAPI:
         # sends request
         try:
             response = post(
-                "https://accounts.spotify.com/api/token",
+                SpotifyAPI.TOKEN_URL,
                 headers={"Authorization": f"Basic {credentials}"},
                 data={"grant_type": "client_credentials"},
                 timeout=5
@@ -62,7 +65,7 @@ class SpotifyAPI:
 
                     # queries spotify api
                     response = get(
-                        "https://api.spotify.com/v1/search", 
+                        SpotifyAPI.SEARCH_URL, 
                         headers={"Authorization": f"Bearer {token}"}, 
                         params={"q": f'track:"{title_option}" artist:"{artist_option}"', "type": "track", "limit": 1},
                         timeout=5

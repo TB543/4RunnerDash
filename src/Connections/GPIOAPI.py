@@ -57,5 +57,4 @@ class GPIOAPI:
                 callback()
             except:
                 pass
-            run(["../stop_backend.sh"])
             run(["sudo", "shutdown", "-h", "now"])

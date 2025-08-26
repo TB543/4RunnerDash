@@ -31,5 +31,7 @@ add temperature module?
 make boot-up faster at least for UI
 make time label based pihat clock
 add error logging
-add software update detection
 make display sleep non blocking
+software update notification on UI
+display patchnotes on update
+install intermediate updates too
