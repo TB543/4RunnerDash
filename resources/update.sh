@@ -11,10 +11,11 @@ cd ..
 git fetch --tags
 git checkout $1
 
-# ======================== ADD ADDITIONAL INSTALL COMMANDS HERE ========================
-
-# ======================== ADD ADDITIONAL INSTALL COMMANDS HERE ========================
+# runs update scripts
+cd patches/
+/bin/bash ./update.sh
+cd ..
 
 # removes update scripts and reboots
-rm -rf $1
+rm -rf patches/
 sudo reboot

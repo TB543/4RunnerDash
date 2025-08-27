@@ -1,5 +1,5 @@
 # ignores shutdown when car is off, used for development, best to leave as is
-IGNORE_SHUTDOWN = False
+IGNORE_SHUTDOWN = True
 
 # pi screen settings
 PI_WIDTH = 1024  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
@@ -14,7 +14,7 @@ MAX_CACHE_ALBUMS = 90_000  # around 90 gb with 512 resolution, feel free to adju
 IMAGE_RESOLUTION = 512  # can be adjusted to change the quality of the album art, but will change the size of the image cache
 MAP_TILE_RESOLUTION = 256  # changes how big the map tiles are
 
-# default map view
+# default map view when no gps connection
 INITIAL_MAP_COORDS = [39.8283, -98.5795]
 INITIAL_MAP_ZOOM = 4
 

@@ -12,13 +12,14 @@ class MainMenu(CTkFrame):
     the class to represent the main menu of the dashboard
     """
 
-    def __init__(self, master, temp, touch_screen, **kwargs):
+    def __init__(self, master, temp, touch_screen, notification, **kwargs):
         """
         Initializes the main menu frame
 
         @param master: the parent widget
         @param temp: a StringVar to hold the temperature
         @param touch_screen: the touch screen device for listening to touch events
+        @param notification: a string var to display notifications from the various menus
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
@@ -52,6 +53,10 @@ class MainMenu(CTkFrame):
         time_label = CTkLabel(self, textvariable=self.time, font=("Arial", 20))
         time_label.grid(row=2, column=1, sticky="s", pady=20)
         self.update_time()
+
+        # places notification label
+        notification_label = CTkLabel(self, textvariable=notification, font=("Arial", 15))
+        notification_label.grid(row=2, column=2, columnspan=5, sticky="sew", pady=20)
 
         # places temperature label
         temp_label = CTkLabel(self, textvariable=temp, font=("Arial", 20))

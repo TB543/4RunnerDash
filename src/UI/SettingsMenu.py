@@ -10,12 +10,13 @@ class SettingsMenu(CTkFrame):
     Settings menu for the 4Runner Dash application.
     """
 
-    def __init__(self, master, appearance_manager, **kwargs):
+    def __init__(self, master, appearance_manager, release_api, **kwargs):
         """
         Initializes the settings menu frame.
         
         @param master: the parent widget
         @param appearance_manager: a reference to the apps appearance manager
+        @param release_api: a reference to the apps release api
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
@@ -40,11 +41,13 @@ class SettingsMenu(CTkFrame):
         scale_button = CTkButtonFixed(self, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=appearance_manager.cycle_scaling()))
         shell_button = CTkButtonFixed(self, text="🖥️", font=("Arial", 100), command=self.open_shell)
         back_button = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
+        update_button = TSCTkButton(self, text="Update Software", font=("Arial", 20), command=release_api.update)
         appearance_button.grid(row=1, column=1)
         theme_button.grid(row=1, column=3)
         scale_button.grid(row=1, column=5)
         shell_button.grid(row=1, column=7)
         back_button.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
+        update_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew") if release_api.update_available() else None
 
         # sets the grid layout
         self.grid_rowconfigure(0, weight=1, uniform="row0")

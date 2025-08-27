@@ -20,10 +20,8 @@ search for POI like gas stations in maps
 reroute and start route race condition
 add dashcam
 add dead reckoning - updating gps position based on speed and heading when no satellite lock
-update readme to include the rust install - combine install dependencies with install maps
-odm oil/filter/trans change warning on main menu
+obd oil/filter/trans change warning on main menu
 add things that need to be changed based on time (inspection, radiator fluid, etc)
-update readme for working hardware
 tts announces decimals wrong 12.08 = "12.8"
 reroute is expensive and will keep trying if still to far from road
 car in reverse = negative miles?
@@ -32,6 +30,4 @@ make boot-up faster at least for UI
 make time label based pihat clock
 add error logging
 make display sleep non blocking
-software update notification on UI
 display patchnotes on update
-install intermediate updates too

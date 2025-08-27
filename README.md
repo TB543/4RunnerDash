@@ -2,18 +2,23 @@
 
 ## Hardware List
 - [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)
-    - [cooling fan](https://www.raspberrypi.com/products/active-cooler/) and [case](https://www.raspberrypi.com/products/raspberry-pi-5-case/) recommended.
+    - [Raspberry Pi SD Card](https://www.raspberrypi.com/products/sd-cards/) 
+    - [Cooling fan](https://www.raspberrypi.com/products/active-cooler/) and [Case](https://www.raspberrypi.com/products/raspberry-pi-5-case/) recommended
 
-- [Raspberry Pi SD Card](https://www.raspberrypi.com/products/sd-cards/) (128 GB) minimum.
+- Raspberry Pi USB connections
+    - [External Storage](https://www.amazon.com/BUFFALO-External-SSD-USB-%E2%80%8E%E2%80%8ESSD-PUT1-0U3B/dp/B0932C6G8Z?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&gQT=1&th=1) for map data (can buy larger storage for more map data or ignore if you bought a large enough [Raspberry Pi SD Card](https://www.raspberrypi.com/products/sd-cards/))
+    - [OBD Scanner](https://www.amazon.com/dp/B005ZWM0R4?ref=ppx_yo2ov_dt_b_fed_asin_title)
 
-- [External Storage](https://www.amazon.com/BUFFALO-External-SSD-USB-%E2%80%8E%E2%80%8ESSD-PUT1-0U3B/dp/B093275Z7V?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&smid=ATVPDKIKX0DER&gQT=1&th=1) for map data (can buy larger storage for more map data).
+- [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5) with hardware:
+    - [Additional AUX_OUT cable connection](https://thepihut.com/products/4-way-molex-nano-fit-pigtail)
+    - [Ribbon Cable](https://www.amazon.com/dp/B0DQ4X6QP4?ref=ppx_yo2ov_dt_b_fed_asin_title) (only needed if you have a [cooling fan](https://www.raspberrypi.com/products/active-cooler/) and/or [case](https://www.raspberrypi.com/products/raspberry-pi-5-case/))
+    - [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title)
 
 - [Touch Screen Display](https://www.amazon.com/Waveshare-7inch-Capacitive-Raspberry-BeagleBone/dp/B01HPV7KL8?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A50C560NZEBBE&gQT=2)
+    - [HDMI Cable](https://www.amazon.com/dp/B07R9RXWM5?ref=ppx_yo2ov_dt_b_fed_asin_title) and [Power/Data Cable](https://www.amazon.com/dp/B096YDCSCW?ref=ppx_yo2ov_dt_b_fed_asin_title) (Bent to fit in dashboard)
 
-- [GPS Module](https://www.amazon.com/dp/B07PRDY6DS?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)
-- [OBD Scanner](https://www.amazon.com/dp/B0D75PQ6TV?ref=ppx_yo2ov_dt_b_fed_asin_title)
-
-- [Pi Audio Output](https://www.amazon.com/dp/B09MGDDZWF?ref=ppx_yo2ov_dt_b_fed_asin_title)
+- [GPS Module](https://www.amazon.com/dp/B0F2DP1189?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) and [Antenna](https://www.amazon.com/dp/B083D59N55?ref=ppx_yo2ov_dt_b_fed_asin_title)
+    - [Ground Plate](https://www.amazon.com/dp/B07PJLC74M?ref=ppx_yo2ov_dt_b_fed_asin_title) recommended
 
 - [Car Amp Head Unit Connection](https://www.amazon.com/dp/B0DQTPDZK4?ref=ppx_yo2ov_dt_b_fed_asin_title)
     - **Note:** This is for a 2002 Toyota 4Runner, make sure you buy the correct connection for your car.
@@ -21,6 +26,7 @@
 - Additional audio converters
     - [AUX to RCA](https://www.amazon.com/dp/B0BRYD7NJ6?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)
     - [RCA Splitters](https://www.amazon.com/dp/B0916WWN9Z?ref=ppx_yo2ov_dt_b_fed_asin_title)
+    - [Ground Loop Isolator](https://www.amazon.com/dp/B019393MV2?ref=ppx_yo2ov_dt_b_fed_asin_title) (only needed if you have issues with static)
 
 ## Software Installation Prerequisites
 - Download [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
@@ -59,9 +65,9 @@
     sudo apt install -y git
     ```
 
-2. Clone the 4RunnerDash repository:
+2. Clone the latest release from the 4RunnerDash repository:
     ```bash
-    git clone https://github.com/TB543/4RunnerDash
+    git clone --branch $(curl -s https://api.github.com/repos/TB543/4RunnerDash/releases/latest | grep -Po '"tag_name": "\K.*?(?=")') https://github.com/TB543/4RunnerDash
     ```
 
 3. Change into the resources directory:
@@ -90,7 +96,7 @@
 
     >**Note:** If you set up ssh keys and ssh from desktop it will be easier to copy and paste.
 
-5. Next you will need to plug in your [External Storage](https://www.amazon.com/BUFFALO-External-SSD-USB-%E2%80%8E%E2%80%8ESSD-PUT1-0U3B/dp/B093275Z7V?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&smid=ATVPDKIKX0DER&gQT=1&th=1) and run:
+5. Next you will need to plug in your [External Storage](https://www.amazon.com/BUFFALO-External-SSD-USB-%E2%80%8E%E2%80%8ESSD-PUT1-0U3B/dp/B0932C6G8Z?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&gQT=1&th=1) and run:
     ```bash
     ./format_drive.sh
     ```
@@ -113,6 +119,7 @@
     ```bash
     ./install_dependencies.sh
     ```
+    it will first install rust. You can proceed with standard installation by pressing enter when prompted
 
 7. Lastly, run the map install script:
     ```bash
@@ -139,25 +146,28 @@
 ## Hardware Installation
 >**Note:** Make sure software installation has completed before continuing to hardware installation.
 
-1. Connect the [GPS Module](https://www.amazon.com/dp/B07PRDY6DS?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) to the Pi:
-    - Red -> [GPIO-4](https://pinout.xyz/pinout/5v_power)
-    - Black -> [GPIO-6](https://pinout.xyz/pinout/ground)
-    - Green -> [GPIO-8](https://pinout.xyz/pinout/pin8_gpio14/)
-    - White -> [GPIO-10](https://pinout.xyz/pinout/pin10_gpio15/)
+1. Connect the [Ribbon Cable](https://www.amazon.com/dp/B0DQ4X6QP4?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) and the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title)
 
-2. Remove the car radio. [Here is a guide for a 2002 Toyota 4Runner](https://www.youtube.com/watch?v=AbdoAcwrbJ8) (Only Remove the radio, not the amp).
+2. Connect the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5)
 
-3. Connect your [Car Amp Head Unit Connection](https://www.amazon.com/dp/B0DQTPDZK4?ref=ppx_yo2ov_dt_b_fed_asin_title) and plug in the additional audio converters to the connection.
+3. Connect the [GPS Module](https://www.amazon.com/dp/B0F2DP1189?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) to the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title):
+    - VCC -> [GPIO-4](https://pinout.xyz/pinout/5v_power)
+    - Ground -> [GPIO-6](https://pinout.xyz/pinout/ground)
+    - TX -> [GPIO-10](https://pinout.xyz/pinout/pin10_gpio15/)
+    - RX connection is not needed
+4. Remove the car radio. [Here is a guide for a 2002 Toyota 4Runner](https://www.youtube.com/watch?v=AbdoAcwrbJ8) (Only Remove the radio, not the amp)
 
-4. Plug in your [OBD Scanner](https://www.amazon.com/dp/B0D75PQ6TV?ref=ppx_yo2ov_dt_b_fed_asin_title) to the OBD port on your car (usually bottom right of the steering wheel) and wire the USB connection into the slot where the radio used to be.
+5. Connect your [Car Amp Head Unit Connection](https://www.amazon.com/dp/B0DQTPDZK4?ref=ppx_yo2ov_dt_b_fed_asin_title) and wire everything as follows:
+    - 12V const, 12V switch, ILUM and Grounds to [CarPiHAT Main Loom](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344)
+    - AMP control and Grounds to [CarPiHat 12V Outputs](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344)
+    - Stereo audio to AUX cable with audio cables
+    - AUX Cable to to [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5) DAC port
 
-5. [External Storage](https://www.amazon.com/BUFFALO-External-SSD-USB-%E2%80%8E%E2%80%8ESSD-PUT1-0U3B/dp/B093275Z7V?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&smid=ATVPDKIKX0DER&gQT=1&th=1) should already be plugged into the Pi USB slot from the software installation step. If not plug it into the same slot it was in when you ran the software installation.
+6. Plug in your [OBD Scanner](https://www.amazon.com/dp/B005ZWM0R4?ref=ppx_yo2ov_dt_b_fed_asin_title) to the OBD port on your car (usually bottom right of the steering wheel) and wire the USB connection into the slot where the radio used to be and into the [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) along with all of the other usb connections
 
-6. Plug in the [Pi Audio Output](https://www.amazon.com/dp/B09MGDDZWF?ref=ppx_yo2ov_dt_b_fed_asin_title), the [OBD Scanner](https://www.amazon.com/dp/B0D75PQ6TV?ref=ppx_yo2ov_dt_b_fed_asin_title), and the [Touch Screen Display](https://www.amazon.com/Waveshare-7inch-Capacitive-Raspberry-BeagleBone/dp/B01HPV7KL8?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A50C560NZEBBE&gQT=2) power to the Pi USB slots.
+7. Connect the [Antenna](https://www.amazon.com/dp/B083D59N55?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [GPS Module](https://www.amazon.com/dp/B0F2DP1189?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) and mount the antenna on the [Ground Plate](https://www.amazon.com/dp/B07PJLC74M?ref=ppx_yo2ov_dt_b_fed_asin_title) and wire to the roof of the car.
 
-7. Connect the power and mico-HDMI to the [Touch Screen Display](https://www.amazon.com/Waveshare-7inch-Capacitive-Raspberry-BeagleBone/dp/B01HPV7KL8?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A50C560NZEBBE&gQT=2).
-
-8. Connect the Pi power to the cigarette lighter port, shove everything into the dashboard and put the touch screen at the front of the dash (you might have to jerry-rig the screen into the old radio connections if it isn't a perfect fit).
+8. Connect the [HDMI Cable](https://www.amazon.com/dp/B07R9RXWM5?ref=ppx_yo2ov_dt_b_fed_asin_title) and [Power/Data Cable](https://www.amazon.com/dp/B096YDCSCW?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [Touch Screen Display](https://www.amazon.com/Waveshare-7inch-Capacitive-Raspberry-BeagleBone/dp/B01HPV7KL8?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A50C560NZEBBE&gQT=2) and shove everything into the radio slot (might have to rig a screen mount)
 
 ## Album Art Handling
 

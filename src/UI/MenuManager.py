@@ -1,4 +1,5 @@
 from Connections.GPIOAPI import GPIOAPI
+from Connections.ReleaseAPI import ReleaseAPI
 from customtkinter import CTk, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
@@ -33,6 +34,9 @@ class MenuManager(CTk):
         self.shutdown_lock = Lock()
         GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, self.shutdown_lock)
         self.active_menu = "main"
+        release_api = ReleaseAPI(lambda: self.destroy)
+        temp = StringVar(self, " °F")
+        notification = StringVar(self, "Software Update Available in Settings" if release_api.update_available() else "")
 
         # gets the touch screen device
         device_name = environ["TOUCH_SCREEN"]
@@ -43,13 +47,12 @@ class MenuManager(CTk):
                 break
 
         # creates the various menus
-        temp = StringVar(self, " °F")
         self.menus = {
-            "main": MainMenu(self, temp, touch_screen),
+            "main": MainMenu(self, temp, touch_screen, notification),
             "maps": MapsMenu(self),
             "music": MusicMenu(self),
             "obd": OBDMenu(self, temp, self.appearance_manager),
-            "settings": SettingsMenu(self, self.appearance_manager)
+            "settings": SettingsMenu(self, self.appearance_manager, release_api)
         }
         self.change_menu(self.active_menu)
 
