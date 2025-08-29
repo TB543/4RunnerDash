@@ -9,6 +9,7 @@ sudo apt install -y cmake libboost-all-dev libshp-dev rapidjson-dev liblua5.3-de
 sudo apt install -y openjdk-17-jdk postgresql postgis osm2pgsql libicu-dev acl docker.io # navigation system
 
 # moves postgresql database to correct location
+mkdir -p ../src/AppData/map_data
 DIR=$(realpath ../src/AppData/map_data/postgresql)
 while [ "$DIR" != "/" ]; do
     sudo setfacl -m u:postgres:x "$DIR"
