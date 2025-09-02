@@ -60,7 +60,7 @@ class RouteManager:
         self.tree = STRtree(segments)
 
         # callback functions set on start
-        self.gps_callback = None
+        self.gps_callback = None if not hasattr(self, "gps_callback") else self.gps_callback
         self.eta_callback = None
         self.time_callback = None
         self.miles_callback = None
