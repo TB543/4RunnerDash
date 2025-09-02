@@ -13,7 +13,7 @@ class RouteManager:
     tts = TTS("tts_models/en/ljspeech/speedy-speech")
     ANNOUNCEMENTS = {
         1609.344: "In 1 mile",  # note: keys here are in meters, ie 1609.344 meters is 1 mile
-        152.4: "In 500 feet"
+        304.8: "In 1000 feet"
     }
 
     def __init__(self, lat, lon, name, navigation):
