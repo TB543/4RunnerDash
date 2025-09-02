@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# installs map database
+mkdir -p ../src/AppData/map_data
+wget -O ../src/AppData/map_data/map.osm.pbf https://download.geofabrik.de/north-america/us-latest.osm.pbf # only US, feel free to change to a different region if needed
+
 # configures postgresql
 sudo -u postgres /usr/lib/postgresql/15/bin/initdb -D ../src/AppData/map_data/postgresql
 sudo systemctl restart postgresql
@@ -16,10 +20,6 @@ cd ..
 ./get-coastline.sh
 ./get-landcover.sh
 cd ../../../resources
-
-# installs map database
-mkdir -p ../src/AppData/map_data
-wget -O ../src/AppData/map_data/map.osm.pbf https://download.geofabrik.de/north-america/us-latest.osm.pbf # only US, feel free to change to a different region if needed
 
 # creates swapfile for more memory
 sudo fallocate -l 64G swapfile
