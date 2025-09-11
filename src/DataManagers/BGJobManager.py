@@ -44,7 +44,7 @@ class BGJobManager:
         @return a future object to access the results of the job when completed
         """
 
-        future = self.pool.submit(self.job, title, artist, album)
+        future = self.pool.submit(lambda: self.job(title, artist, album))
         future.add_done_callback(lambda f: self.attempt_query_pending())
         return future
 

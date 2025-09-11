@@ -1,5 +1,5 @@
 from requests import get
-from os import mkdir, execv
+from os import mkdir, execv, remove
 from shutil import rmtree
 from subprocess import check_output
 from datetime import datetime
@@ -8,15 +8,17 @@ from datetime import datetime
 class ReleaseAPI:
     """
     a class to check for software updates and handle updates
-    a new version is detected when there is a new release on the github releases page
+    a new version is detected when there is a new release on the GitHub releases page
 
     if a release needs to perform any installation steps aside from pulling the latest code
-    an asset named update.sh should be included in the release with the required install steps
+    an asset named update.sh should be included in the release with the required installation steps
     which will automatically by run by the installer
 
     all assets will be downloaded to ../patches/<release_tag> and can be accessed by the update.sh script
     which will run in the ../patches/<release_tag> directory
     also note that the patches directory will be deleted after the update is complete
+
+    ** note that the directories above are relative to the src directory the program runs in **
     """
 
     REPO_URL = "https://api.github.com/repos/TB543/4RunnerDash/releases"
@@ -32,7 +34,7 @@ class ReleaseAPI:
         self.callback = shutdown
         current_release = check_output(["git", "describe", "--tags", "--abbrev=0"]).decode("utf-8").strip()
         
-        # pulls the latest release from github
+        # pulls the latest release from GitHub
         try:
             releases = get(
                 ReleaseAPI.REPO_URL,
@@ -94,12 +96,19 @@ class ReleaseAPI:
 
         # downloads required files
         try:
-            for release in self.releases:
-                self.download_patch(release) if release["assets"] else None
+            with open("AppData/patch_notes.txt", "w") as f:
+                for release in self.releases:
+                    self.download_patch(release) if release["assets"] else None
+
+                    # generates patch notes
+                    f.write(f"============================== {release['name']} ==============================\n")
+                    f.write(f"{release['body']}\n")
+                    f.write("\n\n")
         
         # removes new version if error occurs
-        except Exception as e:
+        except:
             rmtree(f"../patches")
+            remove("AppData/patch_notes.txt")
             return
 
         # installs the new version

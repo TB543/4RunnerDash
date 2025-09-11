@@ -29,5 +29,5 @@ add temperature module?
 make boot-up faster at least for UI
 make time label based pihat clock
 add error logging
-make display sleep non blocking
-display patchnotes on update
+announce bluetooth device connected
+load album art on device connect

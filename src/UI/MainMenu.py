@@ -1,8 +1,10 @@
-from customtkinter import CTkFrame, CTkLabel, StringVar
+from customtkinter import CTkFrame, CTkLabel, StringVar, CTkScrollableFrame
 from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
 from subprocess import run
 from datetime import datetime
+from os.path import exists
+from os import remove
 
 
 class MainMenu(CTkFrame):
@@ -10,7 +12,7 @@ class MainMenu(CTkFrame):
     the class to represent the main menu of the dashboard
     """
 
-    def __init__(self, master, temp, notification, fg_job_manager, **kwargs):
+    def __init__(self, master, temp, notification, fg_job_manager, scale, **kwargs):
         """
         Initializes the main menu frame
 
@@ -18,6 +20,7 @@ class MainMenu(CTkFrame):
         @param temp: a StringVar to hold the temperature
         @param notification: a string var to display notifications from the various menus
         @param fg_job_manager: an instance of the foreground job manager for display sleep jobs
+        @param scale: the appearance scale, determines the wrap length of the patch notes
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
@@ -69,6 +72,28 @@ class MainMenu(CTkFrame):
         self.grid_columnconfigure(6, weight=1)
         self.grid_columnconfigure(8, weight=1)
 
+        # gets patch notes
+        if exists("AppData/patch_notes.txt"):
+            wraplength = 725 * (1 / scale)
+            with open("AppData/patch_notes.txt") as f:
+                patch_notes = f.read()
+
+            # creates widgets to display patch notes
+            patch_notes_frame = CTkFrame(self, border_width=2)
+            header = CTkLabel(patch_notes_frame, text="Patch Notes:", font=("Arial", 20))
+            close_patch_notes = TSCTkButton(patch_notes_frame, text="x", width=12, font=("Arial", 20), command=lambda: MainMenu.close_patch_notes(patch_notes_frame))
+            patch_notes_container = CTkScrollableFrame(patch_notes_frame)
+            patch_notes = CTkLabel(patch_notes_container, text=patch_notes, justify="left", wraplength=wraplength, font=("Arial", 10))
+
+            # places patch notes widgets
+            self.after(0, lambda: patch_notes.pack(side="left"))
+            header.grid(row=0, column=0, padx=15)
+            close_patch_notes.grid(row=0, column=1, pady=5, padx=5)
+            patch_notes_container.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=2, pady=(0, 2))
+            patch_notes_frame.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center")
+            patch_notes_frame.rowconfigure(1, weight=1)
+            patch_notes_frame.columnconfigure(0, weight=1)
+
     def update_time(self):
         """
         updates the time display label and queues the next update just after the minute change
@@ -96,3 +121,12 @@ class MainMenu(CTkFrame):
 
         self.winfo_toplevel().deiconify()
         run(["xrandr", "--output", "HDMI-1", "--auto", "--output", "HDMI-2", "--auto"])
+
+    @staticmethod
+    def close_patch_notes(patch_notes_frame):
+        """
+        closes the patch notes popup and deletes the patch notes file so it does not show up next boot
+        """
+
+        patch_notes_frame.destroy()
+        remove("AppData/patch_notes.txt")
