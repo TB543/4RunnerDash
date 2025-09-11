@@ -159,4 +159,3 @@ class RouteManager:
         if self.gps_callback is not None:
             NavigationAPI.remove_gps_callback(self.gps_callback)
             self.gps_callback = None
-        

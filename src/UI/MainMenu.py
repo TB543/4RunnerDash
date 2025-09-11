@@ -2,12 +2,7 @@ from customtkinter import CTkFrame, CTkLabel, StringVar
 from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
 from subprocess import run
-from time import time
 from datetime import datetime
-try:
-    from evdev.ecodes import BTN_TOUCH
-except ModuleNotFoundError:
-    from Dev.Imports.evdev import *
 
 
 class MainMenu(CTkFrame):
@@ -15,19 +10,19 @@ class MainMenu(CTkFrame):
     the class to represent the main menu of the dashboard
     """
 
-    def __init__(self, master, temp, touch_screen, notification, **kwargs):
+    def __init__(self, master, temp, notification, fg_job_manager, **kwargs):
         """
         Initializes the main menu frame
 
         @param master: the parent widget
         @param temp: a StringVar to hold the temperature
-        @param touch_screen: the touch screen device for listening to touch events
         @param notification: a string var to display notifications from the various menus
+        @param fg_job_manager: an instance of the foreground job manager for display sleep jobs
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
         super().__init__(master, **kwargs)
-        self.touch_screen = touch_screen
+        self.fg_job_manager = fg_job_manager
 
         # creates the labels for the buttons
         maps_label = CTkLabel(self, text="Maps", font=("Arial", 20))
@@ -85,24 +80,19 @@ class MainMenu(CTkFrame):
 
     def sleep(self):
         """
-        Puts the display to sleep by hiding the main window and turning off the HDMI output.
-        It waits for a touch event to wake up the display, then re-enables the HDMI
-        output and shows the main window again.
+        Puts the display to sleep by hiding the main window and turning off the HDMI output and queues a foreground job
+        to wait for the wake-up signal from the display
         """
 
-        # Hide the main window and turn off the HDMI output
+        # hide the main window and turn off the HDMI output
         self.winfo_toplevel().withdraw()
         run(["xrandr", "--output", "HDMI-1", "--off", "--output", "HDMI-2", "--off"])
+        self.fg_job_manager.queue_display_sleep(lambda: self.after(0, self.wake))
 
-        # Wait for next touch event
-        start = time()
-        for event in self.touch_screen.read_loop():
-            if event.code == BTN_TOUCH and event.value == 1 and event.timestamp() > start:
-                break
-        
-        # Re-enable the HDMI output and show the main window again after next release event
-        for event in self.touch_screen.read_loop():
-            if event.code == BTN_TOUCH and event.value == 0:
-                self.winfo_toplevel().deiconify()
-                run(["xrandr", "--output", "HDMI-1", "--auto", "--output", "HDMI-2", "--auto"])
-                break
+    def wake(self):
+        """
+        wakes the display after a touch event by then re-enabling the HDMI output and showing the main window again.
+        """
+
+        self.winfo_toplevel().deiconify()
+        run(["xrandr", "--output", "HDMI-1", "--auto", "--output", "HDMI-2", "--auto"])

@@ -1,7 +1,7 @@
 from time import sleep
 from subprocess import run, PIPE
 from time import strftime, gmtime
-from DataManagers.AlbumJobManager import AlbumJobManager
+from DataManagers.BGJobManager import BGJobManager
 try:
     from pydbus import SystemBus
 except ModuleNotFoundError:
@@ -23,7 +23,7 @@ class BluezAPI:
         # initializes the fields
         self.bus = SystemBus()
         self.player = None
-        self.art_manager = AlbumJobManager("AppData/default_album_art.png")
+        self.art_manager = BGJobManager("AppData/default_album_art.png")
         self._title = None
         self._artist = None
         self._playback_ratio = 0

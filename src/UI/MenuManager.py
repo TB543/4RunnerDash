@@ -4,6 +4,7 @@ from customtkinter import CTk, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
 from os import environ
+from DataManagers.FGJobManager import FGJobManager
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
 from UI.MusicMenu import MusicMenu
@@ -29,6 +30,14 @@ class MenuManager(CTk):
         @param kwargs: additional keyword arguments for CTk
         """
 
+        # gets the touch screen device
+        device_name = environ["TOUCH_SCREEN"]
+        touch_screen = None  # created here because will be used by map menu for custom map touch screen zoom later
+        for path in list_devices():
+            touch_screen = InputDevice(path)
+            if device_name == touch_screen.name:
+                break
+
         # initializes the window
         super().__init__(**kwargs)
         self.configure(cursor="none")
@@ -38,20 +47,13 @@ class MenuManager(CTk):
         GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, self.shutdown_lock)
         self.active_menu = "main"
         release_api = ReleaseAPI(lambda: self.destroy)
+        fg_job_manager = FGJobManager(touch_screen)  # will be used by maps menu for other fg jobs later
         temp = StringVar(self, " °F")
         notification = StringVar(self, "Software Update Available in Settings" if release_api.update_available() else "")
 
-        # gets the touch screen device
-        device_name = environ["TOUCH_SCREEN"]
-        touch_screen = None
-        for path in list_devices():
-            touch_screen = InputDevice(path)
-            if device_name == touch_screen.name:
-                break
-
         # creates the various menus
         self.menus = {
-            "main": MainMenu(self, temp, touch_screen, notification),
+            "main": MainMenu(self, temp, notification, fg_job_manager),
             "maps": MapsMenu(self),
             "music": MusicMenu(self),
             "obd": OBDMenu(self, temp, self.appearance_manager),

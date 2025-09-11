@@ -60,7 +60,7 @@ class ReleaseAPI:
     
     def download_patch(self, patch):
         """
-        downloads all of the files for a given patch
+        downloads all the files for a given patch
 
         @param patch: the release patch to download
         """

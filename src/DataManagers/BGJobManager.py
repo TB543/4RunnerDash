@@ -9,9 +9,9 @@ from PIL.ImageDraw import Draw
 from threading import Lock
 
 
-class AlbumJobManager:
+class BGJobManager:
     """
-    a class to handle api request threads
+    a class to handle background api request threads
     """
 
     # initializes global fields
@@ -45,7 +45,7 @@ class AlbumJobManager:
         """
 
         future = self.pool.submit(self.job, title, artist, album)
-        future.add_done_callback(lambda future: self.attempt_query_pending())
+        future.add_done_callback(lambda f: self.attempt_query_pending())
         return future
 
     def job(self, title, artist, album=None):
