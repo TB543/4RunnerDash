@@ -3,7 +3,6 @@ from Connections.ReleaseAPI import ReleaseAPI
 from customtkinter import CTk, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
-from evdev import list_devices, InputDevice
 from os import environ
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
@@ -12,6 +11,10 @@ from UI.MapsMenu import MapsMenu
 from UI.OBDMenu import OBDMenu
 from threading import Lock
 from subprocess import run
+try:
+    from evdev import list_devices, InputDevice
+except ModuleNotFoundError:
+    from Dev.Imports.evdev import *
 
 
 class MenuManager(CTk):
@@ -83,5 +86,7 @@ class MenuManager(CTk):
         overrides the destroy method to also ensure the backend is stopped before shutdown
         """
 
-        run(["../stop_backend.sh"])
-        return super().destroy()
+        try:
+            run(["../stop_backend.sh"])
+        finally:
+            return super().destroy()

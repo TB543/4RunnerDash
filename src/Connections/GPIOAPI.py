@@ -1,7 +1,10 @@
-from RPi.GPIO import setmode, BCM, setup, IN, OUT, HIGH, add_event_detect, FALLING, BOTH, input as read
 from subprocess import run
 from AppData import IGNORE_SHUTDOWN
 from time import sleep
+try:
+    from RPi.GPIO import setmode, BCM, setup, IN, OUT, HIGH, add_event_detect, FALLING, BOTH, input as read
+except ModuleNotFoundError:
+    from Dev.Imports.GPIO import *
 
 
 class GPIOAPI:
@@ -9,7 +12,7 @@ class GPIOAPI:
     a class to handle communication with the GPIO pins. implements the following:
         -> safe shutdown
         -> amp control
-        -> system appearance mode detection (based on car head lights)
+        -> system appearance mode detection (based on car headlights)
     """
 
     # initializes gpio settings

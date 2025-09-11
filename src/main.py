@@ -1,7 +1,10 @@
 from UI.MenuManager import MenuManager
 from threading import Thread
-from Lib.BluezAgent import my_app as start_bluetooth
 from Dev.KeyboardController import KeyboardController
+try:
+    from Lib.BluezAgent import my_app as start_bluetooth
+except ModuleNotFoundError:
+    from Dev.Imports.BluezAgent import *
 
 
 if __name__ == "__main__":

@@ -1,8 +1,11 @@
-from pydbus import SystemBus
 from time import sleep
 from subprocess import run, PIPE
 from time import strftime, gmtime
 from DataManagers.AlbumJobManager import AlbumJobManager
+try:
+    from pydbus import SystemBus
+except ModuleNotFoundError:
+    from Dev.Imports.pydbus import *
 
 
 class BluezAPI:
@@ -258,13 +261,15 @@ class BluezAPI:
     def volume(self):
         """
         attempts to get the current volume
-        attempts to update the player if it fails
 
-        @return: the current volume
+        @return: the current volume or 0 if the command fails
         """
 
-        command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
-        result = command.stdout
-        volume = result.split("%")
-        volume = volume[0].split(" ")
-        return int(volume[-1])
+        try:
+            command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
+            result = command.stdout
+            volume = result.split("%")
+            volume = volume[0].split(" ")
+            return int(volume[-1])
+        except:
+            return 0

@@ -1,0 +1,1 @@
+start_bluetooth = lambda *args, **kwargs: None

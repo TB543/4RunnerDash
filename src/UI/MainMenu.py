@@ -3,8 +3,11 @@ from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
 from subprocess import run
 from time import time
-from evdev.ecodes import BTN_TOUCH
 from datetime import datetime
+try:
+    from evdev.ecodes import BTN_TOUCH
+except ModuleNotFoundError:
+    from Dev.Imports.evdev import *
 
 
 class MainMenu(CTkFrame):

@@ -19,8 +19,13 @@ class OBDAPI(Async):
             ** note: all of these callbacks take 1 parameter for the new value **
         """
 
-        # initializes the class and its fields
-        super().__init__()
+        # attempts to connect to OBD scanner, does nothing if fails
+        try:
+            super().__init__()
+        except:
+            super().__init__("No OBD Connection")
+
+        # initializes fields
         self.root = root
         self.mpg = mpg
         self.miles_until_empty = miles_until_empty

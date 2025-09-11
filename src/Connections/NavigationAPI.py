@@ -35,9 +35,14 @@ class NavigationAPI:
         reads the gps data and updates the gps coords attribute of the class
         """
 
+        # attempts to open gps serial port, defaults to dev mode if fails
+        try:
+            gps = Serial("/dev/ttyAMA0")
+        except:
+            gps = None
+
         # changes coords to global initial coords when in dev mode
-        gps = Serial("/dev/ttyAMA0")
-        while len(argv) == 2 and argv[1] == "dev" and NavigationAPI.running:
+        while ((not gps) and NavigationAPI.running) or (len(argv) == 2 and argv[1] == "dev" and NavigationAPI.running):
             sleep(1)
             for callback in NavigationAPI.callbacks[:]:
                 try:
@@ -69,7 +74,8 @@ class NavigationAPI:
                     except:
                         continue
 
-        gps.close()
+        if gps:
+            gps.close()
 
     TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
     NOMINATIM_URL = "http://localhost:8088/search"
