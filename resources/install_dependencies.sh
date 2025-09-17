@@ -29,7 +29,7 @@ wget -O ../src/Lib/graphhopper.jar https://github.com/graphhopper/graphhopper/re
 
 # installs tileserver and config files
 sudo systemctl enable --now docker
-sudo docker pull maptiler/tileserver-gl:latest
+sudo docker pull maptiler/tileserver-gl:v5.3.1
 wget https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/test_data.zip
 unzip test_data.zip -d ../src/Lib/tileserver
 rm test_data.zip
