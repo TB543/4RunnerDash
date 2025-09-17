@@ -31,3 +31,4 @@ make time label based pihat clock
 add error logging
 announce bluetooth device connected
 load album art on device connect
+use stable tilemaker release
