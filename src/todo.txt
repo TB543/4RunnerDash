@@ -31,3 +31,5 @@ load album art on device connect
 automate insurancec card update
 update readme for new hardware
 use stable tilemaker release
+add i2c config in readme
+nomantium no server?

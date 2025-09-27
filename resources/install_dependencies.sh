@@ -22,7 +22,7 @@ sudo sed -i.bak "s|^data_directory *=.*|data_directory = '$(realpath ../src/AppD
 # adds rust to shell and installs python modules
 . "$HOME/.cargo/env"
 python3 -m venv ../venv --system-site-packages
-../venv/bin/pip install -r requirements.txt
+../venv/bin/pip install -r requirements.txt --no-deps
 
 # installs graphhopper (used for gps directions)
 wget -O ../src/Lib/graphhopper.jar https://github.com/graphhopper/graphhopper/releases/download/10.2/graphhopper-web-10.2.jar

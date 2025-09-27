@@ -2,7 +2,7 @@ from subprocess import run, PIPE, Popen
 from AppData import MAX_VOLUME
 from time import sleep
 from sys import argv
-
+from dht11 import DHT11
 try:
     from RPi.GPIO import setmode, BCM, setup, IN, OUT, add_event_detect, FALLING, BOTH, input as read, output, PUD_UP
 except ModuleNotFoundError:
@@ -28,6 +28,8 @@ class GPIOAPI:
     setup(26, IN)
     setup(6, IN)
     setup(5, IN, pull_up_down=PUD_UP)
+
+    dht = DHT11(4)
 
     def __init__(self, shutdown, dimmer, lock):
         """

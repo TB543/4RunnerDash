@@ -1,7 +1,7 @@
 # pi screen settings
 PI_WIDTH = 1024  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
 PI_HEIGHT = 600
-FPS = 30
+FPS = 30  # how often to update music menu
 
 # audio playback settings
 MAX_VOLUME = 100  # might take some adjusting based on cars sound system

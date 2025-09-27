@@ -4,7 +4,7 @@ from serial import Serial
 from threading import Thread
 from sys import argv
 from time import sleep
-# from bmm150 import BMM150, PresetMode
+from bmm150 import BMM150, PresetMode
 from math import atan2, degrees
 
 
@@ -55,7 +55,7 @@ class NavigationAPI:
         while NavigationAPI.running:
             line = gps.readline().decode('ascii', errors='ignore').strip().split(",") if gps.in_waiting > 0 else sleep(1)
             if line and line[0] == "$GPRMC" and line[2] == "A":
-                
+
                 # reads the useful data
                 lat = line[3]
                 lat_dir = line[4]
@@ -80,7 +80,7 @@ class NavigationAPI:
     TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
     NOMINATIM_URL = "http://localhost:8088/search"
     GRAPH_HOPPER_URL = "http://localhost:8989/route"
-    compass = None # BMM150(PresetMode.HIGHACCURACY)
+    compass = BMM150(PresetMode.HIGHACCURACY)
     gps_coords = (0, 0)
     callbacks = []
     thread = Thread(target=gps_read_loop, daemon=True)
@@ -110,13 +110,13 @@ class NavigationAPI:
 
         try:
             results = get(
-                NavigationAPI.NOMINATIM_URL, 
+                NavigationAPI.NOMINATIM_URL,
                 params={
                     "q": query
-                }, 
+                },
                 timeout=15
             ).json()
-            return "Error Processing Request, Try Again..." if "error" in results or isinstance(results, dict)  else results
+            return "Error Processing Request, Try Again..." if "error" in results or isinstance(results, dict) else results
 
         # handles errors
         except:
@@ -136,7 +136,7 @@ class NavigationAPI:
         try:
             return get(
                 NavigationAPI.GRAPH_HOPPER_URL,
-                params= {
+                params={
                     "point": [f"{cls.gps_coords[0]},{cls.gps_coords[1]}", f"{point[0]},{point[1]}"],
                     "profile": "car",
                     "points_encoded": "false"
