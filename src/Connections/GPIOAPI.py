@@ -1,8 +1,10 @@
-from subprocess import run
-from AppData import IGNORE_SHUTDOWN
+from subprocess import run, PIPE, Popen
+from AppData import MAX_VOLUME
 from time import sleep
+from sys import argv
+
 try:
-    from RPi.GPIO import setmode, BCM, setup, IN, OUT, HIGH, add_event_detect, FALLING, BOTH, input as read
+    from RPi.GPIO import setmode, BCM, setup, IN, OUT, add_event_detect, FALLING, BOTH, input as read, output, PUD_UP
 except ModuleNotFoundError:
     from Dev.Imports.GPIO import *
 
@@ -15,11 +17,17 @@ class GPIOAPI:
         -> system appearance mode detection (based on car headlights)
     """
 
-    # initializes gpio settings
+    # CarPiHat pins
     setmode(BCM)
     setup(12, IN)
     setup(13, IN)
-    setup(25, OUT, initial=HIGH)
+    setup(25, OUT, initial=1)
+    setup(27, OUT, initial=0)  # start off to avoid crackling on boot up
+
+    # volume rotary encoder pins
+    setup(26, IN)
+    setup(6, IN)
+    setup(5, IN, pull_up_down=PUD_UP)
 
     def __init__(self, shutdown, dimmer, lock):
         """
@@ -32,15 +40,47 @@ class GPIOAPI:
             this will prevent premature exit of the program
         """
 
+        # volume control
+        command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
+        result = command.stdout
+        volume = result.split("%")
+        volume = volume[0].split(" ")
+        self.volume = int(volume[-1])
+        output(27, 1)  # amp on
+        add_event_detect(26, BOTH, lambda e: self.rotary_encoder_rotate(), bouncetime=2)
+        add_event_detect(5, BOTH, lambda e: self.rotary_encoder_press(), bouncetime=25)
+
         # shutdown command
         self.lock = lock
-        if not IGNORE_SHUTDOWN:
+        if len(argv) < 2 or argv[1] != "dev":
             add_event_detect(12, FALLING, lambda e: self.shutdown(shutdown))
             self.shutdown(shutdown) if read(12) == 0 else None
 
         # dimmer command
         add_event_detect(13, BOTH, lambda e: dimmer(read(13)))
         dimmer(read(13))
+
+    def rotary_encoder_rotate(self):
+        """
+        called when the volume rotary encoder is rotated. Adjusts volume accordingly.
+        """
+
+        clk = read(26)
+        dt = read(6)
+        if clk == dt and self.volume > 0:
+            self.volume -= 1
+            Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", "-1%"])
+        elif clk != dt and self.volume < MAX_VOLUME:
+            self.volume += 1
+            Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+1%"])
+
+    def rotary_encoder_press(self):
+        """
+        called when the volume rotary encoder is pressed
+        """
+
+        if read(5) == 0:
+            output(27, 0 if read(27) == 1 else 1)
 
     def shutdown(self, callback):
         """

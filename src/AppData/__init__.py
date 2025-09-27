@@ -1,6 +1,3 @@
-# ignores shutdown when car is off, used for development, best to leave as is
-IGNORE_SHUTDOWN = False
-
 # pi screen settings
 PI_WIDTH = 1024  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
 PI_HEIGHT = 600

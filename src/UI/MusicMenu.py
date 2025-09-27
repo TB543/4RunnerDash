@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
 from Dev.TSCTkButton import TSCTkButton
 from Connections.BluezAPI import BluezAPI
-from AppData import MAX_VOLUME, FPS
+from AppData import FPS
 
 
 class MusicMenu(CTkFrame):
@@ -46,9 +46,7 @@ class MusicMenu(CTkFrame):
         self.playback_ratio = DoubleVar(self)
         self.remaining_time = StringVar(self)
         self.player_status = StringVar(self)
-        self.volume = IntVar(self, self.api.volume)
         self.image_container = CTkLabel(music_container, text="", image=CTkImage(self.api.album_art, size=(200, 200)))
-        self.volume.trace_add("write", lambda *args: self.api.set_volume(self.volume.get()))
 
         # creates metadata
         title = CTkLabel(music_container, textvariable=self.title, height=15, font=("Arial", 12, "bold"), anchor="w")
@@ -62,12 +60,6 @@ class MusicMenu(CTkFrame):
         track_control = TSCTkButton(music_container, textvariable=self.player_status, command=self.api.track_control, width=75, height=35, font=("Arial", 15), corner_radius=float("inf"))
         next_track = TSCTkButton(music_container, text="▶▶", command=self.api.next_track, width=50, height=20, font=("Arial", 10), corner_radius=float("inf"))
 
-        # creates volume container
-        volume_container = CTkFrame(music_container, fg_color=self.cget("fg_color"))
-        volume_up = TSCTkButton(volume_container, text="🔊", command=lambda: self.volume.set(self.volume.get() + 5), width=17, height=15, font=("Arial", 15), corner_radius=float("inf"))
-        volume_slider = CTkSlider(volume_container, from_=0, to=MAX_VOLUME, variable=self.volume, orientation="vertical")
-        volume_down = TSCTkButton(volume_container, text="🔉", command=lambda: self.volume.set(self.volume.get() - 5 if self.volume.get() - 5 >= 0 else 0), width=17, height=15, font=("Arial", 15), corner_radius=float("inf"))
-
         # places metadata widgets
         self.image_container.grid(row=0, column=2, columnspan=3, pady=(0, 6))
         title.grid(row=1, column=1, columnspan=5, sticky="ew")
@@ -80,16 +72,6 @@ class MusicMenu(CTkFrame):
         previous_track.grid(row=4, column=2)
         track_control.grid(row=4, column=3)
         next_track.grid(row=4, column=4)
-
-        # places volume controls
-        volume_up.grid(row=0, column=1, sticky="s")
-        volume_slider.grid(row=1, column=1, pady=5)
-        volume_down.grid(row=2, column=1, sticky="n")
-        volume_container.rowconfigure(0, weight=1, uniform="row0")
-        volume_container.rowconfigure(2, weight=1, uniform="row0")
-        volume_container.columnconfigure(0, weight=1)
-        volume_container.columnconfigure(2, weight=1)
-        volume_container.grid(row=0, column=0, rowspan=5, sticky="nsew")
 
         # sets the grid layout of the container
         music_container.rowconfigure(0, weight=1)

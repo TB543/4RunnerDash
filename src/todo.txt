@@ -1,6 +1,3 @@
-# ======================================================== HARDWARE ========================================================
-wire amp on for when audio is playing
-
 # ======================================================== POLISHING ========================================================
 add way to reset miles when filled tank to get miles until empty
 add temp offset to account for engine tempcheck manual for actual values to change fluids
@@ -31,3 +28,5 @@ make time label based pihat clock
 add error logging
 announce bluetooth device connected
 load album art on device connect
+automate insurancec card update
+update readme for new hardware

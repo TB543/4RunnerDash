@@ -1,5 +1,4 @@
 from time import sleep
-from subprocess import run, PIPE
 from time import strftime, gmtime
 from DataManagers.BGJobManager import BGJobManager
 try:
@@ -12,7 +11,6 @@ class BluezAPI:
     """
     A class to communicate with the connected Bluetooth devices via bluetooth.
     handles playback controls and can retrieve information about current track and playback status.
-    additionally can handle volume controls
     """
 
     def __init__(self):
@@ -76,7 +74,7 @@ class BluezAPI:
                 if "org.bluez.MediaPlayer1" in interfaces:
                     self.player = self.bus.get("org.bluez", path)
                     return
-        
+
         except:
             self.player = None
 
@@ -86,7 +84,7 @@ class BluezAPI:
         """
 
         self.art_manager.shutdown()
-            
+
     # ========================================== PLAYBACK CONTROLS ==========================================
 
     def previous_track(self):
@@ -125,16 +123,6 @@ class BluezAPI:
         except:
             self.update_player()
 
-    @staticmethod
-    def set_volume(percent):
-        """
-        changes the volume to the specified value
-
-        @param percent: the volume percentage to update to 
-        """
-
-        run(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{percent}%"])
-        
     # ========================================== METADATA RETRIEVAL =========================================
 
     @property
@@ -160,13 +148,13 @@ class BluezAPI:
 
         @return: the artist of the current track
         """
-        
+
         try:
             self._artist = self.player.Track["Artist"]
         except:
             self.update_player()
         return self._artist
-    
+
     @property
     def album(self):
         """
@@ -179,13 +167,13 @@ class BluezAPI:
             return self.player.Track["Album"]
         except:
             return None
-        
+
     @property
     def album_art(self):
         """
         attempts to get the album art of the current track.
         only retrieves the art if the queued job has completed
-        additionally this method will only return the art for 
+        additionally this method will only return the art for
         the current track once to avoid repeat calling the expensive job
 
         @return: the album of the current track
@@ -196,7 +184,7 @@ class BluezAPI:
             art = self.art_job.result()
             self.art_job = None
         return art
-    
+
     @property
     def elapsed_time_str(self):
         """
@@ -256,20 +244,3 @@ class BluezAPI:
         except:
             self.update_player()
             return "▶"
-        
-    @property
-    def volume(self):
-        """
-        attempts to get the current volume
-
-        @return: the current volume or 0 if the command fails
-        """
-
-        try:
-            command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
-            result = command.stdout
-            volume = result.split("%")
-            volume = volume[0].split(" ")
-            return int(volume[-1])
-        except:
-            return 0

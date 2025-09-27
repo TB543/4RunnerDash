@@ -48,7 +48,7 @@ class ReleaseAPI:
             self.releases.sort(key=lambda release: datetime.strptime(release["published_at"], "%Y-%m-%dT%H:%M:%SZ"))
 
         # returns the current release if there is no internet connection
-        except Exception:
+        except:
             self.releases = None
 
     def update_available(self):
