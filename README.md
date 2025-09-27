@@ -1,5 +1,8 @@
 # 4RunnerDash Setup Guide for Raspberry Pi 5
 
+## Project Demo
+- https://youtu.be/KCUJW72areY
+
 ## Hardware List
 - [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/)
     - [Raspberry Pi SD Card](https://www.raspberrypi.com/products/sd-cards/) 

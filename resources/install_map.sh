@@ -46,4 +46,5 @@ cd ../resources
 # removes swapfile and shuts down system
 sudo swapoff swapfile
 rm -f swapfile
+rmdir tokenizer
 sudo shutdown

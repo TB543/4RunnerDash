@@ -30,3 +30,4 @@ announce bluetooth device connected
 load album art on device connect
 automate insurancec card update
 update readme for new hardware
+use stable tilemaker release
