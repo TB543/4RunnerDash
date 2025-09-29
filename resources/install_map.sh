@@ -11,7 +11,7 @@ sudo -u postgres createuser -s $(whoami)
 sudo -u postgres createuser www-data
 
 # installs tilemaker
-git clone https://github.com/systemed/tilemaker ../src/Lib/tilemaker
+git clone --branch v3.0.0 --single-branch https://github.com/systemed/tilemaker ../src/Lib/tilemaker
 mkdir ../src/Lib/tilemaker/build
 cd ../src/Lib/tilemaker/build
 cmake ..

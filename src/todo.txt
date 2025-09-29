@@ -1,6 +1,5 @@
 # ======================================================== POLISHING ========================================================
-add way to reset miles when filled tank to get miles until empty
-add temp offset to account for engine tempcheck manual for actual values to change fluids
+check manual for actual values to change fluids
 add commas for mile counters
 map pinch to zoom - make map take vector tiles and render them directly on the canvas for easy scaling - also makes it so dark mode can be applied to map
 add visuals for virtual keyboard for caps lock and shift and gray out blank keys
@@ -22,14 +21,15 @@ add things that need to be changed based on time (inspection, radiator fluid, et
 tts announces decimals wrong 12.08 = "12.8"
 reroute is expensive and will keep trying if still to far from road
 car in reverse = negative miles?
-add temperature module?
-make boot-up faster at least for UI
-make time label based pihat clock
-add error logging
 announce bluetooth device connected
 load album art on device connect
 automate insurancec card update
-update readme for new hardware
+nomantium no server?
+user set miles until change should not reset on update
+
 use stable tilemaker release
 add i2c config in readme
-nomantium no server?
+update readme for new hardware
+make boot-up faster at least for UI
+add error logging
+make time label based pihat clock
