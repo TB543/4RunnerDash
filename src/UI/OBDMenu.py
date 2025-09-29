@@ -9,12 +9,11 @@ class OBDMenu(CTkFrame):
     OBD scanner menu for the 4runner dashboard
     """
 
-    def __init__(self, master, temp, appearance_manager, **kwargs):
+    def __init__(self, master, appearance_manager, **kwargs):
         """
         Initializes the settings menu frame.
         
         @param master: the parent widget
-        @param temp: a StringVar to hold the temperature
         @param appearance_manager: a reference to the apps appearance manager
         @param kwargs: additional keyword arguments for CTkFrame
         """
@@ -45,7 +44,6 @@ class OBDMenu(CTkFrame):
             self,
             lambda m: self.after(0, lambda: mpg.set(m)),
             lambda e: self.after(0, lambda: miles_until_empty.set(e)),
-            lambda t: self.after(0, lambda: temp.set(t))
         )
 
         # creates widgets for mpg

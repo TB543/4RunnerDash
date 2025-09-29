@@ -1,4 +1,5 @@
 from customtkinter import CTkFrame, CTkLabel, StringVar, CTkScrollableFrame
+from Connections.GPIOAPI import GPIOAPI
 from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
 from subprocess import run
@@ -12,18 +13,18 @@ class MainMenu(CTkFrame):
     the class to represent the main menu of the dashboard
     """
 
-    def __init__(self, master, temp, notification, fg_job_manager, scale, **kwargs):
+    def __init__(self, master, notification, fg_job_manager, scale, **kwargs):
         """
         Initializes the main menu frame
 
         @param master: the parent widget
-        @param temp: a StringVar to hold the temperature
         @param notification: a string var to display notifications from the various menus
         @param fg_job_manager: an instance of the foreground job manager for display sleep jobs
         @param scale: the appearance scale, determines the wrap length of the patch notes
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
+        # initialize fields
         super().__init__(master, **kwargs)
         self.fg_job_manager = fg_job_manager
 
@@ -60,8 +61,10 @@ class MainMenu(CTkFrame):
         notification_label.grid(row=2, column=2, columnspan=5, sticky="sew", pady=20)
 
         # places temperature label
-        temp_label = CTkLabel(self, textvariable=temp, font=("Arial", 20))
+        self.temp = StringVar(self, f" °F")
+        temp_label = CTkLabel(self, textvariable=self.temp, font=("Arial", 20))
         temp_label.grid(row=2, column=7, sticky="s", pady=20)
+        self.update_temp()
 
         # sets the grid layout
         self.grid_rowconfigure(0, weight=1, uniform="row0")
@@ -102,6 +105,15 @@ class MainMenu(CTkFrame):
         now = datetime.now()
         self.time.set(now.strftime("%I:%M %p"))
         self.after((60 - now.second) * 1000, self.update_time)
+
+    def update_temp(self):
+        """
+        updates the temp display label and queues the next update just after 1 second
+        """
+
+        if reading := GPIOAPI.read_dht11():
+            self.temp.set(f"{reading}°F")
+        self.after(1000, self.update_temp)
 
     def sleep(self):
         """

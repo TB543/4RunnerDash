@@ -75,7 +75,7 @@
 6. Navigate to **Interface Options** -> **I2C** and enable I2C.
 7. Optionally you can also disable screen sleeping after 10 mins in **Display Options -> Screen Blanking**
 
-> **Note:** Sometimes you may need to change the WLAN Country and reconnect to Wi-Fi for proper internet connectivity, even if it was set during flashing. This can be done in **Localization Options -> WLAN Country** and **System Options -> Wireless LAN**
+> **Note:** Sometimes you may need to change the WLAN Country and reconnect to Wi-Fi for proper internet connectivity, even if it was set during flashing. This can be done in **Localization Options -> WLAN Country** and **System Options -> Wireless LAN**. Make sure if your internet/password ever changes you update this setting to ensure software updates and album art continues to work. 
 
 ## Software Installation
 1. Install Git:
@@ -212,9 +212,19 @@
 
 13. Route the [USB Breakout Cable](https://www.amazon.com/gp/product/B07DL2FP5C/ref=ewc_pr_img_1?smid=A2OQYP5S7I3UUC&th=1) and [Volume Control Knob](https://www.amazon.com/Potentiometer-Electronic-Component-Precision-Performance/dp/B0F3373LRJ/ref=sr_1_10?crid=3NT5UM3AASOTS&dib=eyJ2IjoiMSJ9.sOk1-wHZoEsHbT9sww5-eTcs7kLURlHPQDu32Zopsp_M0nh8D1t9AphItKT4DfvBC9EjGKqu4E5ClB6qzfBEa3mF7iIAoZWCxZdNyRlBAfn4bS5LRXRSb37jxgyau72E2B2Szs1IEgCUerQgR4KJGa_SYu0yF2brxKhfVp8Buw46Aj1vfYmXYRWIHMxnS6_JBvke5gHbcZHNw0_gzfm71sq-i1wGv5bjLvDBx7Or5s_qr5y5dUqID3f8CKEqa6SY5Hbq_g8FRXflafG9ZO0EniaM0_BimHO1H-hccX30ONU.1osesHRaXaTz7vxy3QwQ4DMCBwCbhlYDmOEIRgL7lcU&dib_tag=se&keywords=hw-040+cap&qid=1759162407&s=electronics&sprefix=hw-040+cap%2Celectronics%2C75&sr=1-10) to the respective slots on the mount and connect to the car
 
+>**Note:** The [Temperature Sensor](https://www.amazon.com/WWZMDiB-DHT11-Digital-Temperature-Humidity/dp/B0BG4DX7GD/ref=sr_1_3?dib=eyJ2IjoiMSJ9.Rm43YOiOnwbBoItkph1HMyjRnbPB7BPlljHwZ8US1Rhc74E_dDDXLAAJsshvDa_tzk3RUzZ5emO9eB8d0ij-5JexwoRfBLVWZmoRqjhfsuw9KnoK3HQLsPgTD2SxuxiSBMOT7-2G794_ZHyK6HkP-R6iD479Q5jokCLTvGTNR3o0KZWmQ8uGLZRTskWufHVGclcXXp9CfMQjG3MPAp3KJxtv5YuEstEz574yiEjEXo0.waI64ejL5yRXbRtBf1vZ6BeuLCUFCx67a5M2RJfkmrk&dib_tag=se&keywords=dht11&qid=1759161931&sr=8-3) and [Compass Module](https://www.amazon.com/dp/B0C5XY3J3B?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) should be routed somewhere in the cabin so that the readings can be more accurate. Additionally, make sure the compass is mounted in the correct orientation (there should be an xyz axis printed on the module. mount the x-axis to face the front of the car).
+
 ## Power Usage
 
 The Pi will automatically boot up when the car is turned on so there is no need to worry about powering it up manually. Additionally the Pi will automatically shutdown 5 seconds after the car is turned off. This 5 second delay is to prevent a reboot when switched from car battery to engine power. When the Pi is off it will draw a negligible amount of power and will not drain the car battery.
+
+## Software Updates
+
+Each time the Pi is booted up and connected to the internet (in your driveway) it will automatically check the GitHub repository to see if a new update is available. If there is, there will be a notification on the main menu to install it via the settings menu. When installing the update, make sure that you stay within range of your internet router to ensure all update files can properly download. When the update is complete, the Pi will reboot and display the patch notes for the update. If an update ever adds additional hardware or breaks your current hardware you can visit this github page for more info or revert to a previous version via the command:
+```bash
+git checkout <version num>
+```
+where "version num" is the release you wish to go back to. For example "v1.0.0".
 
 ## Album Art Handling
 

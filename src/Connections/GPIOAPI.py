@@ -82,13 +82,26 @@ class GPIOAPI:
             self.volume += 1
             Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+1%"])
 
-    def rotary_encoder_press(self):
+    @staticmethod
+    def rotary_encoder_press():
         """
         called when the volume rotary encoder is pressed
         """
 
         if read(5) == 0:
             output(27, 0 if read(27) == 1 else 1)
+
+    @staticmethod
+    def read_dht11():
+        """
+        reads the dht11 sensor
+
+        @return: the temperature in f
+        """
+
+        reading = GPIOAPI.dht.read()
+        if reading.is_valid():
+            return (reading.temperature * 1.8) + 32
 
     def shutdown(self, callback):
         """

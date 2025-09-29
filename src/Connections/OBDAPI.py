@@ -8,14 +8,13 @@ class OBDAPI(Async):
     a class to communicate with the OBD-II interface of a vehicle.
     """
 
-    def __init__(self, root, mpg, miles_until_empty, temp):
+    def __init__(self, root, mpg, miles_until_empty):
         """
         initializes the OBDAPI class.
 
         @param root: the root window to update to prevent deadlocks
         @param mpg: the callback function for updating the mpg
         @param miles_until_empty: the callback function for updating miles until empty
-        @param temp: the callback function for updating the temperature
             ** note: all of these callbacks take 1 parameter for the new value **
         """
 
@@ -29,14 +28,12 @@ class OBDAPI(Async):
         self.root = root
         self.mpg = mpg
         self.miles_until_empty = miles_until_empty
-        self.temp = temp
         self.speed_time = None
 
         # sets the codes to watch
         self.watch(commands.SPEED)
         self.watch(commands.MAF)
-        self.watch(commands.FUEL_LEVEL)
-        self.watch(commands.INTAKE_TEMP, callback=lambda r: self.update_loop())
+        self.watch(commands.FUEL_LEVEL, callback=lambda r: self.update_loop())
         self.start()
 
     def update_loop(self):
@@ -50,7 +47,6 @@ class OBDAPI(Async):
         speed = self.query(commands.SPEED)
         maf = self.query(commands.MAF)
         fuel_level = self.query(commands.FUEL_LEVEL)
-        temp = self.query(commands.INTAKE_TEMP)
 
         # handles the first response
         if self.speed_time is None:
@@ -65,13 +61,11 @@ class OBDAPI(Async):
         mph = speed.value.to("mph").magnitude if speed.value is not None else 0
         mpg = mph / (maf.value.magnitude * .0805) if maf.value is not None else 0
         miles_until_empty = mpg * fuel_level.value.to("ratio").magnitude * TANK_CAPACITY if fuel_level.value is not None else 0
-        temp = round(temp.value.to('degF').magnitude) if temp.value is not None else ""
 
         # sends updates to the UI
         try:
             self.mpg(round(mpg, 2))
             self.miles_until_empty(round(miles_until_empty, 2))
-            self.temp(f"{temp} °F")
         except:
             pass
         MileManger.add_miles(mph * (dt / 3600))

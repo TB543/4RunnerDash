@@ -45,20 +45,19 @@ class MenuManager(CTk):
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()
         GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, self.shutdown_lock)
-        self.active_menu = "main"
         release_api = ReleaseAPI(lambda: self.destroy)
         fg_job_manager = FGJobManager(touch_screen)  # will be used by maps menu for other fg jobs later
-        temp = StringVar(self, " °F")
         notification = StringVar(self, "Software Update Available in Settings" if release_api.update_available() else "")
 
         # creates the various menus
         self.menus = {
-            "main": MainMenu(self, temp, notification, fg_job_manager, self.appearance_manager.scaling),
+            "main": MainMenu(self, notification, fg_job_manager, self.appearance_manager.scaling),
             "maps": MapsMenu(self),
             "music": MusicMenu(self),
-            "obd": OBDMenu(self, temp, self.appearance_manager),
+            "obd": OBDMenu(self, self.appearance_manager),
             "settings": SettingsMenu(self, self.appearance_manager, release_api)
         }
+        self.active_menu = "main"
         self.change_menu(self.active_menu)
 
     def change_menu(self, menu_name):
@@ -82,7 +81,7 @@ class MenuManager(CTk):
         super().mainloop()
         with self.shutdown_lock:
             return
-        
+
     def destroy(self):
         """
         overrides the destroy method to also ensure the backend is stopped before shutdown
