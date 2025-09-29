@@ -26,10 +26,8 @@ load album art on device connect
 automate insurancec card update
 nomantium no server?
 user set miles until change should not reset on update
+add cad file to readme + repo
 
-use stable tilemaker release
-add i2c config in readme
-update readme for new hardware
 make boot-up faster at least for UI
 add error logging
 make time label based pihat clock

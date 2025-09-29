@@ -13,15 +13,26 @@
     - [OBD Scanner](https://www.amazon.com/dp/B005ZWM0R4?ref=ppx_yo2ov_dt_b_fed_asin_title)
 
 - [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5) with hardware:
-    - [Additional AUX_OUT cable connection](https://thepihut.com/products/4-way-molex-nano-fit-pigtail)
+    - [Additional Output Cable Connection](https://thepihut.com/products/4-way-molex-nano-fit-pigtail) (you will need at least 3)
     - [Ribbon Cable](https://www.amazon.com/dp/B0DQ4X6QP4?ref=ppx_yo2ov_dt_b_fed_asin_title) (only needed if you have a [cooling fan](https://www.raspberrypi.com/products/active-cooler/) and/or [case](https://www.raspberrypi.com/products/raspberry-pi-5-case/))
     - [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title)
 
 - [Touch Screen Display](https://www.amazon.com/Waveshare-7inch-Capacitive-Raspberry-BeagleBone/dp/B01HPV7KL8?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A50C560NZEBBE&gQT=2)
     - [HDMI Cable](https://www.amazon.com/dp/B07R9RXWM5?ref=ppx_yo2ov_dt_b_fed_asin_title) and [Power/Data Cable](https://www.amazon.com/dp/B096YDCSCW?ref=ppx_yo2ov_dt_b_fed_asin_title) (Bent to fit in dashboard)
 
+- [Raspberry Pi Camera](https://www.amazon.com/Arducam-Raspberry-Megapixel-Compatible-RPI-CAM-8MP/dp/B09V576TFN/ref=sr_1_8?crid=1XSXDIDRFGLJY&dib=eyJ2IjoiMSJ9.-i-FiCoFLNq2ZhrYWlV2SGi3t2xVcyp-7iol05jW6V5ktZ29SD_EA4_O4JOd0VBBrufxMJN3LXNAeirDeeI9olRw_3fytO_HNwF7YNcNHP5i3tzAFuq1n7wyWtqBYlqqMfMb6ee0AmdxSEwaxADrTVhlbAozn9iXg_6io711ITl2l5oGXCE-g2AlBb0531i-5hTVup71roAhsQqe_zwPpAxLyLNrWkK-AtvzcG_09uc.rg-oPRNfF4mJnslU996ovT4iHgtfCcFC1B-MjpvxENg&dib_tag=se&keywords=raspberry%2Bpi%2B5%2Bcamera&qid=1759162264&sprefix=raspberry%2Bpi%2B5%2Bcamera%2Caps%2C112&sr=8-8&th=1)
+    - [Ribbon to HDMI](https://www.amazon.com/gp/product/B06XDNBM63/ref=ewc_pr_img_2?smid=A2IAB2RW3LLT8D&th=1) recommended for durability + longer cable
+
 - [GPS Module](https://www.amazon.com/dp/B0F2DP1189?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) and [Antenna](https://www.amazon.com/dp/B083D59N55?ref=ppx_yo2ov_dt_b_fed_asin_title)
     - [Ground Plate](https://www.amazon.com/dp/B07PJLC74M?ref=ppx_yo2ov_dt_b_fed_asin_title) recommended
+
+- [Compass Module](https://www.amazon.com/dp/B0C5XY3J3B?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)
+
+- [Temperature Sensor](https://www.amazon.com/WWZMDiB-DHT11-Digital-Temperature-Humidity/dp/B0BG4DX7GD/ref=sr_1_3?dib=eyJ2IjoiMSJ9.Rm43YOiOnwbBoItkph1HMyjRnbPB7BPlljHwZ8US1Rhc74E_dDDXLAAJsshvDa_tzk3RUzZ5emO9eB8d0ij-5JexwoRfBLVWZmoRqjhfsuw9KnoK3HQLsPgTD2SxuxiSBMOT7-2G794_ZHyK6HkP-R6iD479Q5jokCLTvGTNR3o0KZWmQ8uGLZRTskWufHVGclcXXp9CfMQjG3MPAp3KJxtv5YuEstEz574yiEjEXo0.waI64ejL5yRXbRtBf1vZ6BeuLCUFCx67a5M2RJfkmrk&dib_tag=se&keywords=dht11&qid=1759161931&sr=8-3)
+  - Note: this is a 3 pack, only 1 is needed
+
+- [Volume Control Knob](https://www.amazon.com/Potentiometer-Electronic-Component-Precision-Performance/dp/B0F3373LRJ/ref=sr_1_10?crid=3NT5UM3AASOTS&dib=eyJ2IjoiMSJ9.sOk1-wHZoEsHbT9sww5-eTcs7kLURlHPQDu32Zopsp_M0nh8D1t9AphItKT4DfvBC9EjGKqu4E5ClB6qzfBEa3mF7iIAoZWCxZdNyRlBAfn4bS5LRXRSb37jxgyau72E2B2Szs1IEgCUerQgR4KJGa_SYu0yF2brxKhfVp8Buw46Aj1vfYmXYRWIHMxnS6_JBvke5gHbcZHNw0_gzfm71sq-i1wGv5bjLvDBx7Or5s_qr5y5dUqID3f8CKEqa6SY5Hbq_g8FRXflafG9ZO0EniaM0_BimHO1H-hccX30ONU.1osesHRaXaTz7vxy3QwQ4DMCBwCbhlYDmOEIRgL7lcU&dib_tag=se&keywords=hw-040+cap&qid=1759162407&s=electronics&sprefix=hw-040+cap%2Celectronics%2C75&sr=1-10)
+  - Note: the KY-040 might also work and might be cheeper, but has not been tested
 
 - [Car Amp Head Unit Connection](https://www.amazon.com/dp/B0DQTPDZK4?ref=ppx_yo2ov_dt_b_fed_asin_title)
     - **Note:** This is for a 2002 Toyota 4Runner, make sure you buy the correct connection for your car.
@@ -30,6 +41,9 @@
     - [AUX to RCA](https://www.amazon.com/dp/B0BRYD7NJ6?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)
     - [RCA Splitters](https://www.amazon.com/dp/B0916WWN9Z?ref=ppx_yo2ov_dt_b_fed_asin_title)
     - [Ground Loop Isolator](https://www.amazon.com/dp/B019393MV2?ref=ppx_yo2ov_dt_b_fed_asin_title) (only needed if you have issues with static)
+
+- [USB Breakout Cable](https://www.amazon.com/gp/product/B07DL2FP5C/ref=ewc_pr_img_1?smid=A2OQYP5S7I3UUC&th=1)
+  - Not required, but useful if you want to connect to the Pi easily
 
 ## Software Installation Prerequisites
 - Download [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
@@ -58,7 +72,8 @@
     ```
 4. Navigate to **System Options** -> **Auto Login** and enable it.
 5. Navigate to **Interface Options** -> **Serial Port** and disable login shell over serial and enable serial hardware.
-6. Optionally you can also disable screen sleeping after 10 mins in **Display Options -> Screen Blanking**
+6. Navigate to **Interface Options** -> **I2C** and enable I2C.
+7. Optionally you can also disable screen sleeping after 10 mins in **Display Options -> Screen Blanking**
 
 > **Note:** Sometimes you may need to change the WLAN Country and reconnect to Wi-Fi for proper internet connectivity, even if it was set during flashing. This can be done in **Localization Options -> WLAN Country** and **System Options -> Wireless LAN**
 
@@ -129,7 +144,7 @@
     ./install_map.sh
     ```
 
-    This will take a really long time to run (sometimes multiple days) as it has to download large map data files and format it but you do not to be present while it is running, just be patient. The Raspberry Pi will automatically shutdown when complete to not waste power.
+    This will take a really long time to run (sometimes multiple weeks) as it has to download large map data files and format it but you do not to be present while it is running, just be patient. The Raspberry Pi will automatically shutdown when complete to not waste power.
 
     >**Note:** By default only the US map database is installed, but feel free to modify the install_map.sh file to change this.
 
@@ -151,26 +166,55 @@
 
 1. Connect the [Ribbon Cable](https://www.amazon.com/dp/B0DQ4X6QP4?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) and the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title)
 
-2. Connect the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5)
+2. Connect the [Raspberry Pi Camera](https://www.amazon.com/Arducam-Raspberry-Megapixel-Compatible-RPI-CAM-8MP/dp/B09V576TFN/ref=sr_1_8?crid=1XSXDIDRFGLJY&dib=eyJ2IjoiMSJ9.-i-FiCoFLNq2ZhrYWlV2SGi3t2xVcyp-7iol05jW6V5ktZ29SD_EA4_O4JOd0VBBrufxMJN3LXNAeirDeeI9olRw_3fytO_HNwF7YNcNHP5i3tzAFuq1n7wyWtqBYlqqMfMb6ee0AmdxSEwaxADrTVhlbAozn9iXg_6io711ITl2l5oGXCE-g2AlBb0531i-5hTVup71roAhsQqe_zwPpAxLyLNrWkK-AtvzcG_09uc.rg-oPRNfF4mJnslU996ovT4iHgtfCcFC1B-MjpvxENg&dib_tag=se&keywords=raspberry%2Bpi%2B5%2Bcamera&qid=1759162264&sprefix=raspberry%2Bpi%2B5%2Bcamera%2Caps%2C112&sr=8-8&th=1) to the [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) via the [Ribbon to HDMI](https://www.amazon.com/gp/product/B06XDNBM63/ref=ewc_pr_img_2?smid=A2IAB2RW3LLT8D&th=1) and an HDMI cable
+    - [Heres a video to help](https://www.youtube.com/watch?v=lAbpDRy-gc0)
 
 3. Connect the [GPS Module](https://www.amazon.com/dp/B0F2DP1189?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) to the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title):
     - VCC -> [GPIO-4](https://pinout.xyz/pinout/5v_power)
     - Ground -> [GPIO-6](https://pinout.xyz/pinout/ground)
     - TX -> [GPIO-10](https://pinout.xyz/pinout/pin10_gpio15/)
     - RX connection is not needed
-4. Remove the car radio. [Here is a guide for a 2002 Toyota 4Runner](https://www.youtube.com/watch?v=AbdoAcwrbJ8) (Only Remove the radio, not the amp)
 
-5. Connect your [Car Amp Head Unit Connection](https://www.amazon.com/dp/B0DQTPDZK4?ref=ppx_yo2ov_dt_b_fed_asin_title) and wire everything as follows:
-    - 12V const, 12V switch, ILUM and Grounds to [CarPiHAT Main Loom](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344)
-    - AMP control and Grounds to [CarPiHat 12V Outputs](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344)
+4. Connect the [Volume Control Knob](https://www.amazon.com/Potentiometer-Electronic-Component-Precision-Performance/dp/B0F3373LRJ/ref=sr_1_10?crid=3NT5UM3AASOTS&dib=eyJ2IjoiMSJ9.sOk1-wHZoEsHbT9sww5-eTcs7kLURlHPQDu32Zopsp_M0nh8D1t9AphItKT4DfvBC9EjGKqu4E5ClB6qzfBEa3mF7iIAoZWCxZdNyRlBAfn4bS5LRXRSb37jxgyau72E2B2Szs1IEgCUerQgR4KJGa_SYu0yF2brxKhfVp8Buw46Aj1vfYmXYRWIHMxnS6_JBvke5gHbcZHNw0_gzfm71sq-i1wGv5bjLvDBx7Or5s_qr5y5dUqID3f8CKEqa6SY5Hbq_g8FRXflafG9ZO0EniaM0_BimHO1H-hccX30ONU.1osesHRaXaTz7vxy3QwQ4DMCBwCbhlYDmOEIRgL7lcU&dib_tag=se&keywords=hw-040+cap&qid=1759162407&s=electronics&sprefix=hw-040+cap%2Celectronics%2C75&sr=1-10) to the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title)
+    - CLK -> [GPIO-26](https://pinout.xyz/pinout/pin37_gpio26/)
+    - DT -> [GPIO-6](https://pinout.xyz/pinout/pin31_gpio6/)
+    - SW -> [GPIO-5](https://pinout.xyz/pinout/pin29_gpio5/)
+    - VCC -> [GPIO-17](https://pinout.xyz/pinout/3v3_power)
+    - GND -> [GPIO-25](https://pinout.xyz/pinout/ground)
+
+5. Connect the [GPIO Breakout Board](https://www.amazon.com/dp/B0DMNJ17PD?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5)
+
+6. Connect the [Compass Module](https://www.amazon.com/dp/B0C5XY3J3B?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) to the [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5) via the [Output Cable](https://thepihut.com/products/4-way-molex-nano-fit-pigtail)
+   - SCL -> [CarPiHat I2C](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pin 1
+   - SDA -> [CarPiHat I2C](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pin 2
+   - GND -> [CarPiHat I2C](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pin 3
+   - VCC -> [CarPiHat I2C](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pin 4
+   - INT connection is not needed
+
+7. Connect the [Temperature Sensor](https://www.amazon.com/WWZMDiB-DHT11-Digital-Temperature-Humidity/dp/B0BG4DX7GD/ref=sr_1_3?dib=eyJ2IjoiMSJ9.Rm43YOiOnwbBoItkph1HMyjRnbPB7BPlljHwZ8US1Rhc74E_dDDXLAAJsshvDa_tzk3RUzZ5emO9eB8d0ij-5JexwoRfBLVWZmoRqjhfsuw9KnoK3HQLsPgTD2SxuxiSBMOT7-2G794_ZHyK6HkP-R6iD479Q5jokCLTvGTNR3o0KZWmQ8uGLZRTskWufHVGclcXXp9CfMQjG3MPAp3KJxtv5YuEstEz574yiEjEXo0.waI64ejL5yRXbRtBf1vZ6BeuLCUFCx67a5M2RJfkmrk&dib_tag=se&keywords=dht11&qid=1759161931&sr=8-3) to the [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5) via the [Output Cable](https://thepihut.com/products/4-way-molex-nano-fit-pigtail)
+   - OUT -> [CarPiHat 1 Wire](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pin 2
+   - GND -> [CarPiHat 1 Wire](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pin 3
+   - VCC -> [CarPiHat 1 Wire](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pin 4
+
+8. Remove the car radio. [Here is a guide for a 2002 Toyota 4Runner](https://www.youtube.com/watch?v=AbdoAcwrbJ8) (Only Remove the radio, not the amp)
+
+9. Connect your [Car Amp Head Unit Connection](https://www.amazon.com/dp/B0DQTPDZK4?ref=ppx_yo2ov_dt_b_fed_asin_title) and wire everything as follows:
+    - 12V const, 12V switch, ILUM and Grounds to [CarPiHAT Main Loom](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pins 3, 5, 2 and 4 respectfully
+    - AMP control and Grounds to [CarPiHat 12V Output](https://cdn.shopify.com/s/files/1/0176/3274/files/Datasheet_latest.png?v=1647017344) pins 1 and 2
     - Stereo audio to AUX cable with audio cables
     - AUX Cable to to [CarPiHAT PRO 5](https://thepihut.com/products/carpihat-pro-5-car-interface-dac-for-raspberry-pi-5) DAC port
 
-6. Plug in your [OBD Scanner](https://www.amazon.com/dp/B005ZWM0R4?ref=ppx_yo2ov_dt_b_fed_asin_title) to the OBD port on your car (usually bottom right of the steering wheel) and wire the USB connection into the slot where the radio used to be and into the [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) along with all of the other usb connections
+10. Plug in your [OBD Scanner](https://www.amazon.com/dp/B005ZWM0R4?ref=ppx_yo2ov_dt_b_fed_asin_title) to the OBD port on your car (usually bottom right of the steering wheel) and wire the USB connection into the slot where the radio used to be and into the [RaspBerry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) along with all of the other usb connections
 
-7. Connect the [Antenna](https://www.amazon.com/dp/B083D59N55?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [GPS Module](https://www.amazon.com/dp/B0F2DP1189?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) and mount the antenna on the [Ground Plate](https://www.amazon.com/dp/B07PJLC74M?ref=ppx_yo2ov_dt_b_fed_asin_title) and wire to the roof of the car.
+11. Connect the [Antenna](https://www.amazon.com/dp/B083D59N55?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [GPS Module](https://www.amazon.com/dp/B0F2DP1189?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) and mount the antenna on the [Ground Plate](https://www.amazon.com/dp/B07PJLC74M?ref=ppx_yo2ov_dt_b_fed_asin_title) and wire to the roof of the car.
 
-8. Connect the [HDMI Cable](https://www.amazon.com/dp/B07R9RXWM5?ref=ppx_yo2ov_dt_b_fed_asin_title) and [Power/Data Cable](https://www.amazon.com/dp/B096YDCSCW?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [Touch Screen Display](https://www.amazon.com/Waveshare-7inch-Capacitive-Raspberry-BeagleBone/dp/B01HPV7KL8?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A50C560NZEBBE&gQT=2) and shove everything into the radio slot (might have to rig a screen mount)
+12. Connect the [HDMI Cable](https://www.amazon.com/dp/B07R9RXWM5?ref=ppx_yo2ov_dt_b_fed_asin_title) and [Power/Data Cable](https://www.amazon.com/dp/B096YDCSCW?ref=ppx_yo2ov_dt_b_fed_asin_title) to the [Touch Screen Display](https://www.amazon.com/Waveshare-7inch-Capacitive-Raspberry-BeagleBone/dp/B01HPV7KL8?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=A50C560NZEBBE&gQT=2) and shove everything into the radio slot
+
+13. Route the [USB Breakout Cable](https://www.amazon.com/gp/product/B07DL2FP5C/ref=ewc_pr_img_1?smid=A2OQYP5S7I3UUC&th=1) and [Volume Control Knob](https://www.amazon.com/Potentiometer-Electronic-Component-Precision-Performance/dp/B0F3373LRJ/ref=sr_1_10?crid=3NT5UM3AASOTS&dib=eyJ2IjoiMSJ9.sOk1-wHZoEsHbT9sww5-eTcs7kLURlHPQDu32Zopsp_M0nh8D1t9AphItKT4DfvBC9EjGKqu4E5ClB6qzfBEa3mF7iIAoZWCxZdNyRlBAfn4bS5LRXRSb37jxgyau72E2B2Szs1IEgCUerQgR4KJGa_SYu0yF2brxKhfVp8Buw46Aj1vfYmXYRWIHMxnS6_JBvke5gHbcZHNw0_gzfm71sq-i1wGv5bjLvDBx7Or5s_qr5y5dUqID3f8CKEqa6SY5Hbq_g8FRXflafG9ZO0EniaM0_BimHO1H-hccX30ONU.1osesHRaXaTz7vxy3QwQ4DMCBwCbhlYDmOEIRgL7lcU&dib_tag=se&keywords=hw-040+cap&qid=1759162407&s=electronics&sprefix=hw-040+cap%2Celectronics%2C75&sr=1-10) to the respective slots on the mount and connect to the car
+
+## Power Usage
+
+The Pi will automatically boot up when the car is turned on so there is no need to worry about powering it up manually. Additionally the Pi will automatically shutdown 5 seconds after the car is turned off. This 5 second delay is to prevent a reboot when switched from car battery to engine power. When the Pi is off it will draw a negligible amount of power and will not drain the car battery.
 
 ## Album Art Handling
 
