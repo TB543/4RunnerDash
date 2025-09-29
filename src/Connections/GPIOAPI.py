@@ -2,11 +2,12 @@ from subprocess import run, PIPE, Popen
 from AppData import MAX_VOLUME
 from time import sleep
 from sys import argv
-from dht11 import DHT11
 try:
     from RPi.GPIO import setmode, BCM, setup, IN, OUT, add_event_detect, FALLING, BOTH, input as read, output, PUD_UP
+    from dht11 import DHT11
 except ModuleNotFoundError:
     from Dev.Imports.GPIO import *
+    from Dev.Imports.dht11 import *
 
 
 class GPIOAPI:
@@ -42,12 +43,17 @@ class GPIOAPI:
             this will prevent premature exit of the program
         """
 
+        # get current volume
+        try:
+            command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
+            result = command.stdout
+            volume = result.split("%")
+            volume = volume[0].split(" ")
+            self.volume = int(volume[-1])
+        except:
+            self.volume = MAX_VOLUME
+
         # volume control
-        command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
-        result = command.stdout
-        volume = result.split("%")
-        volume = volume[0].split(" ")
-        self.volume = int(volume[-1])
         output(27, 1)  # amp on
         add_event_detect(26, BOTH, lambda e: self.rotary_encoder_rotate(), bouncetime=2)
         add_event_detect(5, BOTH, lambda e: self.rotary_encoder_press(), bouncetime=25)
