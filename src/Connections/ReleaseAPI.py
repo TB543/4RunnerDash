@@ -14,11 +14,9 @@ class ReleaseAPI:
     an asset named update.sh should be included in the release with the required installation steps
     which will automatically by run by the installer
 
-    all assets will be downloaded to ../patches/<release_tag> and can be accessed by the update.sh script
-    which will run in the ../patches/<release_tag> directory
+    all assets will be downloaded to 4RunnerDash/patches/<release_tag> and can be accessed by the update.sh script
+    which will run in the 4RunnerDash/patches/<release_tag> directory
     also note that the patches directory will be deleted after the update is complete
-
-    ** note that the directories above are relative to the src directory the program runs in **
     """
 
     REPO_URL = "https://api.github.com/repos/TB543/4RunnerDash/releases"

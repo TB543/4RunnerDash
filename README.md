@@ -137,29 +137,18 @@
     ```bash
     ./install_dependencies.sh
     ```
-    it will first install rust. You can proceed with standard installation by pressing enter when prompted
+    it will first install rust. You can proceed with standard installation by pressing enter when prompted. The remaining installs will take a few minutes, just be patient. You do not need to be present during any of the remaining installs.
 
 7. Lastly, run the map install script:
     ```bash
     ./install_map.sh
     ```
 
-    This will take a really long time to run (sometimes multiple weeks) as it has to download large map data files and format it but you do not to be present while it is running, just be patient. The Raspberry Pi will automatically shutdown when complete to not waste power.
+    This will take a really long time to run (took me about 2 weeks) as it has to download large map data files and format it but you do not to be present while it is running, just be patient. The Raspberry Pi will automatically shutdown when complete to not waste power.
 
     >**Note:** By default only the US map database is installed, but feel free to modify the install_map.sh file to change this.
 
-8. The **4RunnerDash/src/AppData/__init__.py** file contains configuration settings that can be changed as needed to fit your car/hardware. These settings include:
-
-    - Pi screen resolution
-    - FPS option
-    - Max volume percentage
-    - Number of cached album art images
-    - Album art image resolution
-    - Map tile resolution
-    - Data for how often various car parts/fluids should be replaced
-    - Car gas tank capacity
-
-    feel free to modify based on your needs and the dashboard will reflect these changes.
+8. The **4RunnerDash/src/AppData/__init__.py** file contains configuration settings that can be changed as needed to fit your car/hardware. Feel free to modify based on your needs and the dashboard will reflect these changes.
 
 ## Hardware Installation
 >**Note:** Make sure software installation has completed before continuing to hardware installation.
@@ -225,7 +214,8 @@ Each time the Pi is booted up and connected to the internet (in your driveway) i
 git checkout <version num>
 ```
 where "version num" is the release you wish to go back to. For example "v1.0.0".
-
+>**Note:** Reverting to a previous version and then reinstalling the update at a later time will cause unknown behavior and you will likely need to reinstall
+ 
 ## Album Art Handling
 
 Due to limitations in Bluetooth protocols, album art cannot be transferred directly from connected devices. As a result, this dashboard uses the **Spotify Web API** to fetch album artwork and metadata in real time.

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# save system time to CarPiHat
+sudo hwclock -w -f /dev/rtc1
+
 # maps
 pkill -2 nominatim
 pkill -f graphhopper

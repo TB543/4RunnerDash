@@ -27,7 +27,6 @@ automate insurancec card update
 nomantium no server?
 user set miles until change should not reset on update
 add cad file to readme + repo
-
 make boot-up faster at least for UI
 add error logging
-make time label based pihat clock
+spotify api too many requests handing

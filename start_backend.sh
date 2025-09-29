@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# stops old backend
+# reads system time from CarPiHat and stops old backend
+sudo hwclock -s -f /dev/rtc1
 ./stop_backend.sh
 cd src
 
