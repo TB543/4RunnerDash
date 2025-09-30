@@ -78,6 +78,7 @@ class MenuManager(CTk):
         is finished executing
         """
 
+        print("Starting Debug Logging")
         super().mainloop()
         with self.shutdown_lock:
             return
@@ -87,6 +88,7 @@ class MenuManager(CTk):
         overrides the destroy method to also ensure the backend is stopped before shutdown
         """
 
+        print("Ending Debug Logging")
         try:
             run(["../stop_backend.sh"])
         finally:
