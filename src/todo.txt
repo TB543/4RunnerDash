@@ -29,3 +29,4 @@ user set miles until change should not reset on update
 add cad file to readme + repo
 make boot-up faster at least for UI
 spotify api too many requests handing
+add breif volume display when updating volume
