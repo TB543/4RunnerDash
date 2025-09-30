@@ -2,6 +2,7 @@
 
 # installs dependencies
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh # rust - needed for text to speech python module
+sudo apt update
 sudo apt install -y xserver-xorg x11-xserver-utils fonts-noto-color-emoji # display 
 sudo apt install -y python3.11-dev python3-tk python3-gi python3-mapnik gir1.2-gstreamer-1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good # python src dependencies
 sudo apt install -y bluez pulseaudio pulseaudio-module-bluetooth # bluetooth/audio system
