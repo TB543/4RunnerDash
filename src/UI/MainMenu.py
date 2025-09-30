@@ -112,7 +112,7 @@ class MainMenu(CTkFrame):
         """
 
         if reading := GPIOAPI.read_dht11():
-            self.temp.set(f"{reading}°F")
+            self.temp.set(f"{round(reading)}°F")
         self.after(1000, self.update_temp)
 
     def sleep(self):
