@@ -49,9 +49,9 @@ class GPIOAPI:
         try:
             command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
             result = command.stdout
-            volume = result.split("%")
-            volume = volume[0].split(" ")
-            self.volume = int(volume[-1])
+            result = result.split("%")
+            result = result[0].split(" ")
+            self.volume = int(result[-1])
         except:
             self.volume = MAX_VOLUME // 2
 
