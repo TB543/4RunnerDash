@@ -1,6 +1,8 @@
+from Tools.scripts.nm2def import export_list
+
 from Connections.GPIOAPI import GPIOAPI
 from Connections.ReleaseAPI import ReleaseAPI
-from customtkinter import CTk, StringVar, set_widget_scaling
+from customtkinter import CTk, CTkProgressBar, CTkFrame, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
 from os import environ, name
@@ -45,8 +47,8 @@ class MenuManager(CTk):
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()
         self.fg_job_manager = FGJobManager(touch_screen)
-        GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, self.shutdown_lock)
-        release_api = ReleaseAPI(lambda: self.destroy)
+        GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), self.shutdown_lock)
+        release_api = ReleaseAPI(self.destroy)
         notification = StringVar(self, "Software Update Available in Settings" if release_api.update_available() else "")
 
         # creates the various menus
@@ -60,6 +62,12 @@ class MenuManager(CTk):
         self.active_menu = "main"
         self.change_menu(self.active_menu)
 
+        # creates volume popup
+        self.volume_popup = CTkFrame(self, border_width=2, bg_color=self.menus[self.active_menu].cget("fg_color"))
+        self.volume_bar = CTkProgressBar(self.volume_popup, orientation="vertical")
+        self.volume_bar.pack(fill="both", expand=True, padx=5, pady=5)
+        self.volume_after = self.after(0, lambda: None)
+
     def change_menu(self, menu_name):
         """
         Changes the active menu to the specified menu name
@@ -71,6 +79,18 @@ class MenuManager(CTk):
         self.active_menu = menu_name
         self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
         set_widget_scaling(self.appearance_manager.scaling)
+
+    def show_volume(self, value):
+        """
+        briefly shows the volume level
+
+        @param value: the volume level
+        """
+
+        self.after_cancel(self.volume_after)
+        self.volume_bar.set(value)
+        self.volume_popup.place(relx=.07, rely=.5, relheight=.7, anchor="center")
+        self.volume_after = self.after(1000, self.volume_popup.place_forget)
 
     def mainloop(self):
         """

@@ -32,13 +32,15 @@ class GPIOAPI:
 
     dht = DHT11(4)
 
-    def __init__(self, shutdown, dimmer, lock):
+    def __init__(self, shutdown, dimmer, volume, lock):
         """
         initializes an instance of the GPIO api
 
         @param shutdown: a callback function to run before the shutdown command is issued
         @param dimmer: a callback function to run when the dimmer wire is switched
             takes 1 parameter, for the new state of the dimmer: 0 for low, 1 for high
+        @param volume: a callback function to run when the volume is changed
+            takes 1 parameter, for the new volume % between 0 and 1
         @param lock: the thread lock to hold while executing the shutdown command
             this will prevent premature exit of the program
         """
@@ -51,11 +53,11 @@ class GPIOAPI:
             volume = volume[0].split(" ")
             self.volume = int(volume[-1])
         except:
-            self.volume = MAX_VOLUME
+            self.volume = MAX_VOLUME // 2
 
         # volume control
         output(27, 1)  # amp on
-        add_event_detect(26, BOTH, lambda e: self.rotary_encoder_rotate(), bouncetime=2)
+        add_event_detect(26, BOTH, lambda e: self.rotary_encoder_rotate(volume), bouncetime=2)
         add_event_detect(5, BOTH, lambda e: self.rotary_encoder_press(), bouncetime=25)
 
         # shutdown command
@@ -68,19 +70,29 @@ class GPIOAPI:
         add_event_detect(13, BOTH, lambda e: dimmer(read(13)))
         dimmer(read(13))
 
-    def rotary_encoder_rotate(self):
+    def rotary_encoder_rotate(self, volume):
         """
         called when the volume rotary encoder is rotated. Adjusts volume accordingly.
+
+        @param volume: the volume callback
         """
 
+        # readings
         clk = read(26)
         dt = read(6)
+
+        # volume up
         if clk == dt and self.volume > 0:
             self.volume -= 1
             Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", "-1%"])
+
+        # volume down
         elif clk != dt and self.volume < MAX_VOLUME:
             self.volume += 1
             Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+1%"])
+
+        # displays volume to screen
+        volume(self.volume / MAX_VOLUME)
 
     @staticmethod
     def rotary_encoder_press():
