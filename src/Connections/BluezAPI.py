@@ -7,7 +7,7 @@ except ModuleNotFoundError:
     from Dev.Imports.pydbus import *
 
 
-class BluezAPI(SystemBus):
+class BluezAPI:
     """
     A class to communicate with the connected Bluetooth devices via bluetooth.
     handles playback controls and can retrieve information about current track and playback status.
@@ -19,7 +19,7 @@ class BluezAPI(SystemBus):
         """
 
         # initializes the fields
-        super().__init__()
+        self.bus = SystemBus()
         self.player = None
         self.art_manager = BGJobManager()
         self._title = None
@@ -35,7 +35,7 @@ class BluezAPI(SystemBus):
         self.last_property_params = None
 
         # sets listener for track change
-        self.subscribe(
+        self.bus.subscribe(
             iface="org.freedesktop.DBus.Properties",
             signal="PropertiesChanged",
             signal_fired=lambda *args: self.update_album_art(args[4][1])
@@ -66,13 +66,13 @@ class BluezAPI(SystemBus):
 
         # gets bluetooth objects
         try:
-            mngr = self.get("org.bluez", "/")
+            mngr = self.bus.get("org.bluez", "/")
             objects = mngr.GetManagedObjects()
 
             # finds player
             for path, interfaces in objects.items():
                 if "org.bluez.MediaPlayer1" in interfaces:
-                    self.player = self.get("org.bluez", path)
+                    self.player = self.bus.get("org.bluez", path)
                     return
 
         except:

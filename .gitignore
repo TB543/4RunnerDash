@@ -207,3 +207,4 @@ src/AppData/map_data
 # external libraries
 src/Lib/tileserver
 src/Lib/graphhopper.jar
+src/AppData/patch_notes.txt
