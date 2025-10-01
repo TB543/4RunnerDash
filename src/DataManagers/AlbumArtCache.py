@@ -4,22 +4,21 @@ from collections import OrderedDict
 from threading import Lock
 
 
-class AlbumArtCache:
+class AlbumArtCache(Cache):
     """
     a class to represent a cache of api queries for album art
     with efficient storage by only storing 1 image per album
     and each song within the album references the same image
     """
 
-    def __init__(self, cache_path, default):
+    def __init__(self, default):
         """
         initializes the cache variables
 
-        @param path: the file path to the image cache
         @param default: the default album art to use when none is found
         """
 
-        self.cache = Cache(cache_path)
+        super().__init__("AppData/image_cache")
         self.default_art = default
         self.LRU_lock = Lock()
         self.pending_lock = Lock()
@@ -33,17 +32,17 @@ class AlbumArtCache:
         """
 
         with self.LRU_lock:
-            LRU_dict = self.cache.get("LRU", OrderedDict())
+            LRU_dict = self.get("LRU", OrderedDict())
 
             # links song to album if needed
             if song and (album in LRU_dict):
-                self.cache.set(song, album, tag=album)
+                self.set(song, album, tag=album)
 
             # touches the album
             if (not song) or (song and (album in LRU_dict)):
                 LRU_dict[album] = None
                 LRU_dict.move_to_end(album)
-                self.cache.set("LRU", LRU_dict)
+                self.set("LRU", LRU_dict)
     
     def read_album(self, album, pool, song=None):
         """
@@ -56,7 +55,7 @@ class AlbumArtCache:
         @return the album art for the album or the default album art if it does not have any
         """
         
-        if not (art := self.cache.get(album)):
+        if not (art := self.get(album)):
             return None if song or album != f"albums:{None}" else self.default_art
         pool.submit(self.touch_album, album, song)
         return art
@@ -79,7 +78,7 @@ class AlbumArtCache:
             return image
 
         # checks cache with song and artist
-        if (album := self.cache.get(song_key)) and (image := self.read_album(album, pool)):
+        if (album := self.get(song_key)) and (image := self.read_album(album, pool)):
             return image
 
     def store(self, title, artist, album=None, art=None):
@@ -94,22 +93,22 @@ class AlbumArtCache:
 
         # associates song with album
         key, value = f"songs:{title}\n{artist}", f"albums:{album}\n{artist.split(',')[0]}"
-        self.cache.set(key, value, tag=value)
+        self.set(key, value, tag=value)
 
         # sets album art
-        if art and (not value in self.cache):
-            self.cache.set(value, art, tag=value)
+        if art and (not value in self):
+            self.set(value, art, tag=value)
         
         # handles when song has default album art
         elif not art:
-            self.cache.set(key, f"albums:{None}", tag="default")
+            self.set(key, f"albums:{None}", tag="default")
         self.touch_album(value)
 
         # removes from pending queries
         with self.pending_lock:
-            pending = self.cache.get("pending", OrderedDict())
+            pending = self.get("pending", OrderedDict())
             pending.pop((title, artist), None)
-            self.cache.set(f"pending", pending)
+            self.set(f"pending", pending)
 
         self.clean()
     
@@ -120,7 +119,7 @@ class AlbumArtCache:
         """
 
         with self.pending_lock:
-            return self.cache.get("pending", OrderedDict())
+            return self.get("pending", OrderedDict())
 
     @pending.setter
     def pending(self, value):
@@ -131,10 +130,10 @@ class AlbumArtCache:
         """
 
         with self.pending_lock:
-            pending = self.cache.get("pending", OrderedDict())
+            pending = self.get("pending", OrderedDict())
             pending[value] = None
             pending.move_to_end(value)
-            self.cache.set(f"pending", pending)
+            self.set(f"pending", pending)
 
     @property
     def token(self):
@@ -142,7 +141,7 @@ class AlbumArtCache:
         gets the api token if it has not expired
         """
 
-        return self.cache.get("token")
+        return self.get("token")
     
     @token.setter
     def token(self, value):
@@ -152,7 +151,7 @@ class AlbumArtCache:
         @param value: the json response from spotify api token request
         """
 
-        self.cache.set("token", value["access_token"], expire=value["expires_in"] - 60)
+        self.set("token", value["access_token"], expire=value["expires_in"] - 60)
 
     def clean(self):
         """
@@ -161,11 +160,11 @@ class AlbumArtCache:
 
         # gets the LRU
         with self.LRU_lock:
-            LRU_dict = self.cache.get("LRU", OrderedDict())
+            LRU_dict = self.get("LRU", OrderedDict())
 
             # removes the least recently accessed album
             while len(LRU_dict) > MAX_CACHE_ALBUMS:
-                with self.cache.transact():  # ensures atomicity
-                    self.cache.evict("default")
-                    self.cache.evict(LRU_dict.popitem(last=False)[0])
-                    self.cache.set("LRU", LRU_dict)
+                with self.transact():  # ensures atomicity
+                    self.evict("default")
+                    self.evict(LRU_dict.popitem(last=False)[0])
+                    self.set("LRU", LRU_dict)

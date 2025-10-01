@@ -91,15 +91,15 @@ class GPIOAPI:
         if read(5) == 0:
             output(27, 0 if read(27) == 1 else 1)
 
-    @staticmethod
-    def read_dht11():
+    @classmethod
+    def read_dht11(cls):
         """
         reads the dht11 sensor
 
         @return: the temperature in f
         """
 
-        reading = GPIOAPI.dht.read()
+        reading = cls.dht.read()
         if reading.is_valid():
             return (reading.temperature * 1.8) + 32
 

@@ -71,7 +71,7 @@ class NavigationAPI:
                 NavigationAPI.gps_coords = (-lat if lat_dir == 'S' else lat, -lon if lon_dir == 'W' else lon)
 
                 # sends new GPS coords via callback functions
-                for callback in NavigationAPI.callbacks[:]:
+                for callback in NavigationAPI.callbacks[:]:  # copy so that race conditions do not occur
                     try:
                         callback(NavigationAPI.gps_coords)
                     except:

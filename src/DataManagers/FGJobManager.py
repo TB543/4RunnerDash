@@ -6,7 +6,7 @@ except ModuleNotFoundError:
     from Dev.Imports.evdev import *
 
 
-class FGJobManager:
+class FGJobManager(ThreadPoolExecutor):
     """
     a class to manage foreground jobs such as the following:
         --> display sleep job
@@ -21,7 +21,7 @@ class FGJobManager:
         @param touch_screen: the touch screen display to listen to for events in the display sleep job
         """
 
-        self.pool = ThreadPoolExecutor()
+        super().__init__()
         self.touch_screen = touch_screen
 
     def queue_display_sleep(self, wake):
@@ -31,7 +31,7 @@ class FGJobManager:
         @param wake: the function to call to wake up the display when an input is given
         """
 
-        future = self.pool.submit(self.display_sleep_job)
+        future = self.submit(self.display_sleep_job)
         future.add_done_callback(lambda f: wake())
 
     def queue_address_search(self, address, done):
@@ -87,10 +87,3 @@ class FGJobManager:
 
         @return: the response from the navigation api containing the route to the destination
         """
-
-    def shutdown(self):
-        """
-        shuts down the thread pool when it is no longer needed
-        """
-
-        self.pool.shutdown(cancel_futures=True)

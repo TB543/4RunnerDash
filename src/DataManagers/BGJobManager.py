@@ -1,7 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from DataManagers.AlbumArtCache import AlbumArtCache
 from Connections.SpotifyAPI import SpotifyAPI
-from os import environ
 from io import BytesIO
 from PIL.Image import open as open_img, new as new_img
 from AppData import IMAGE_RESOLUTION
@@ -9,7 +8,7 @@ from PIL.ImageDraw import Draw
 from threading import Lock
 
 
-class BGJobManager:
+class BGJobManager(ThreadPoolExecutor):
     """
     a class to handle background api request threads
     """
@@ -18,19 +17,17 @@ class BGJobManager:
     image_mask = new_img("L", (IMAGE_RESOLUTION, IMAGE_RESOLUTION), 0)
     Draw(image_mask).rounded_rectangle([0, 0, IMAGE_RESOLUTION, IMAGE_RESOLUTION], radius=12, fill=255)
 
-    def __init__(self, default_path):
+    def __init__(self):
         """
         initializes the request manager and its fields
-
-        @param default_path the path to the default image cache
         """
 
-        with open(default_path, "rb") as f:
+        super().__init__()
+        with open("AppData/default_album_art.png", "rb") as f:
             self.default_art = self.format_bytes(f.read())
 
-        self.pool = ThreadPoolExecutor()
-        self.api = SpotifyAPI(environ['CLIENT_ID'], environ['CLIENT_SECRET'])
-        self.cache = AlbumArtCache("AppData/image_cache", self.default_art)
+        self.api = SpotifyAPI()
+        self.cache = AlbumArtCache(self.default_art)
         self.token_lock = Lock()
 
     def queue_job(self, title, artist, album):
@@ -44,7 +41,7 @@ class BGJobManager:
         @return a future object to access the results of the job when completed
         """
 
-        future = self.pool.submit(lambda: self.job(title, artist, album))
+        future = self.submit(lambda: self.job(title, artist, album))
         future.add_done_callback(lambda f: self.attempt_query_pending())
         return future
 
@@ -73,7 +70,7 @@ class BGJobManager:
             return self.default_art
 
         # checks cache
-        if image := self.cache.fetch(title, artist, album, self.pool):
+        if image := self.cache.fetch(title, artist, album, self):
             return image
 
         # attempts api query
@@ -83,7 +80,7 @@ class BGJobManager:
                 data[3] = image = self.format_bytes(data[3])
 
             # queues cache store and returns
-            self.pool.submit(self.cache.store, *data)
+            self.submit(self.cache.store, *data)
             return image
         
         # adds to pending queries and returns default image
@@ -130,12 +127,5 @@ class BGJobManager:
 
         # iterates over every song
         for query in self.cache.pending:
-            self.pool.submit(self.job, *query)
-
-    def shutdown(self):
-        """
-        shuts down the thread pool when it is no longer needed
-        """
-
-        self.pool.shutdown(cancel_futures=True)
+            self.submit(self.job, *query)
         

@@ -3,7 +3,7 @@ from Connections.ReleaseAPI import ReleaseAPI
 from customtkinter import CTk, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
-from os import environ
+from os import environ, name
 from DataManagers.FGJobManager import FGJobManager
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
@@ -44,14 +44,14 @@ class MenuManager(CTk):
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()
+        self.fg_job_manager = FGJobManager(touch_screen)
         GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, self.shutdown_lock)
         release_api = ReleaseAPI(lambda: self.destroy)
-        fg_job_manager = FGJobManager(touch_screen)  # will be used by maps menu for other fg jobs later
         notification = StringVar(self, "Software Update Available in Settings" if release_api.update_available() else "")
 
         # creates the various menus
         self.menus = {
-            "main": MainMenu(self, notification, fg_job_manager, self.appearance_manager.scaling),
+            "main": MainMenu(self, notification, self.fg_job_manager, self.appearance_manager.scaling),
             "maps": MapsMenu(self),
             "music": MusicMenu(self),
             "obd": OBDMenu(self, self.appearance_manager),
@@ -88,8 +88,8 @@ class MenuManager(CTk):
         overrides the destroy method to also ensure the backend is stopped before shutdown
         """
 
+        self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
+        super().destroy()
         print("Ending Debug Logging")
-        try:
+        if name != "nt":
             run(["../stop_backend.sh"])
-        finally:
-            return super().destroy()

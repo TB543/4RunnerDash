@@ -1,5 +1,6 @@
 from base64 import b64encode
 from requests import get, post
+from os import environ
 
 
 class SpotifyAPI:
@@ -10,16 +11,13 @@ class SpotifyAPI:
     TOKEN_URL = "https://accounts.spotify.com/api/token"
     SEARCH_URL = "https://api.spotify.com/v1/search"
 
-    def __init__(self, client_id, client_secret):
+    def __init__(self):
         """
         initializes the spotify api
-
-        @param client_id: the client id for the developer app
-        @param client_secret: the client secret for the developer app
         """
 
-        self.client_id = client_id
-        self.client_secret = client_secret
+        self.client_id = environ['CLIENT_ID']
+        self.client_secret = environ['CLIENT_SECRET']
 
     def request_token(self):
         """
@@ -46,8 +44,8 @@ class SpotifyAPI:
         except:
             return {"access_token": None, "expires_in": 0}
 
-    @staticmethod
-    def request_data(title, artist, token):
+    @classmethod
+    def request_data(cls, title, artist, token):
         """
         attempts to query spotify for the track data
 
@@ -65,7 +63,7 @@ class SpotifyAPI:
 
                     # queries spotify api
                     response = get(
-                        SpotifyAPI.SEARCH_URL, 
+                        cls.SEARCH_URL,
                         headers={"Authorization": f"Bearer {token}"}, 
                         params={"q": f'track:"{title_option}" artist:"{artist_option}"', "type": "track", "limit": 1},
                         timeout=5
