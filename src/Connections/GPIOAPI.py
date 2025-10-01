@@ -81,12 +81,12 @@ class GPIOAPI:
         clk = read(26)
         dt = read(6)
 
-        # volume up
+        # volume down
         if clk == dt and self.volume > 0:
             self.volume -= 1
             Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", "-1%"])
 
-        # volume down
+        # volume up
         elif clk != dt and self.volume < MAX_VOLUME:
             self.volume += 1
             Popen(["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+1%"])

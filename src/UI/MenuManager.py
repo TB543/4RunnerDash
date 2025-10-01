@@ -1,5 +1,3 @@
-from Tools.scripts.nm2def import export_list
-
 from Connections.GPIOAPI import GPIOAPI
 from Connections.ReleaseAPI import ReleaseAPI
 from customtkinter import CTk, CTkProgressBar, CTkFrame, StringVar, set_widget_scaling
