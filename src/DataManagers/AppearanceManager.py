@@ -45,8 +45,6 @@ class AppearanceManager:
         self.system_mode = 0  # will be initialized by GPIOAPI
         self.theme = "blue"
         self.scaling = list(AppearanceManager.SCALES.keys())[1]
-        self.lat = 0
-        self.long = 0
         self.root = root
         self.load()
 
@@ -60,16 +58,12 @@ class AppearanceManager:
         try:
             with open("AppData/appearance_settings.json", "r") as f:
                 data = load(f)
-                AppearanceManager.SCALES[data["scaling"]]  # ensures app settings reset if pi resolution settings change
+                AppearanceManager.SCALES[data["scaling"]]  # error if pi resolution settings change and resets data
                 self.mode = data["mode"]
                 self.theme = data["theme"]
                 self.scaling = data["scaling"]
-                self.lat = data["lat"]
-                self.long = data["long"]
-
-        # If the file does not exist or is corrupted, create it with default values
         except:
-            self.save()
+            pass
 
         # updates the appearance settings based on the loaded values
         set_default_color_theme(self.theme)
@@ -86,8 +80,6 @@ class AppearanceManager:
                 "mode": self.mode,
                 "theme": self.theme,
                 "scaling": self.scaling,
-                "lat": self.lat,
-                "long": self.long
             }, f, indent=4)
 
     # ======================================= CYCLERS ========================================

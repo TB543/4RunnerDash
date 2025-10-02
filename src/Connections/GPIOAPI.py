@@ -2,6 +2,7 @@ from subprocess import run, PIPE, Popen
 from AppData import MAX_VOLUME
 from time import sleep
 from sys import argv
+from json import dump, load
 try:
     from RPi.GPIO import setmode, BCM, setup, IN, OUT, add_event_detect, FALLING, BOTH, input as read, output, PUD_UP
     from dht11 import DHT11
@@ -45,6 +46,14 @@ class GPIOAPI:
             this will prevent premature exit of the program
         """
 
+        # get current amp state
+        try:
+            with open("AppData/GPIO_state.json", "r") as f:
+                data = load(f)
+                amp_state = data["amp"]
+        except:
+            amp_state = 1
+
         # get current volume
         try:
             command = run(["pactl", "get-sink-volume", "@DEFAULT_SINK@"], stdout=PIPE, text=True)
@@ -56,9 +65,9 @@ class GPIOAPI:
             self.volume = MAX_VOLUME // 2
 
         # volume control
-        output(27, 1)  # amp on
+        output(27, amp_state)
         add_event_detect(26, BOTH, lambda e: self.rotary_encoder_rotate(volume), bouncetime=2)
-        add_event_detect(5, BOTH, lambda e: self.rotary_encoder_press(), bouncetime=25)
+        add_event_detect(5, FALLING, lambda e: self.rotary_encoder_press(volume), bouncetime=25)
 
         # shutdown command
         self.lock = lock
@@ -77,6 +86,10 @@ class GPIOAPI:
         @param volume: the volume callback
         """
 
+        # does nothing if amp is off
+        if read(27) == 0:
+            return
+
         # readings
         clk = read(26)
         dt = read(6)
@@ -94,14 +107,28 @@ class GPIOAPI:
         # displays volume to screen
         volume(self.volume / MAX_VOLUME)
 
-    @staticmethod
-    def rotary_encoder_press():
+    def rotary_encoder_press(self, volume):
         """
         called when the volume rotary encoder is pressed
+
+        @param volume: the volume callback
         """
 
-        if read(5) == 0:
-            output(27, 0 if read(27) == 1 else 1)
+        # amp already on, turns it off
+        if read(27) == 1:
+            output(27, 0)
+            volume(0)
+
+        # amp already off, turn it on
+        else:
+            output(27, 1)
+            volume(self.volume / MAX_VOLUME)
+
+        # write state to file
+        with open("AppData/GPIO_state.json", "w") as f:
+            dump({
+                "amp": read(27)
+            }, f, indent=4)
 
     @classmethod
     def read_dht11(cls):
