@@ -67,7 +67,7 @@ class GPIOAPI:
         # volume control
         output(27, amp_state)
         add_event_detect(26, BOTH, lambda e: self.rotary_encoder_rotate(volume), bouncetime=2)
-        add_event_detect(5, FALLING, lambda e: self.rotary_encoder_press(volume), bouncetime=25)
+        add_event_detect(5, BOTH, lambda e: self.rotary_encoder_press(volume), bouncetime=25)
 
         # shutdown command
         self.lock = lock
@@ -113,6 +113,10 @@ class GPIOAPI:
 
         @param volume: the volume callback
         """
+
+        # bounce handling
+        if read(5) == 1:
+            return
 
         # amp already on, turns it off
         if read(27) == 1:
