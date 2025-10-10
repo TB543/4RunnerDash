@@ -31,9 +31,9 @@ class OBDAPI(Async):
         self.speed_time = None
 
         # sets the codes to watch
-        self.watch(commands.SPEED)
         self.watch(commands.MAF)
-        self.watch(commands.FUEL_LEVEL, callback=lambda r: self.update_loop())
+        self.watch(commands.FUEL_LEVEL)
+        self.watch(commands.SPEED, callback=lambda r: self.update_loop())
         self.start()
 
     def update_loop(self):

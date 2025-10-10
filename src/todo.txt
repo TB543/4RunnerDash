@@ -29,3 +29,5 @@ user set miles until change should not reset on update
 add cad file to readme + repo
 make boot-up faster at least for UI
 better get request error handling
+tileserver switch link for dark mode
+retry obd connection on fail
