@@ -165,6 +165,8 @@ class MapsMenu(CTkFrame):
         if reroute:
             self.map_widget.destination_path.delete()
             self.map_widget.destination_path = self.map_widget.set_path(self.active_route.path, color="#3E69CB")
+        else:
+            self.search_entry.delete(0, "end")
 
         # starts the routing and displays route on UI
         self.active_route.end() if self.active_route else None

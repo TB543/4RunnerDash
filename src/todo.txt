@@ -31,3 +31,4 @@ better get request error handling
 tileserver switch link for dark mode
 retry obd connection on fail
 save connected bluetooth devices to auto connect
+non blockling tts and routing
