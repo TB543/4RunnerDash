@@ -4,7 +4,6 @@ add commas for mile counters
 map pinch to zoom - make map take vector tiles and render them directly on the canvas for easy scaling - also makes it so dark mode can be applied to map
 add visuals for virtual keyboard for caps lock and shift and gray out blank keys
 media player bg same color as album art
-non blocking loading for navigation system
 car image for position marker
 shortcuts for addresses like work home etc
 caps lock shouldnt shift numbers
@@ -31,3 +30,4 @@ make boot-up faster at least for UI
 better get request error handling
 tileserver switch link for dark mode
 retry obd connection on fail
+save connected bluetooth devices to auto connect

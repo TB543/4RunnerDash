@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from time import time
+from Connections.NavigationAPI import NavigationAPI
 try:
     from evdev.ecodes import BTN_TOUCH
 except ModuleNotFoundError:
@@ -23,6 +24,7 @@ class FGJobManager(ThreadPoolExecutor):
 
         super().__init__()
         self.touch_screen = touch_screen
+        self.address_search_future = None
 
     def queue_display_sleep(self, wake):
         """
@@ -43,6 +45,11 @@ class FGJobManager(ThreadPoolExecutor):
 
         @return: a future object for accessing the coordinates of the address
         """
+
+        self.address_search_future.cancel() if self.address_search_future else None
+        future = self.submit(lambda: FGJobManager.address_search_job(address))
+        future.add_done_callback(lambda f: done(address, f.result()) if not f.cancelled() else None)
+        self.address_search_future = future
 
     def queue_routing(self, destination, done):
         """
@@ -70,7 +77,8 @@ class FGJobManager(ThreadPoolExecutor):
             if event.code == BTN_TOUCH and event.value == 0:
                 break
 
-    def address_search_job(self, address):
+    @staticmethod
+    def address_search_job(address):
         """
         the job for address search, queries the navigation api and waits for the response
 
@@ -78,6 +86,8 @@ class FGJobManager(ThreadPoolExecutor):
 
         @return: the response from the navigation api containing the coordinates of the address
         """
+
+        return NavigationAPI.geocode(address)
 
     def routing_job(self, destination):
         """

@@ -70,9 +70,9 @@ class OBDMenu(CTkFrame):
         oil_change = DoubleVar(self)
         filter_change = DoubleVar(self)
         transmission_change = DoubleVar(self)
-        oil_change_manager = MileManger("change_oil_at", lambda o: self.after(0, oil_change.set(o)))
-        filter_change_manager = MileManger("change_filter_at", lambda f: self.after(0, filter_change.set(f)))
-        transmission_change_manager = MileManger("change_transmission_at", lambda t: self.after(0, transmission_change.set(t)))
+        oil_change_manager = MileManger("change_oil_at", lambda o: self.after(0, lambda: oil_change.set(o)))
+        filter_change_manager = MileManger("change_filter_at", lambda f: self.after(0, lambda: filter_change.set(f)))
+        transmission_change_manager = MileManger("change_transmission_at", lambda t: self.after(0, lambda: transmission_change.set(t)))
 
         # creates widgets for oil change
         oil_change_container = CTkFrame(container)

@@ -14,7 +14,7 @@ class VirtualKeyboard(CTkFrame):
         (('Tab',), ('q', 'Q'), ('w', 'W'), ('e', 'E'), ('r', 'R'), ('t', 'T'), ('y', 'Y'), ('u', 'U'), ('i', 'I'), ('o', 'O'), ('p', 'P'), ('[', '{'), (']', '}'), ('\\', '|')),
         (('Caps',), ('a', 'A'), ('s', 'S'), ('d', 'D'), ('f', 'F'), ('g', 'G'), ('h', 'H'), ('j', 'J'), ('k', 'K'), ('l', 'L'), (';', ':'), ("'", '"'), ('Enter',)),
         (('Shift',), ('z', 'Z'), ('x', 'X'), ('c', 'C'), ('v', 'V'), ('b', 'B'), ('n', 'N'), ('m', 'M'), (',', '<'), ('.', '>'), ('/', '?'), ('Shift', 'Shift')),
-        ((' ',), (' ',), (' ',), ('Space',), (' ', ' '), ('←',), ('→',), (' ', ' '), ('✖',))
+        ((' ',), (' ',), (' ',), ('Space',), (' ', ' '), ('←',), ('→',), (' ', ' '), (' ', ' '))
     )
 
     # lists how many columns a given key takes up. default is 4
@@ -35,16 +35,15 @@ class VirtualKeyboard(CTkFrame):
         ('Back',): lambda s: lambda: s.entry.delete(s.entry.index("insert") - 1) if s.entry.index("insert") != 0 else None,
         ('Tab',): lambda s: lambda: s.key(('\t', '\t')),
         ('Caps',): lambda s: lambda: s.caps_lock(),
-        ('Enter',): lambda s: lambda: s.enter(),
+        ('Enter',): lambda s: lambda: s.exit(),
         ('Shift',): lambda s: lambda: s.shift(),
         ('Shift', 'Shift'): lambda s: lambda: s.shift(),
         ('Space',): lambda s: lambda: s.key((' ', ' ')),
         ('←',): lambda s: lambda: s.entry.icursor(s.entry.index("insert") - 1),
         ('→',): lambda s: lambda: s.entry.icursor(s.entry.index("insert") + 1),
-        ('✖',): lambda s: lambda: s.exit(),
     }
 
-    def __init__(self, master, entry, callback, **kwargs):
+    def __init__(self, master, entry, **kwargs):
         """
         Initializes the virtual keyboard.
         
@@ -57,7 +56,6 @@ class VirtualKeyboard(CTkFrame):
         # initializes superclass and sets fields
         super().__init__(master, **kwargs)
         self.entry = entry
-        self.callback = callback
         self.key_index = 0
         self.caps = False
 
@@ -113,14 +111,6 @@ class VirtualKeyboard(CTkFrame):
 
         self.caps = False if self.caps else True
         self.shift() if (self.caps and self.key_index == 0) or ((not self.caps) and self.key_index == 1) else None
-
-    def enter(self):
-        """
-        handles when the user presses the enter key
-        """
-
-        self.exit()
-        self.callback()
 
     def exit(self):
         """

@@ -28,15 +28,17 @@ class MapsMenu(CTkFrame):
         7:  "⬈",  # keep right
     }
 
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, fg_job_manager, **kwargs):
         """
         Initializes the settings menu frame.
         
         @param master: the parent widget
+        @param fg_job_manager: the fg_job_manager object for queuing navigation api jobs
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
         super().__init__(master, **kwargs)
+        self.fg_job_manager = fg_job_manager
         self.active_route = None
 
         # creates spacer widgets and sets grid layout
@@ -54,20 +56,20 @@ class MapsMenu(CTkFrame):
         container.grid(row=1, column=1, columnspan=7, sticky="nsew", pady=10)
 
         # creates search container
+        textvariable = StringVar(self)
         search_container = CTkFrame(container, fg_color=self.cget("fg_color"))
         focus_position_button = TSCTkButton(search_container, text="◉", width=12, font=("Arial", 20), command=lambda: self.map_widget.lock_position())
-        self.search_entry = CTkEntry(search_container, placeholder_text="Enter Your Destination...", font=("Arial", 20), takefocus=0)
-        search_button = TSCTkButton(search_container, text="Search", font=("Arial", 20), width=80, command=self.populate_search_results)
+        self.search_entry = CTkEntry(search_container, placeholder_text="Enter Your Destination...", textvariable=textvariable, font=("Arial", 20), takefocus=0)
         search_container.pack(fill="x", padx=10)
         search_container.columnconfigure(1, weight=1)
         focus_position_button.grid(row=0, column=0)
         self.search_entry.grid(row=0, column=1, sticky="ew", padx=5)
-        search_button.grid(row=0, column=2)
 
         # configures search entry settings and adds a virtual keyboard for it
+        textvariable.trace_add("write", lambda *args: self.search_address())
         self.search_entry._is_focused = False
         self.search_entry._entry.configure(cursor="none")
-        self.keyboard = VirtualKeyboard(self, self.search_entry, self.populate_search_results)
+        self.keyboard = VirtualKeyboard(self, self.search_entry)
 
         # creates map container
         map_container = CTkFrame(container, fg_color=self.cget("fg_color"))
@@ -255,9 +257,9 @@ class MapsMenu(CTkFrame):
         self.start_navigation_button.configure(state="normal")
         self.map_widget.set_POI(route)
 
-    def populate_search_results(self):
+    def search_address(self):
         """
-        handles when the user presses the search button
+        handles when the user is searching for an address
         """
 
         # clears old results
@@ -269,8 +271,24 @@ class MapsMenu(CTkFrame):
         for widget in self.search_results_container.winfo_children():
             widget.destroy()
 
+        # starts address search
+        label = CTkLabel(self.search_results_container, text="Searching...", font=("Arial", 10))
+        label.grid(row=0, column=1)
+        self.fg_job_manager.queue_address_search(self.search_entry.get(), self.populate_search_results)
+
+    def populate_search_results(self, address, results):
+        """
+        the callback function when the search job has finished. populates the search results
+
+        @param address: the address searched for (ensured correct job is displayed)
+        @param results: the search results
+        """
+
+        # ensures results are populated with correct job
+        if address != self.search_entry.get():
+            return
+
         # handles when results contains an error
-        results = NavigationAPI.geocode(self.search_entry.get())
         if isinstance(results, str):
             label = CTkLabel(self.search_results_container, text=results, font=("Arial", 10))
             label.grid(row=0, column=1)
@@ -294,7 +312,6 @@ class MapsMenu(CTkFrame):
 
         # clean up
         separator.destroy() if separator else None
-        self.search_entry.delete(0, "end")
         self.bind_focus(self.search_results_container)
 
     def close_search_menu(self):

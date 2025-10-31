@@ -52,7 +52,7 @@ class MenuManager(CTk):
         # creates the various menus
         self.menus = {
             "main": MainMenu(self, notification, self.fg_job_manager, self.appearance_manager.scaling),
-            "maps": MapsMenu(self),
+            "maps": MapsMenu(self, self.fg_job_manager),
             "music": MusicMenu(self),
             "obd": OBDMenu(self, self.appearance_manager),
             "settings": SettingsMenu(self, self.appearance_manager, release_api)
