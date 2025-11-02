@@ -23,7 +23,6 @@ car in reverse = negative miles?
 announce bluetooth device connected
 load album art on device connect
 automate insurancec card update
-nomantium no server?
 user set miles until change should not reset on update
 add cad file to readme + repo
 make boot-up faster at least for UI

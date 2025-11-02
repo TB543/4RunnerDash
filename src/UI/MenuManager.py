@@ -4,6 +4,7 @@ from customtkinter import CTk, CTkProgressBar, CTkFrame, StringVar, set_widget_s
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
 from os import environ, name
+from sys import argv
 from DataManagers.FGJobManager import FGJobManager
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
@@ -40,7 +41,7 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(**kwargs)
-        self.configure(cursor="none")
+        self.configure(cursor="none") if len(argv) != 2 or argv[1] != "dev" else None
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()

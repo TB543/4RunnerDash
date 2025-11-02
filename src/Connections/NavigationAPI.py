@@ -80,8 +80,17 @@ class NavigationAPI:
         if gps:
             gps.close()
 
-    TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
-    NOMINATIM_URL = "http://localhost:8088/search"
+    # use internet for apis when in debug mode
+    if len(argv) == 2 and argv[1] == "dev":
+        TILE_SERVER_URL = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
+
+    # otherwise use localhost running apis
+    else:
+        TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
+        NOMINATIM_URL = "http://localhost:8088/search"
+
+    # remaining class fields
     GRAPH_HOPPER_URL = "http://localhost:8989/route"
     compass = BMM150(PresetMode.HIGHACCURACY)
     gps_coords = (0, 0)
@@ -115,7 +124,11 @@ class NavigationAPI:
             results = get(
                 NavigationAPI.NOMINATIM_URL,
                 params={
-                    "q": query
+                    "q": query,
+                    "format": "jsonv2",
+                },
+                headers={
+                    "User-Agent": "4RunnerDash"
                 },
                 timeout=15
             ).json()
