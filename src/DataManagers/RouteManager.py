@@ -157,7 +157,7 @@ class RouteManager:
         self.miles_callback = miles
         self.reroute_callback = reroute
         self.instruction_miles_callbacks = callbacks
-        # self.update_loop(NavigationAPI.gps_coords)
+        self.update_loop(NavigationAPI.gps_coords)
         self.gps_callback = NavigationAPI.add_gps_callback(self.update_loop)
 
     def end(self):

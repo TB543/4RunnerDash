@@ -81,7 +81,7 @@ class NavigationAPI:
         if gps:
             gps.close()
 
-    # remaining class fields
+    # class fields
     GRAPH_HOPPER_URL = "http://localhost:8989/route"
     compass = BMM150(PresetMode.HIGHACCURACY)
     callbacks = []
