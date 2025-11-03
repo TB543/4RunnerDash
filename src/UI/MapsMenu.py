@@ -60,16 +60,19 @@ class MapsMenu(CTkFrame):
         search_container = CTkFrame(container, fg_color=self.cget("fg_color"))
         focus_position_button = TSCTkButton(search_container, text="◉", width=12, font=("Arial", 20), command=lambda: self.map_widget.lock_position())
         self.search_entry = CTkEntry(search_container, placeholder_text="Enter Your Destination...", textvariable=textvariable, font=("Arial", 20), takefocus=0)
+        saved_routes = TSCTkButton(search_container, text="📌", width=12, font=("Arial", 20), command=self.show_saved_menu)
         search_container.pack(fill="x", padx=10)
         search_container.columnconfigure(1, weight=1)
         focus_position_button.grid(row=0, column=0)
         self.search_entry.grid(row=0, column=1, sticky="ew", padx=5)
+        saved_routes.grid(row=0, column=2)
 
         # configures search entry settings and adds a virtual keyboard for it
         textvariable.trace_add("write", lambda *args: self.search_address())
         self.search_entry._is_focused = False
         self.search_entry._entry.configure(cursor="none")
         self.keyboard = VirtualKeyboard(self, self.search_entry)
+        self.search_entry.bind("<FocusIn>", lambda e: self.search_address())
 
         # creates map container
         map_container = CTkFrame(container, fg_color=self.cget("fg_color"))
@@ -84,18 +87,33 @@ class MapsMenu(CTkFrame):
 
         # creates search results menu
         self.search_results_menu = CTkFrame(map_container, width=250)
-        self.start_navigation_button = TSCTkButton(self.search_results_menu, text="Start Navigation", font=("Arial", 20), command=self.start_navigation)
-        close = TSCTkButton(self.search_results_menu, text="x", width=12, font=("Arial", 20), command=self.close_search_menu)
+        self.search_start_navigation_button = TSCTkButton(self.search_results_menu, text="Start Navigation", font=("Arial", 20), command=self.start_navigation)
+        close = TSCTkButton(self.search_results_menu, text="x", width=12, font=("Arial", 20), command=lambda: self.close_menu(self.search_results_menu))
         self.search_results_container = CTkScrollableFrame(self.search_results_menu, fg_color=self.search_results_menu.cget("fg_color"))
 
         # places the search results menu and configures the grid
         self.search_results_menu.grid_propagate(False)
-        self.start_navigation_button.grid(row=0, column=0, sticky="ew", pady=(5, 0), padx=5)
+        self.search_start_navigation_button.grid(row=0, column=0, sticky="ew", pady=(5, 0), padx=5)
         close.grid(row=0, column=1, sticky="ne", pady=(5, 0), padx=(0, 5))
         self.search_results_container.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
         self.search_results_menu.rowconfigure(1, weight=1)
         self.search_results_menu.columnconfigure(0, weight=1)
         self.search_results_container.columnconfigure(1, weight=1)
+
+        # creates saved routes menu
+        self.saved_routes_menu = CTkFrame(map_container, width=250)
+        self.saved_start_navigation_button = TSCTkButton(self.saved_routes_menu, text="Start Navigation", font=("Arial", 20), command=self.start_navigation)
+        close = TSCTkButton(self.saved_routes_menu, text="x", width=12, font=("Arial", 20), command=lambda: self.close_menu(self.saved_routes_menu))
+        self.saved_routes_container = CTkScrollableFrame(self.saved_routes_menu, fg_color=self.saved_routes_menu.cget("fg_color"))
+
+        # places the saved routes menu and configures the grid
+        self.saved_routes_menu.grid_propagate(False)
+        self.saved_start_navigation_button.grid(row=0, column=0, sticky="ew", pady=(5, 0), padx=5)
+        close.grid(row=0, column=1, sticky="ne", pady=(5, 0), padx=(0, 5))
+        self.saved_routes_container.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
+        self.saved_routes_menu.rowconfigure(1, weight=1)
+        self.saved_routes_menu.columnconfigure(0, weight=1)
+        self.saved_routes_container.columnconfigure(1, weight=1)
 
         # creates the navigation menu
         self.navigation_menu = CTkFrame(map_container)
@@ -168,7 +186,6 @@ class MapsMenu(CTkFrame):
         @param reroute: determines if the current route needs to be rerouted
         """
 
-
         # handles reroute
         self.active_route.end() if self.active_route else None
         if reroute:
@@ -178,6 +195,7 @@ class MapsMenu(CTkFrame):
         # handles non-reroutes
         else:
             self.search_results_menu.pack_forget()
+            self.saved_routes_menu.pack_forget()
             self.navigation_menu.pack(side="right", fill="y", padx=(5, 0))
             self.search_entry.delete(0, "end")
             self.active_route = self.map_widget.promote_POI()
@@ -251,38 +269,17 @@ class MapsMenu(CTkFrame):
         self.navigation_container.grid(row=2, column=1, sticky="nsew", padx=(0, 5), pady=(0, 5))
         self.hide_navigation_button.configure(text="▸", command=self.hide_navigation_menu)
 
-    def select_search_result(self):
+    def select_destination(self, button):
         """
-        updates the UI when the user selects a search result
+        updates the UI when the user selects a destination
+
+        @param button: the start route button that will be enabled
         """
 
         waypoint = loads(self.selected_waypoint.get())
         route = RouteManager(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"])
-        self.start_navigation_button.configure(state="normal")
+        button.configure(state="normal")
         self.map_widget.set_POI(route)
-
-    def search_address(self):
-        """
-        handles when the user is searching for an address
-        """
-
-        # does nothing if no text entered
-        if not self.search_entry.get().strip():
-            return
-
-        # clears old results
-        self.navigation_menu.pack_forget()
-        self.selected_waypoint.set("")
-        self.search_results_menu.pack(side="right", fill="y", padx=(5, 0))
-        self.start_navigation_button.configure(state="disabled")
-        self.map_widget.delete_POI()
-        for widget in self.search_results_container.winfo_children():
-            widget.destroy()
-
-        # starts address search
-        label = CTkLabel(self.search_results_container, text="Searching...", font=("Arial", 10))
-        label.grid(row=0, column=1)
-        self.fg_job_manager.queue_address_search(self.search_entry.get(), self.populate_search_results)
 
     def populate_search_results(self, address, results):
         """
@@ -310,7 +307,7 @@ class MapsMenu(CTkFrame):
         # draws results to screen
         separator = None
         for row, result in enumerate(results):
-            button = CTkRadioButton(self.search_results_container, text="", width=10, variable=self.selected_waypoint, value=dumps(result), command=self.select_search_result)
+            button = CTkRadioButton(self.search_results_container, text="", width=10, variable=self.selected_waypoint, value=dumps(result), command=lambda: self.select_destination(self.search_start_navigation_button))
             label = CTkLabel(self.search_results_container, text=result["display_name"], font=("Arial", 10), wraplength=185, justify="left")
             label.bind("<Button-1>", lambda e, btn=button: btn.invoke())
             separator = CTkFrame(self.search_results_container, height=2)
@@ -322,13 +319,54 @@ class MapsMenu(CTkFrame):
         separator.destroy() if separator else None
         self.bind_focus(self.search_results_container)
 
-    def close_search_menu(self):
+    def search_address(self):
+        """
+        handles when the user is searching for an address
+        """
+
+        # does nothing if no text entered
+        if not self.search_entry.get().strip():
+            return
+
+        # clears old results
+        self.navigation_menu.pack_forget()
+        self.saved_routes_menu.pack_forget()
+        self.selected_waypoint.set("")
+        self.search_results_menu.pack(side="right", fill="y", padx=(5, 0))
+        self.search_start_navigation_button.configure(state="disabled")
+        self.map_widget.delete_POI()
+        for widget in self.search_results_container.winfo_children():
+            widget.destroy()
+
+        # starts address search
+        label = CTkLabel(self.search_results_container, text="Searching...", font=("Arial", 10))
+        label.grid(row=0, column=1)
+        self.fg_job_manager.queue_address_search(self.search_entry.get(), self.populate_search_results)
+
+    def show_saved_menu(self):
+        """
+        displays the saved routes menu
+
+        todo populate saved menu, add way to save/delete saved routes
+        """
+
+        # clears old results
+        self.navigation_menu.pack_forget()
+        self.search_results_menu.pack_forget()
+        self.selected_waypoint.set("")
+        self.saved_routes_menu.pack(side="right", fill="y", padx=(5, 0))
+        self.saved_start_navigation_button.configure(state="disabled")
+        self.map_widget.delete_POI()
+
+    def close_menu(self, menu):
         """
         closes the search menu popup
+
+        @param menu: the menu to close
         """
 
         self.map_widget.delete_POI()
-        self.search_results_menu.pack_forget()
+        menu.pack_forget()
         self.navigation_menu.pack(side="right", fill="y", padx=(5, 0)) if self.active_route else None
 
     def destroy(self):

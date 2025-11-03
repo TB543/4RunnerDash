@@ -89,7 +89,8 @@ class FGJobManager(ThreadPoolExecutor):
 
         return NavigationAPI.geocode(address)
 
-    def routing_job(self, destination):
+    @staticmethod
+    def routing_job(destination):
         """
         the job for routing, queries the navigation api and waits for the response
 
@@ -97,3 +98,5 @@ class FGJobManager(ThreadPoolExecutor):
 
         @return: the response from the navigation api containing the route to the destination
         """
+
+        return NavigationAPI.navigate(destination)
