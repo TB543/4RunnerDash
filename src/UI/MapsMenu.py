@@ -168,21 +168,21 @@ class MapsMenu(CTkFrame):
         @param reroute: determines if the current route needs to be rerouted
         """
 
+
         # handles reroute
+        self.active_route.end() if self.active_route else None
         if reroute:
             self.map_widget.destination_path.delete()
             self.map_widget.destination_path = self.map_widget.set_path(self.active_route.path, color="#3E69CB")
-        else:
-            self.search_entry.delete(0, "end")
 
-        # starts the routing and displays route on UI
-        self.active_route.end() if self.active_route else None
-        self.active_route = self.map_widget.promote_POI() if not reroute else self.active_route
+        # handles non-reroutes
+        else:
+            self.search_results_menu.pack_forget()
+            self.navigation_menu.pack(side="right", fill="y", padx=(5, 0))
+            self.search_entry.delete(0, "end")
+            self.active_route = self.map_widget.promote_POI()
 
         # removes old instructions
-        self.search_results_menu.pack_forget()
-        self.navigation_menu.pack(side="right", fill="y", padx=(5, 0))
-        self.show_navigation_menu() if not reroute else None
         for widget in self.navigation_container.winfo_children():
             widget.destroy()
 
@@ -265,6 +265,10 @@ class MapsMenu(CTkFrame):
         """
         handles when the user is searching for an address
         """
+
+        # does nothing if no text entered
+        if not self.search_entry.get().strip():
+            return
 
         # clears old results
         self.navigation_menu.pack_forget()

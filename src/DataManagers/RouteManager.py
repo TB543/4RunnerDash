@@ -93,9 +93,7 @@ class RouteManager:
 
         # handles when the user is too far off course
         if offset > .0006:
-            if not (navigation := NavigationAPI.navigate(self.coords)):
-                return
-            self.__init__(*self.coords, self.name, navigation)
+            self.__init__(*self.coords, self.name)
             self.reroute_callback(True)
             return
         
@@ -146,10 +144,6 @@ class RouteManager:
 
         @throws attribute error if already running
         """
-
-        # handles when route is already running
-        if self.gps_callback is not None:
-            raise AttributeError("Route Already Started")
 
         # starts the route
         self.eta_callback = eta
