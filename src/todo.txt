@@ -7,7 +7,6 @@ media player bg same color as album art
 car image for position marker
 shortcuts for addresses like work home etc
 caps lock shouldnt shift numbers
-add way to make current navigation presist across reboot
 handle route not found
 set map zoom based on velocity
 add way to add stops
@@ -31,3 +30,4 @@ tileserver switch link for dark mode
 retry obd connection on fail
 save connected bluetooth devices to auto connect
 non blockling tts and routing
+routes auto end when complete

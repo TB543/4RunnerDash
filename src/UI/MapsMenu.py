@@ -135,6 +135,12 @@ class MapsMenu(CTkFrame):
         route_miles_label.grid(row=1, column=2, stick="n")
         self.bind_focus(self)
 
+        # resumes route if reboot before ended
+        if "current" in RouteManager.routes:
+            route = RouteManager(**RouteManager.routes["current"])
+            self.map_widget.set_POI(route)
+            self.start_navigation()
+
     def bind_focus(self, root):
         """
         recursively ensures that every element gains focus when it is clicked so entry can be clicked out of 
@@ -249,13 +255,8 @@ class MapsMenu(CTkFrame):
         updates the UI when the user selects a search result
         """
 
-        # handles no route found 
         waypoint = loads(self.selected_waypoint.get())
-        if not (navigation := NavigationAPI.navigate((float(waypoint["lat"]), float(waypoint["lon"])))):
-            return
-
-        # updates UI with selected search result
-        route = RouteManager(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"], navigation)
+        route = RouteManager(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"])
         self.start_navigation_button.configure(state="normal")
         self.map_widget.set_POI(route)
 

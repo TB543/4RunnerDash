@@ -3,6 +3,7 @@ from shapely import STRtree, LineString, Point
 from datetime import timedelta, datetime
 from TTS.api import TTS
 from playsound import playsound
+from json import load, dump
 
 
 class RouteManager:
@@ -10,24 +11,32 @@ class RouteManager:
     a class to manage a route to a destination and announce instructions
     """
 
+    # sets fields
     tts = TTS("tts_models/en/ljspeech/speedy-speech")
     ANNOUNCEMENTS = {
         1609.344: "In 1 mile",  # note: keys here are in meters, ie 1609.344 meters is 1 mile
         304.8: "In 1000 feet"
     }
 
-    def __init__(self, lat, lon, name, navigation):
+    # loads saved routes from file
+    try:
+        with open("AppData/routes.json", "r") as f:
+            routes = load(f)
+    except:
+        routes = {"saved": {}}
+
+    def __init__(self, lat, lon, name):
         """
         creates the route object
 
         @param lat: the latitude of the destination
         @param lon: the longitude of the destination
         @param name: the name of the destination
-        @param navigation: a navigation json response from graphhopper
         """
 
         # fields
         self.coords = (lat, lon)
+        navigation = NavigationAPI.navigate(self.coords)
         self.name = name
         self.path = [(lat, lon) for lon, lat in navigation["points"]["coordinates"]]
         self.distance = navigation["distance"]
@@ -150,6 +159,7 @@ class RouteManager:
         self.instruction_miles_callbacks = callbacks
         self.update_loop(NavigationAPI.gps_coords)
         self.gps_callback = NavigationAPI.add_gps_callback(self.update_loop)
+        self.save(self.name, *self.coords, current_route=True)
 
     def end(self):
         """
@@ -158,4 +168,39 @@ class RouteManager:
 
         if self.gps_callback is not None:
             NavigationAPI.remove_gps_callback(self.gps_callback)
+            self.delete(current_route=True)
             self.gps_callback = None
+
+    @classmethod
+    def save(cls, name, lat, lon, current_route=False):
+        """
+        saves a route for quick access
+
+        @param name: the display name of the destination
+        @param lat: the latitude of the destination
+        @param lon: the longitude of the destination
+        @param current_route: a flag to determine if the route will persist across reboots
+        """
+
+        if current_route:
+            cls.routes["current"] = {"lat": lat, "lon": lon, "name": name}
+        else:
+            cls.routes["saved"][name] = {"lat": lat, "lon": lon}
+        with open("AppData/routes.json", "w") as f:
+            dump(cls.routes, f, indent=4)
+
+    @classmethod
+    def delete(cls, name=None, current_route=False):
+        """
+        deletes a route from the saved routes
+
+        @param name: the route to delete
+        @param current_route: a flag to determine if the current route should be cleared
+        """
+
+        if current_route:
+            cls.routes.pop("current")
+        elif name is not None:
+            cls.routes["saved"].pop(name)
+        with open("AppData/routes.json", "w") as f:
+            dump(cls.routes, f, indent=4)
