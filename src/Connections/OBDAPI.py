@@ -111,4 +111,5 @@ class OBDAPI(Async):
             callbacks are processed while shutting down
         """
 
+        MileManger.save()
         self.close()

@@ -65,7 +65,6 @@ class MileManger:
             self.callback(round(MILE_DELTAS[self.key], 2))
         except:
             pass
-        MileManger.save()
 
     @classmethod
     def add_miles(cls, miles):
@@ -81,7 +80,6 @@ class MileManger:
                 manager.callback(round(manager.value - cls.current_miles, 2))
             except:
                 continue
-        cls.save()
 
     @classmethod
     def save(cls):

@@ -157,9 +157,8 @@ class RouteManager:
         self.miles_callback = miles
         self.reroute_callback = reroute
         self.instruction_miles_callbacks = callbacks
-        self.update_loop(NavigationAPI.gps_coords)
+        # self.update_loop(NavigationAPI.gps_coords)
         self.gps_callback = NavigationAPI.add_gps_callback(self.update_loop)
-        self.save(self.name, *self.coords, current_route=True)
 
     def end(self):
         """
@@ -168,7 +167,7 @@ class RouteManager:
 
         if self.gps_callback is not None:
             NavigationAPI.remove_gps_callback(self.gps_callback)
-            self.delete(current_route=True)
+            self.delete(current_route=True) if "current" in RouteManager.routes else None
             self.gps_callback = None
 
     @classmethod

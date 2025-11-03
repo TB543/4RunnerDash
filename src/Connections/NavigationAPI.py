@@ -5,6 +5,7 @@ from threading import Thread
 from sys import argv
 from time import sleep
 from math import atan2, degrees
+from json import load, dump
 try:
     from bmm150 import BMM150, PresetMode
 except ModuleNotFoundError:
@@ -80,6 +81,13 @@ class NavigationAPI:
         if gps:
             gps.close()
 
+    # remaining class fields
+    GRAPH_HOPPER_URL = "http://localhost:8989/route"
+    compass = BMM150(PresetMode.HIGHACCURACY)
+    callbacks = []
+    thread = Thread(target=gps_read_loop, daemon=True)
+    running = True
+
     # use internet for apis when in debug mode
     if len(argv) == 2 and argv[1] == "dev":
         TILE_SERVER_URL = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -90,13 +98,12 @@ class NavigationAPI:
         TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
         NOMINATIM_URL = "http://localhost:8088/search"
 
-    # remaining class fields
-    GRAPH_HOPPER_URL = "http://localhost:8989/route"
-    compass = BMM150(PresetMode.HIGHACCURACY)
-    gps_coords = (0, 0)
-    callbacks = []
-    thread = Thread(target=gps_read_loop, daemon=True)
-    running = True
+    # attempts to read previous gps coords from file
+    try:
+        with open("AppData/gps.json", "r") as f:
+            gps_coords = load(f)
+    except:
+        gps_coords = (0, 0)
 
     def __init__(self, map_widget):
         """
@@ -196,6 +203,11 @@ class NavigationAPI:
             callbacks are processed while shutting down
         """
 
+        # writes coords to file
+        with open("AppData/gps.json", "w") as f:
+            dump(cls.gps_coords, f, indent=4)
+
+        # shuts down gps read thread
         cls.running = False
         while cls.thread.is_alive():
             root.update()

@@ -157,6 +157,7 @@ class MapsMenu(CTkFrame):
         """
 
         self.active_route.end()
+        self.active_route = None
         self.navigation_menu.pack_forget()
         self.map_widget.delete_destination()
 
@@ -331,5 +332,6 @@ class MapsMenu(CTkFrame):
         overrides the destroy method to also shut down the NavigationAPI connection
         """
 
+        RouteManager.save(self.active_route.name, *self.active_route.coords, current_route=True) if self.active_route else None
         NavigationAPI.shutdown(self)
         super().destroy()
