@@ -139,7 +139,8 @@ class MapsMenu(CTkFrame):
         route_miles_label.grid(row=1, column=2, stick="n")
         self.bind_focus(self)
 
-        # resumes route if reboot before ended
+        # reads saved routes from file
+        self.after(0, lambda: self.populate_destinations(self.saved_destinations_container, [{"display_name": k, **v} for k, v in RouteManager.routes["saved"].items()]))
         if "current" in RouteManager.routes:
             route = RouteManager(**RouteManager.routes["current"])
             self.map_widget.set_POI(route)
@@ -164,45 +165,41 @@ class MapsMenu(CTkFrame):
         # starts address search
         label = CTkLabel(self.search_destinations_container, text="Searching...", font=("Arial", 10))
         label.grid(row=0, column=1)
-        self.fg_job_manager.queue_address_search(self.search_entry.get(), self.populate_search_results)
+        self.fg_job_manager.queue_address_search(self.search_entry.get(), lambda a, r: self.after(0, lambda: self.populate_destinations(self.search_destinations_container, r) if a == self.search_entry.get() else None))
 
-    def populate_search_results(self, address, results):
+    def populate_destinations(self, container, destinations):
         """
         the callback function when the search job has finished. populates the search results
 
-        @param address: the address searched for (ensured correct job is displayed)
-        @param results: the search results
+        @param container: the destinations container to fill
+        @param results: the list of destinations to fill the container with
         """
 
-        # ensures results are populated with correct job
-        if address != self.search_entry.get():
-            return
-
         # handles when results contains an error
-        if isinstance(results, str):
-            label = CTkLabel(self.search_destinations_container, text=results, font=("Arial", 10))
+        if isinstance(destinations, str):
+            label = CTkLabel(container, text=destinations, font=("Arial", 10))
             label.grid(row=0, column=1)
             return
 
         # handles when no results are found
-        if not results:
-            label = CTkLabel(self.search_destinations_container, text="No Results Found...", font=("Arial", 10))
+        if not destinations:
+            label = CTkLabel(container, text="No Results Found..." if container == self.search_destinations_container else "No Saved Destinations...", font=("Arial", 10))
             label.grid(row=0, column=1)
 
         # draws results to screen
         separator = None
-        for row, result in enumerate(results):
-            button = CTkRadioButton(self.search_destinations_container, text="", width=10, variable=self.selected_waypoint, value=dumps(result), command=lambda: self.select_destination(self.start_navigation_button))
-            label = CTkLabel(self.search_destinations_container, text=result["display_name"], font=("Arial", 10), wraplength=185, justify="left")
+        for row, result in enumerate(destinations):
+            button = CTkRadioButton(container, text="", width=10, variable=self.selected_waypoint, value=dumps(result), command=lambda: self.select_destination(self.start_navigation_button))
+            label = CTkLabel(container, text=result["display_name"], font=("Arial", 10), wraplength=185, justify="left")
             label.bind("<Button-1>", lambda e, btn=button: btn.invoke())
-            separator = CTkFrame(self.search_destinations_container, height=2)
+            separator = CTkFrame(container, height=2)
             button.grid(row=row * 2, column=0, sticky="ns")
             label.grid(row=row * 2, column=1, sticky="w")
             separator.grid(row=(row * 2) + 1, column=0, columnspan=2, sticky="ew", pady=5)
 
         # clean up
         separator.destroy() if separator else None
-        self.bind_focus(self.search_destinations_container)
+        self.bind_focus(container)
 
     def select_destination(self, button):
         """
