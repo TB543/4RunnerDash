@@ -101,7 +101,7 @@ class NavigationAPI:
     # attempts to read previous gps coords from file
     try:
         with open("AppData/gps.json", "r") as f:
-            gps_coords = load(f)
+            gps_coords = load(f)["coords"]
     except:
         gps_coords = (0, 0)
 
@@ -205,7 +205,7 @@ class NavigationAPI:
 
         # writes coords to file
         with open("AppData/gps.json", "w") as f:
-            dump(cls.gps_coords, f, indent=4)
+            dump({"coords": cls.gps_coords}, f, indent=4)
 
         # shuts down gps read thread
         cls.running = False
