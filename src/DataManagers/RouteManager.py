@@ -164,36 +164,30 @@ class RouteManager:
             self.delete(current_route=True) if "current" in RouteManager.routes else None
             self.gps_callback = None
 
-    @classmethod
-    def save(cls, name, lat, lon, current_route=False):
+    def save(self, current_route=False):
         """
-        saves a route for quick access
+        saves the route for quick access
 
-        @param name: the display name of the destination
-        @param lat: the latitude of the destination
-        @param lon: the longitude of the destination
         @param current_route: a flag to determine if the route will persist across reboots
         """
 
         if current_route:
-            cls.routes["current"] = {"lat": lat, "lon": lon, "name": name}
+            RouteManager.routes["current"] = {"lat": self.coords[0], "lon": self.coords[1], "name": self.name}
         else:
-            cls.routes["saved"][name] = {"lat": lat, "lon": lon}
+            RouteManager.routes["saved"][self.name] = {"lat": self.coords[0], "lon": self.coords[1]}
         with open("AppData/routes.json", "w") as f:
-            dump(cls.routes, f, indent=4)
+            dump(RouteManager.routes, f, indent=4)
 
-    @classmethod
-    def delete(cls, name=None, current_route=False):
+    def delete(self, current_route=False):
         """
-        deletes a route from the saved routes
+        deletes the route from the saved routes
 
-        @param name: the route to delete
         @param current_route: a flag to determine if the current route should be cleared
         """
 
         if current_route:
-            cls.routes.pop("current")
-        elif name is not None:
-            cls.routes["saved"].pop(name)
+            RouteManager.routes.pop("current")
+        else:
+            RouteManager.routes["saved"].pop(self.name)
         with open("AppData/routes.json", "w") as f:
-            dump(cls.routes, f, indent=4)
+            dump(RouteManager.routes, f, indent=4)

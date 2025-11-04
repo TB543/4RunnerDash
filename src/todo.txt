@@ -5,7 +5,6 @@ map pinch to zoom - make map take vector tiles and render them directly on the c
 add visuals for virtual keyboard for caps lock and shift and gray out blank keys
 media player bg same color as album art
 car image for position marker
-shortcuts for addresses like work home etc
 caps lock shouldnt shift numbers
 handle route not found
 set map zoom based on velocity
@@ -21,7 +20,6 @@ reroute is expensive and will keep trying if still to far from road
 car in reverse = negative miles?
 announce bluetooth device connected
 load album art on device connect
-automate insurancec card update
 user set miles until change should not reset on update
 add cad file to readme + repo
 make boot-up faster at least for UI
@@ -31,3 +29,5 @@ retry obd connection on fail
 save connected bluetooth devices to auto connect
 non blockling tts and routing
 routes auto end when complete
+save route - allow user to name route (home, work, etc) - warning about overrides
+delete route - confirmation
