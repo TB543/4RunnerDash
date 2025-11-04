@@ -32,8 +32,7 @@ class VirtualKeyboard(CTkFrame):
 
     # list of commands for the keys
     COMMANDS = {
-        ('Back',): lambda s: lambda: s.entry.delete(s.entry.index("insert") - 1) if s.entry.index(
-            "insert") != 0 else None,
+        ('Back',): lambda s: lambda: s.entry.delete(s.entry.index("insert") - 1) if s.entry.index("insert") != 0 else None,
         ('Tab',): lambda s: lambda: s.key(('\t', '\t')),
         ('Caps',): lambda s: lambda: s.caps_lock(),
         ('Enter',): lambda s: lambda: s.enter(),
@@ -76,8 +75,7 @@ class VirtualKeyboard(CTkFrame):
             # creates buttons
             column = 0
             for key in keys:
-                command = VirtualKeyboard.COMMANDS[key](self) if key in VirtualKeyboard.COMMANDS else lambda \
-                    k=key: self.key(k)
+                command = VirtualKeyboard.COMMANDS[key](self) if key in VirtualKeyboard.COMMANDS else lambda k=key: self.key(k)
                 button = TSCTkButton(self, text=key[0], font=("Arial", 20), command=command)
                 button.metadata = key
                 columns = VirtualKeyboard.COLUMNS[key] if key in VirtualKeyboard.COLUMNS else 4
