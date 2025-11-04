@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar, DoubleVar
+from customtkinter import CTkFrame, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar, DoubleVar, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
 from UI.MapWidget import MapWidget
 from Connections.NavigationAPI import NavigationAPI
@@ -28,17 +28,19 @@ class MapsMenu(CTkFrame):
         7:  "⬈",  # keep right
     }
 
-    def __init__(self, master, fg_job_manager, **kwargs):
+    def __init__(self, master, fg_job_manager, appearance_manager, **kwargs):
         """
         Initializes the settings menu frame.
         
         @param master: the parent widget
         @param fg_job_manager: the fg_job_manager object for queuing navigation api jobs
+        @param appearance_manager: the appearance_manager object for handling scaling
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
         super().__init__(master, **kwargs)
         self.fg_job_manager = fg_job_manager
+        self.appearance_manager = appearance_manager
         self.active_route = None
 
         # creates spacer widgets and sets grid layout
@@ -54,6 +56,8 @@ class MapsMenu(CTkFrame):
         container = CTkFrame(self, fg_color=self.cget("fg_color"))
         main_menu.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
         container.grid(row=1, column=1, columnspan=7, sticky="nsew", pady=10)
+        self.save_destination_popup = CTkFrame(self, border_width=2)
+        self.delete_destination_popup = CTkFrame(self, border_width=2)
 
         # creates search container
         textvariable = StringVar(self)
@@ -71,8 +75,8 @@ class MapsMenu(CTkFrame):
         textvariable.trace_add("write", lambda *args: self.search_address())
         self.search_entry._is_focused = False
         self.search_entry._entry.configure(cursor="none")
-        self.keyboard = VirtualKeyboard(self, self.search_entry)
-        self.search_entry.bind("<FocusIn>", lambda e: self.search_address())
+        self.search_keyboard = VirtualKeyboard(self, self.search_entry)
+        self.search_entry.bind("<FocusIn>", lambda e: self.search_address(), add="+")
 
         # creates map container
         map_container = CTkFrame(container, fg_color=self.cget("fg_color"))
@@ -88,20 +92,43 @@ class MapsMenu(CTkFrame):
         # creates destinations menu
         self.destinations_menu = CTkFrame(map_container, width=250)
         self.start_navigation_button = TSCTkButton(self.destinations_menu, text="Start Navigation", font=("Arial", 20), command=self.start_navigation)
-        self.manage_saved_routes_button = TSCTkButton(self.destinations_menu, width=12, font=("Arial", 20), command=self.manage_saved_routes)
+        self.manage_saved_destinations_button = TSCTkButton(self.destinations_menu, width=12, font=("Arial", 20), command=self.manage_saved_routes)
         close = TSCTkButton(self.destinations_menu, text="x", width=12, font=("Arial", 20), command=lambda: self.close_destinations_menu())
         self.search_destinations_container = CTkScrollableFrame(self.destinations_menu, fg_color=self.destinations_menu.cget("fg_color"))
         self.saved_destinations_container = CTkScrollableFrame(self.destinations_menu, fg_color=self.destinations_menu.cget("fg_color"))
 
-        # places the search results menu and configures the grid
+        # places the destinations menu and configures the grid
         self.destinations_menu.grid_propagate(False)
         self.start_navigation_button.grid(row=0, column=0, sticky="ew", pady=(5, 0), padx=(5, 0))
-        self.manage_saved_routes_button.grid(row=0, column=1, pady=(5, 0), padx=5)
+        self.manage_saved_destinations_button.grid(row=0, column=1, pady=(5, 0), padx=5)
         close.grid(row=0, column=2, sticky="ne", pady=(5, 0), padx=(0, 5))
         self.destinations_menu.rowconfigure(1, weight=1)
         self.destinations_menu.columnconfigure(0, weight=1)
         self.search_destinations_container.columnconfigure(1, weight=1)
         self.saved_destinations_container.columnconfigure(1, weight=1)
+
+        # creates the save route popup
+        name_label = CTkLabel(self.save_destination_popup, text="Name This Destination:", font=("Arial", 20))
+        self.saved_destination_name = CTkEntry(self.save_destination_popup, placeholder_text="e.g., Home, Work, etc.", font=("Arial", 20), takefocus=0)
+        confirm_button = TSCTkButton(self.save_destination_popup, text="Save", font=("Arial", 20), command=self.save_destination)
+        cancel_button = TSCTkButton(self.save_destination_popup, text="Cancel", font=("Arial", 20), command=self.save_destination_popup.place_forget)
+        name_label.pack(anchor="sw", padx=15, pady=(65, 0))
+        self.saved_destination_name.pack(anchor="n", expand=True, fill="x", padx=15, pady=5)
+        confirm_button.pack(side="left", anchor="center", expand=True, fill="both", padx=10, pady=10)
+        cancel_button.pack(side="right", anchor="center", expand=True, fill="both", padx=10, pady=10)
+
+        # configure up name entry keyboard
+        self.saved_destination_name._is_focused = False
+        self.saved_destination_name._entry.configure(cursor="none")
+        self.name_keyboard = VirtualKeyboard(self, self.saved_destination_name, self.save_destination)
+
+        # creates the delete route popups
+        confirm_label = CTkLabel(self.delete_destination_popup, text="Delete Selected Route?", font=("Arial", 20))
+        confirm_button = TSCTkButton(self.delete_destination_popup, text="Confirm", font=("Arial", 20), command=self.delete_destination)
+        cancel_button = TSCTkButton(self.delete_destination_popup, text="Cancel", font=("Arial", 20), command=self.delete_destination_popup.place_forget)
+        confirm_label.pack(anchor="center", expand=True, fill="both", padx=5, pady=5)
+        confirm_button.pack(side="left", anchor="center", expand=True, fill="both", padx=10, pady=10)
+        cancel_button.pack(side="right", anchor="center", expand=True, fill="both", padx=10, pady=10)
 
         # creates the navigation menu
         self.navigation_menu = CTkFrame(map_container)
@@ -177,6 +204,10 @@ class MapsMenu(CTkFrame):
         @param results: the list of destinations to fill the container with
         """
 
+        # clears previous widgets
+        for widget in container.winfo_children():
+            widget.destroy()
+
         # handles when results contains an error
         if isinstance(destinations, str):
             label = CTkLabel(container, text=destinations, font=("Arial", 10))
@@ -187,10 +218,6 @@ class MapsMenu(CTkFrame):
         if not destinations:
             label = CTkLabel(container, text="No Results Found..." if container == self.search_destinations_container else "No Saved Destinations...", font=("Arial", 10))
             label.grid(row=0, column=1)
-
-        # clears previous widgets
-        for widget in container.winfo_children():
-            widget.destroy()
 
         # draws results to screen
         separator = None
@@ -212,25 +239,47 @@ class MapsMenu(CTkFrame):
         updates the UI when the user selects a destination
         """
 
+        self.save_destination_popup.place_forget()
+        self.delete_destination_popup.place_forget()
+        self.saved_destination_name.delete(0, "end")
         waypoint = loads(self.selected_waypoint.get())
-        route = RouteManager(float(waypoint["lat"]), float(waypoint["lon"]), waypoint["display_name"])
+        route = RouteManager(waypoint["display_name"], float(waypoint["lat"]), float(waypoint["lon"]))
         self.start_navigation_button.configure(state="normal")
-        self.manage_saved_routes_button.configure(state="normal")
+        self.manage_saved_destinations_button.configure(state="normal")
         self.map_widget.set_POI(route)
 
     def manage_saved_routes(self):
         """
-        handles saving and deleting routes
+        opens the respective popup window for saving/deleting a destination
         """
 
-        if self.manage_saved_routes_button.cget("text") == "💾":
-            self.map_widget.pending_route.save()
+        if self.manage_saved_destinations_button.cget("text") == "💾":
+            self.save_destination_popup.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center")
+            self.saved_destination_name.focus()
         else:
-            self.map_widget.pending_route.delete()
-            self.selected_waypoint.set("")
-            self.map_widget.delete_POI()
-            self.start_navigation_button.configure(state="disabled")
-            self.manage_saved_routes_button.configure(state="disabled")
+            self.delete_destination_popup.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center")
+        set_widget_scaling(self.appearance_manager.scaling)
+
+    def save_destination(self):
+        """
+        handles when the user saves a destination
+        """
+
+        self.map_widget.pending_route.save(self.saved_destination_name.get())
+        self.save_destination_popup.place_forget()
+        self.populate_destinations(self.saved_destinations_container, [{"display_name": k, **v} for k, v in RouteManager.routes["saved"].items()])
+
+    def delete_destination(self):
+        """
+        handles when the user deleted a saved destination
+        """
+
+        self.map_widget.pending_route.delete()
+        self.selected_waypoint.set("")
+        self.map_widget.delete_POI()
+        self.start_navigation_button.configure(state="disabled")
+        self.manage_saved_destinations_button.configure(state="disabled")
+        self.delete_destination_popup.place_forget()
         self.populate_destinations(self.saved_destinations_container, [{"display_name": k, **v} for k, v in RouteManager.routes["saved"].items()])
 
     def start_navigation(self, reroute=False):
@@ -249,6 +298,8 @@ class MapsMenu(CTkFrame):
         # handles non-reroutes
         else:
             self.destinations_menu.pack_forget()
+            self.save_destination_popup.place_forget()
+            self.delete_destination_popup.place_forget()
             self.navigation_menu.pack(side="right", fill="y", padx=(5, 0))
             self.search_entry.delete(0, "end")
             self.active_route = self.map_widget.promote_POI()
@@ -321,11 +372,13 @@ class MapsMenu(CTkFrame):
         self.selected_waypoint.set("")
         self.map_widget.delete_POI()
         self.start_navigation_button.configure(state="disabled")
-        self.manage_saved_routes_button.configure(state="disabled", text="💾" if container == self.search_destinations_container else "🗑")
+        self.manage_saved_destinations_button.configure(state="disabled", text="💾" if container == self.search_destinations_container else "🗑")
         self.search_destinations_container.grid_forget()
         self.saved_destinations_container.grid_forget()
         container.grid(row=1, column=0, columnspan=3, sticky="nsew", padx=5, pady=5)
         self.navigation_menu.pack_forget()
+        self.save_destination_popup.place_forget()
+        self.delete_destination_popup.place_forget()
         self.destinations_menu.pack(side="right", fill="y", padx=(5, 0))
 
     def close_destinations_menu(self):
@@ -335,6 +388,8 @@ class MapsMenu(CTkFrame):
 
         self.map_widget.delete_POI()
         self.destinations_menu.pack_forget()
+        self.save_destination_popup.place_forget()
+        self.delete_destination_popup.place_forget()
         self.navigation_menu.pack(side="right", fill="y", padx=(5, 0)) if self.active_route else None
 
     def hide_navigation_menu(self):
@@ -369,7 +424,7 @@ class MapsMenu(CTkFrame):
 
         root.bind("<Button-1>", lambda e: self.focus(), add="+")
         for widget in root.winfo_children():
-            if widget != self.keyboard and widget != self.search_entry:
+            if widget != self.search_keyboard and widget != self.search_entry and widget != self.name_keyboard and widget != self.saved_destination_name:
                 self.bind_focus(widget)
 
     def destroy(self):

@@ -29,5 +29,3 @@ retry obd connection on fail
 save connected bluetooth devices to auto connect
 non blockling tts and routing
 routes auto end when complete
-save route - allow user to name route (home, work, etc) - warning about overrides
-delete route - confirmation

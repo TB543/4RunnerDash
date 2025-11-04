@@ -14,7 +14,7 @@ class VirtualKeyboard(CTkFrame):
         (('Tab',), ('q', 'Q'), ('w', 'W'), ('e', 'E'), ('r', 'R'), ('t', 'T'), ('y', 'Y'), ('u', 'U'), ('i', 'I'), ('o', 'O'), ('p', 'P'), ('[', '{'), (']', '}'), ('\\', '|')),
         (('Caps',), ('a', 'A'), ('s', 'S'), ('d', 'D'), ('f', 'F'), ('g', 'G'), ('h', 'H'), ('j', 'J'), ('k', 'K'), ('l', 'L'), (';', ':'), ("'", '"'), ('Enter',)),
         (('Shift',), ('z', 'Z'), ('x', 'X'), ('c', 'C'), ('v', 'V'), ('b', 'B'), ('n', 'N'), ('m', 'M'), (',', '<'), ('.', '>'), ('/', '?'), ('Shift', 'Shift')),
-        ((' ',), (' ',), (' ',), ('Space',), (' ', ' '), ('←',), ('→',), (' ', ' '), (' ', ' '))
+        ((' ',), (' ',), (' ',), ('Space',), (' ', ' '), ('←',), ('→',), (' ', ' '), ('✖',))
     )
 
     # lists how many columns a given key takes up. default is 4
@@ -32,21 +32,23 @@ class VirtualKeyboard(CTkFrame):
 
     # list of commands for the keys
     COMMANDS = {
-        ('Back',): lambda s: lambda: s.entry.delete(s.entry.index("insert") - 1) if s.entry.index("insert") != 0 else None,
+        ('Back',): lambda s: lambda: s.entry.delete(s.entry.index("insert") - 1) if s.entry.index(
+            "insert") != 0 else None,
         ('Tab',): lambda s: lambda: s.key(('\t', '\t')),
         ('Caps',): lambda s: lambda: s.caps_lock(),
-        ('Enter',): lambda s: lambda: s.exit(),
+        ('Enter',): lambda s: lambda: s.enter(),
         ('Shift',): lambda s: lambda: s.shift(),
         ('Shift', 'Shift'): lambda s: lambda: s.shift(),
         ('Space',): lambda s: lambda: s.key((' ', ' ')),
         ('←',): lambda s: lambda: s.entry.icursor(s.entry.index("insert") - 1),
         ('→',): lambda s: lambda: s.entry.icursor(s.entry.index("insert") + 1),
+        ('✖',): lambda s: lambda: s.exit(),
     }
 
-    def __init__(self, master, entry, **kwargs):
+    def __init__(self, master, entry, callback=None, **kwargs):
         """
         Initializes the virtual keyboard.
-        
+
         @param master: the parent widget
         @param entry: the CTkEntry widget to send keystrokes to
         @param callback: the function to call when enter is pressed
@@ -56,6 +58,7 @@ class VirtualKeyboard(CTkFrame):
         # initializes superclass and sets fields
         super().__init__(master, **kwargs)
         self.entry = entry
+        self.callback = callback if callback else lambda: None
         self.key_index = 0
         self.caps = False
 
@@ -73,7 +76,8 @@ class VirtualKeyboard(CTkFrame):
             # creates buttons
             column = 0
             for key in keys:
-                command = VirtualKeyboard.COMMANDS[key](self) if key in VirtualKeyboard.COMMANDS else lambda k=key: self.key(k)
+                command = VirtualKeyboard.COMMANDS[key](self) if key in VirtualKeyboard.COMMANDS else lambda \
+                    k=key: self.key(k)
                 button = TSCTkButton(self, text=key[0], font=("Arial", 20), command=command)
                 button.metadata = key
                 columns = VirtualKeyboard.COLUMNS[key] if key in VirtualKeyboard.COLUMNS else 4
@@ -111,6 +115,14 @@ class VirtualKeyboard(CTkFrame):
 
         self.caps = False if self.caps else True
         self.shift() if (self.caps and self.key_index == 0) or ((not self.caps) and self.key_index == 1) else None
+
+    def enter(self):
+        """
+        handles when the user presses the enter key
+        """
+
+        self.exit()
+        self.callback()
 
     def exit(self):
         """

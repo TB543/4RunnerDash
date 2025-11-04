@@ -25,19 +25,19 @@ class RouteManager:
     except:
         routes = {"saved": {}}
 
-    def __init__(self, lat, lon, name):
+    def __init__(self, name, lat, lon):
         """
         creates the route object
 
+        @param name: the name of the destination
         @param lat: the latitude of the destination
         @param lon: the longitude of the destination
-        @param name: the name of the destination
         """
 
         # fields
+        self.name = name
         self.coords = (lat, lon)
         navigation = NavigationAPI.navigate(self.coords)
-        self.name = name
         self.path = [(lat, lon) for lon, lat in navigation["points"]["coordinates"]]
         self.distance = navigation["distance"]
         self.time = navigation["time"]
@@ -93,7 +93,7 @@ class RouteManager:
 
         # handles when the user is too far off course
         if offset > .0006:
-            self.__init__(*self.coords, self.name)
+            self.__init__(self.name, *self.coords)
             self.reroute_callback(True)
             return
         
@@ -164,17 +164,29 @@ class RouteManager:
             self.delete(current_route=True) if "current" in RouteManager.routes else None
             self.gps_callback = None
 
-    def save(self, current_route=False):
+    def save(self, name=None, current_route=False):
         """
         saves the route for quick access
 
+        @param name: the name to save the route as (overrides current route name)
         @param current_route: a flag to determine if the route will persist across reboots
         """
 
+        # saves route to dict
+        name = name if name else self.name
         if current_route:
             RouteManager.routes["current"] = {"lat": self.coords[0], "lon": self.coords[1], "name": self.name}
         else:
-            RouteManager.routes["saved"][self.name] = {"lat": self.coords[0], "lon": self.coords[1]}
+
+            # ensures no duplicate names
+            saved_name = name
+            i = 1
+            while saved_name in RouteManager.routes["saved"]:
+                saved_name = f"{name} ({i})"
+                i += 1
+            RouteManager.routes["saved"][saved_name] = {"lat": self.coords[0], "lon": self.coords[1]}
+
+        # writes to file
         with open("AppData/routes.json", "w") as f:
             dump(RouteManager.routes, f, indent=4)
 
