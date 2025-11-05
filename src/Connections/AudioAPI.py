@@ -1,5 +1,9 @@
-from time import sleep
-from time import strftime, gmtime
+from time import sleep, strftime, gmtime
+from queue import Queue
+from threading import Thread
+from contextlib import redirect_stdout
+from io import StringIO
+from playsound import playsound
 from DataManagers.BGJobManager import BGJobManager
 try:
     from pydbus import SystemBus
@@ -7,10 +11,11 @@ except ModuleNotFoundError:
     from Dev.Imports.pydbus import *
 
 
-class BluezAPI:
+class AudioAPI:
     """
     A class to communicate with the connected Bluetooth devices via bluetooth.
     handles playback controls and can retrieve information about current track and playback status.
+    additionally can spawn tts audio
     """
 
     def __init__(self):
@@ -27,6 +32,11 @@ class BluezAPI:
         self._playback_ratio = 0
         self._elapsed_time_str = "00:00"
         self._remaining_time_str = "00:00"
+
+        # starts tts job
+        self.tts_queue = Queue()
+        self.tts_thread = Thread(target=self.tts_worker)
+        self.tts_thread.start()
 
         # gets album art
         self.update_player()
@@ -78,11 +88,31 @@ class BluezAPI:
         except:
             self.player = None
 
+    def tts_worker(self):
+        """
+        a thread for processing tts playback
+        """
+
+        # import here to prevent blocking main thread
+        from TTS.api import TTS
+
+        # removes debug info
+        buffer = StringIO()
+        with redirect_stdout(buffer):
+            tts = TTS("tts_models/en/ljspeech/speedy-speech")
+
+        # pulls from job queue until job is None
+        while (job := self.tts_queue.get()) is not None:
+            tts.tts_to_file(job, file_path="AppData/tts.wav")
+            playsound("AppData/tts.wav")
+
     def shutdown(self):
         """
         shuts down the album art manager
         """
 
+        self.tts_queue.put(None)
+        self.tts_thread.join()
         self.art_manager.shutdown(cancel_futures=True)
 
     # ========================================== PLAYBACK CONTROLS ==========================================
@@ -225,7 +255,8 @@ class BluezAPI:
         """
 
         try:
-            self._remaining_time_str = strftime("%M:%S", gmtime((self.player.Track["Duration"] - self.player.Position) / 1000))
+            remaining = self.player.Track["Duration"] - self.player.Position
+            self._remaining_time_str = strftime("%M:%S", gmtime((0 if remaining < 0 else remaining) / 1000))
         except:
             self.update_player()
         return self._remaining_time_str

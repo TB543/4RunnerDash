@@ -1,8 +1,6 @@
 from Connections.NavigationAPI import NavigationAPI
 from shapely import STRtree, LineString, Point
 from datetime import timedelta, datetime
-from TTS.api import TTS
-from playsound import playsound
 from json import load, dump
 
 
@@ -12,7 +10,6 @@ class RouteManager:
     """
 
     # sets fields
-    tts = TTS("tts_models/en/ljspeech/speedy-speech")
     ANNOUNCEMENTS = {
         1609.344: "In 1 mile",  # note: keys here are in meters, ie 1609.344 meters is 1 mile
         304.8: "In 1000 feet"
@@ -25,18 +22,20 @@ class RouteManager:
     except:
         routes = {"saved": {}}
 
-    def __init__(self, name, lat, lon):
+    def __init__(self, name, lat, lon, audio_api):
         """
         creates the route object
 
         @param name: the name of the destination
         @param lat: the latitude of the destination
         @param lon: the longitude of the destination
+        @param audio_api: the audio api for instruction tts
         """
 
         # fields
         self.name = name
         self.coords = (lat, lon)
+        self.audio_api = audio_api
         navigation = NavigationAPI.navigate(self.coords)
         self.path = [(lat, lon) for lon, lat in navigation["points"]["coordinates"]]
         self.distance = navigation["distance"]
@@ -127,8 +126,7 @@ class RouteManager:
 
         # ensures only 1 announcement
         if announce:
-            RouteManager.tts.tts_to_file(f"{announce} {instruction['text']}.", file_path="AppData/tts.wav")
-            playsound("AppData/tts.wav")
+            self.audio_api.tts_queue.put(f"{announce} {instruction['text']}.")
 
     def start(self, eta, time, miles, reroute, callbacks):
         """

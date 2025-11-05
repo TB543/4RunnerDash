@@ -5,6 +5,7 @@ from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
 from os import environ, name
 from sys import argv
+from Connections.AudioAPI import AudioAPI
 from DataManagers.FGJobManager import FGJobManager
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
@@ -45,6 +46,7 @@ class MenuManager(CTk):
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()
+        self.audio_api = AudioAPI()
         self.fg_job_manager = FGJobManager(touch_screen)
         GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), self.shutdown_lock)
         release_api = ReleaseAPI(self.destroy)
@@ -53,8 +55,8 @@ class MenuManager(CTk):
         # creates the various menus
         self.menus = {
             "main": MainMenu(self, notification, self.fg_job_manager, self.appearance_manager.scaling),
-            "maps": MapsMenu(self, self.fg_job_manager, self.appearance_manager),
-            "music": MusicMenu(self),
+            "maps": MapsMenu(self, self.audio_api, self.fg_job_manager, self.appearance_manager),
+            "music": MusicMenu(self, self.audio_api),
             "obd": OBDMenu(self, self.appearance_manager),
             "settings": SettingsMenu(self, self.appearance_manager, release_api)
         }
@@ -107,6 +109,7 @@ class MenuManager(CTk):
         overrides the destroy method to also ensure the backend is stopped before shutdown
         """
 
+        self.audio_api.shutdown()
         self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
         super().destroy()
         print("Ending Debug Logging")

@@ -28,17 +28,19 @@ class MapsMenu(CTkFrame):
         7:  "⬈",  # keep right
     }
 
-    def __init__(self, master, fg_job_manager, appearance_manager, **kwargs):
+    def __init__(self, master, audio_api, fg_job_manager, appearance_manager, **kwargs):
         """
         Initializes the settings menu frame.
         
         @param master: the parent widget
+        @param audio_api: the audio api for map instructions tts
         @param fg_job_manager: the fg_job_manager object for queuing navigation api jobs
         @param appearance_manager: the appearance_manager object for handling scaling
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
         super().__init__(master, **kwargs)
+        self.audio_api = audio_api
         self.fg_job_manager = fg_job_manager
         self.appearance_manager = appearance_manager
         self.active_route = None
@@ -171,7 +173,7 @@ class MapsMenu(CTkFrame):
         # reads saved routes from file - note after is used here so window doesn't resize, not sure why it happens
         self.after(0, lambda: self.populate_destinations(self.saved_destinations_container, [{"display_name": k, **v} for k, v in RouteManager.routes["saved"].items()]))
         if "current" in RouteManager.routes:
-            route = RouteManager(**RouteManager.routes["current"])
+            route = RouteManager(**RouteManager.routes["current"], audio_api=self.audio_api)
             self.map_widget.set_POI(route)
             self.after(0, self.start_navigation)
 
@@ -243,7 +245,7 @@ class MapsMenu(CTkFrame):
         self.delete_destination_popup.place_forget()
         self.saved_destination_name.delete(0, "end")
         waypoint = loads(self.selected_waypoint.get())
-        route = RouteManager(waypoint["display_name"], float(waypoint["lat"]), float(waypoint["lon"]))
+        route = RouteManager(waypoint["display_name"], float(waypoint["lat"]), float(waypoint["lon"]), self.audio_api)
         self.start_navigation_button.configure(state="normal")
         self.manage_saved_destinations_button.configure(state="normal")
         self.map_widget.set_POI(route)
