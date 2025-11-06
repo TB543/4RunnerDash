@@ -1,5 +1,4 @@
 from base64 import b64encode
-from requests import get, post
 from os import environ
 
 
@@ -27,6 +26,7 @@ class SpotifyAPI:
         """
 
         # prepares api call
+        from requests import post  # lazy loaded for performance
         credentials = f"{self.client_id}:{self.client_secret}"
         credentials = b64encode(credentials.encode()).decode()
 
@@ -57,6 +57,7 @@ class SpotifyAPI:
         """
 
         # tries various combinations of requests with and without features
+        from requests import get  # lazy loaded for performance
         for i, artist_option in enumerate((artist, artist.split(",")[0])):
             for j, title_option in enumerate((title, title.split(" (feat")[0])):
                 try:

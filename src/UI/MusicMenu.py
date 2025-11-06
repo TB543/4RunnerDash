@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkLabel, CTkSlider, StringVar, DoubleVar, IntVar, CTkImage
+from customtkinter import CTkFrame, CTkLabel, CTkSlider, StringVar, DoubleVar, CTkImage
 from Dev.TSCTkButton import TSCTkButton
 from AppData import FPS
 

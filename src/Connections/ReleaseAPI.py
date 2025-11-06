@@ -1,8 +1,8 @@
-from requests import get
 from os import mkdir, execv, remove
 from shutil import rmtree
 from subprocess import check_output
 from datetime import datetime
+from threading import Thread, Lock
 
 
 class ReleaseAPI:
@@ -26,12 +26,40 @@ class ReleaseAPI:
         creates the release manager
 
         @param callback: the shutdown callback to call before updating
+        @param update_available: the callback when an update is found
         """
 
         # sets fields
         self.callback = shutdown
+        self.releases = None
+        self.update_available_callbacks = []
+        self.thread_lock = Lock()
+        Thread(target=self.get_releases).start()
+
+    def add_callback(self, func):
+        """
+        adds a callback function if an update is found
+
+        @param func: the callback function
+        """
+
+        with self.thread_lock:
+            if self.releases:
+                func()
+            else:
+                self.update_available_callbacks.append(func)
+
+    def get_releases(self):
+        """
+        checks if a new version is available and gets all the new releases
+
+        @param update_available: the callback when an update is found
+        """
+
+        # lazy load for performance
+        from requests import get
         current_release = check_output(["git", "describe", "--tags", "--abbrev=0"]).decode("utf-8").strip()
-        
+
         # pulls the latest release from GitHub
         try:
             releases = get(
@@ -45,20 +73,19 @@ class ReleaseAPI:
             self.releases = [release for release in releases if datetime.strptime(release["published_at"], "%Y-%m-%dT%H:%M:%SZ") > current_release_date]
             self.releases.sort(key=lambda release: datetime.strptime(release["published_at"], "%Y-%m-%dT%H:%M:%SZ"))
 
+            # performs callback functions if an update is found
+            if self.releases:
+                with self.thread_lock:
+                    for callback in self.update_available_callbacks:
+                        callback()
+                    self.update_available_callbacks = []
+
         # returns the current release if there is no internet connection
         except:
-            self.releases = None
+            return
 
-    def update_available(self):
-        """
-        checks if a new version is available
-
-        @return: True if a new version is available, False otherwise
-        """
-
-        return self.releases
-    
-    def download_patch(self, patch):
+    @staticmethod
+    def download_patch(patch):
         """
         downloads all the files for a given patch
 
@@ -96,7 +123,7 @@ class ReleaseAPI:
         try:
             with open("AppData/patch_notes.txt", "w") as f:
                 for release in self.releases:
-                    self.download_patch(release) if release["assets"] else None
+                    ReleaseAPI.download_patch(release) if release["assets"] else None
 
                     # generates patch notes
                     f.write(f"============================== {release['name']} ==============================\n")

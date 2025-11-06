@@ -140,7 +140,7 @@ class AppearanceManager:
         Changes the theme of the application.
 
         @param root: the root widget to apply the theme to
-        @param old_top_fg_color: the old theme, used to keep settings not
+        @param old_theme: the old theme, used to keep settings not
             auto applied by theme manager
         """
 

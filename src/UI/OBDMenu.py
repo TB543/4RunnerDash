@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, DoubleVar, CTkScrollableFrame, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
-from Connections.OBDAPI import OBDAPI
 from DataManagers.MileManager import MileManger
+from threading import Thread, Lock
 
 
 class OBDMenu(CTkFrame):
@@ -40,11 +40,9 @@ class OBDMenu(CTkFrame):
         # creates vars to hold obd data and binds them to the API
         mpg = DoubleVar(self)
         miles_until_empty = DoubleVar(self)
-        self.api = OBDAPI(
-            self,
-            lambda m: self.after(0, lambda: mpg.set(m)),
-            lambda e: self.after(0, lambda: miles_until_empty.set(e)),
-        )
+        self.api = None
+        self.api_thread = Thread(target=lambda: self.load_api(mpg, miles_until_empty))
+        self.api_thread.start()
 
         # creates widgets for mpg
         mpg_container = CTkFrame(container)
@@ -124,12 +122,25 @@ class OBDMenu(CTkFrame):
         self.codes_popup.columnconfigure(1, weight=1)
         self.codes_container.columnconfigure(1, weight=1)
 
+    def load_api(self, mpg, miles_until_empty):
+        """
+        loads the OBD scanner asynchronously for UI performance
+        """
+
+        from Connections.OBDAPI import OBDAPI
+        self.api = OBDAPI(
+            self,
+            lambda m: self.after(0, lambda: mpg.set(m)),
+            lambda e: self.after(0, lambda: miles_until_empty.set(e)),
+        )
+
     def get_codes(self):
         """
         gets the diagnostic trouble codes (DTCs) from the OBD-II interface and displays them in the UI
         """
 
         # places popup and clears old codes
+        self.api_thread.join()
         self.codes_popup.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center")
         set_widget_scaling(self.appearance_manager.scaling)
         for widget in self.codes_container.winfo_children():
@@ -156,5 +167,6 @@ class OBDMenu(CTkFrame):
         overrides the destroy method to also shut down the OBD connection
         """
 
+        self.api_thread.join()
         self.api.shutdown()
         super().destroy()

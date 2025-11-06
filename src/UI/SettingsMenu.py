@@ -47,7 +47,7 @@ class SettingsMenu(CTkFrame):
         scale_button.grid(row=1, column=5)
         shell_button.grid(row=1, column=7)
         back_button.grid(row=0, column=1, columnspan=7, pady=(10, 0), sticky="new")
-        update_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew") if release_api.update_available() else None
+        release_api.add_callback(lambda: self.after(0, lambda: update_button.grid(row=2, column=1, columnspan=7, pady=(0, 10), sticky="sew")))
 
         # sets the grid layout
         self.grid_rowconfigure(0, weight=1, uniform="row0")

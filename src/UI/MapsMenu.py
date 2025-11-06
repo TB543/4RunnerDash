@@ -88,7 +88,7 @@ class MapsMenu(CTkFrame):
         self.selected_waypoint = StringVar(self)
 
         # loads api
-        self.api = NavigationAPI(self.map_widget)
+        NavigationAPI(self.map_widget)
         NavigationAPI.add_gps_callback(lambda coords: self.after(0, lambda: self.map_widget.update_position(coords)))
 
         # creates destinations menu

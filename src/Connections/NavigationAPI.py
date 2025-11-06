@@ -1,5 +1,4 @@
 from AppData import MAP_TILE_RESOLUTION, INITIAL_MAP_COORDS
-from requests import get
 from serial import Serial
 from threading import Thread
 from sys import argv
@@ -127,6 +126,7 @@ class NavigationAPI:
         @return: the json result of the query
         """
 
+        from requests import get  # lazy loaded for performance
         try:
             results = get(
                 NavigationAPI.NOMINATIM_URL,
@@ -156,6 +156,7 @@ class NavigationAPI:
         @return: the json response from GraphHopper
         """
 
+        from requests import get  # lazy loaded for performance
         try:
             return get(
                 NavigationAPI.GRAPH_HOPPER_URL,

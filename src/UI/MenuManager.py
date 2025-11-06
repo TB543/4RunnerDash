@@ -49,8 +49,9 @@ class MenuManager(CTk):
         self.audio_api = AudioAPI()
         self.fg_job_manager = FGJobManager(touch_screen)
         GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), self.shutdown_lock)
+        notification = StringVar(self)
         release_api = ReleaseAPI(self.destroy)
-        notification = StringVar(self, "Software Update Available in Settings" if release_api.update_available() else "")
+        release_api.add_callback(lambda: self.after(0, lambda: notification.set("Software Update Available in Settings")))
 
         # creates the various menus
         self.menus = {
