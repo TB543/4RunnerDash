@@ -101,10 +101,10 @@ class AudioAPI:
         with redirect_stdout(buffer):
             tts = TTS("tts_models/en/ljspeech/speedy-speech")
 
-        # pulls from job queue until job is None
-        while (job := self.tts_queue.get()) is not None:
-            tts.tts_to_file(job, file_path="AppData/tts.wav")
-            playsound("AppData/tts.wav")
+            # pulls from job queue until job is None
+            while (job := self.tts_queue.get()) is not None:
+                tts.tts_to_file(job, file_path="AppData/tts.wav")
+                playsound("AppData/tts.wav")
 
     def shutdown(self):
         """

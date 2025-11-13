@@ -17,7 +17,6 @@ obd oil/filter/trans change warning on main menu
 add things that need to be changed based on time (inspection, radiator fluid, etc)
 tts announces decimals wrong 12.08 = "12.8"
 reroute is expensive and will keep trying if still to far from road
-car in reverse = negative miles?
 announce bluetooth device connected
 load album art on device connect
 user set miles until change should not reset on update
@@ -27,5 +26,7 @@ better get request error handling
 tileserver switch link for dark mode
 retry obd connection on fail
 save connected bluetooth devices to auto connect
-non blockling tts and routing
+non blockling routing
 routes auto end when complete
+maps menu emojis too big for buttons
+clear search bar after saving a route

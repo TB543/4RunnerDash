@@ -92,7 +92,7 @@ class RouteManager:
 
         # handles when the user is too far off course
         if offset > .0006:
-            self.__init__(self.name, *self.coords)
+            self.__init__(self.name, *self.coords, self.audio_api)
             self.reroute_callback(True)
             return
         

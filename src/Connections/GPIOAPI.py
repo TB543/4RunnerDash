@@ -1,12 +1,13 @@
 from subprocess import run, PIPE, Popen
 from AppData import MAX_VOLUME
 from time import sleep
-from sys import argv
+from sys import argv, stdout, stderr
 from json import dump, load
 try:
+    from os import sync
     from RPi.GPIO import setmode, BCM, setup, IN, OUT, add_event_detect, FALLING, BOTH, input as read, output, PUD_UP
     from dht11 import DHT11
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     from Dev.Imports.GPIO import *
     from Dev.Imports.dht11 import *
 
@@ -164,4 +165,9 @@ class GPIOAPI:
                 callback()
             except:
                 pass
+
+            # ensure buffers are flushed and shuts down
+            stdout.flush()
+            stderr.flush()
+            sync()
             run(["sudo", "shutdown", "-h", "now"])

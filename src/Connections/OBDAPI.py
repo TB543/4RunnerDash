@@ -1,12 +1,16 @@
 from obd import Async, commands
 from DataManagers.MileManager import MileManger
 from AppData import TANK_CAPACITY
+from logging import disable, CRITICAL
 
 
 class OBDAPI(Async):
     """
     a class to communicate with the OBD-II interface of a vehicle.
     """
+
+    # disables obd logging
+    disable(CRITICAL)
 
     def __init__(self, root, mpg, miles_until_empty):
         """
@@ -106,9 +110,6 @@ class OBDAPI(Async):
     def shutdown(self):
         """
         shuts down the OBD-II interface.
-
-        @param root: the root window to update to ensure
-            callbacks are processed while shutting down
         """
 
         MileManger.save()
