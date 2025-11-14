@@ -13,5 +13,5 @@ if __name__ == "__main__":
     window = MenuManager()
     KeyboardController(window)
     return_code = window.mainloop()
-    run(["./stop_backend.sh"])
+    run(["../stop_backend.sh"])
     exit(return_code)
