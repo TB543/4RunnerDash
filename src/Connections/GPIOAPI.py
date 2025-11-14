@@ -163,4 +163,4 @@ class GPIOAPI:
             try:
                 callback(200)  # shutdown code
             except:
-                exit(200)  # exit with shutdown code just in case error occurs
+                run(["sudo", "shutdown"])  # shutdown if error (prioritize car battery over safe shutdown)
