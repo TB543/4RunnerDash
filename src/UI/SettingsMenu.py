@@ -39,7 +39,7 @@ class SettingsMenu(CTkFrame):
         appearance_button = CTkButtonFixed(self, text=appearance_text, font=("Arial", 100), command=lambda: appearance_button.configure(text=appearance_manager.cycle_mode()))
         theme_button = CTkButtonFixed(self, text=theme_text, font=("Arial", 100), command=lambda: theme_button.configure(text=appearance_manager.cycle_theme()))
         scale_button = CTkButtonFixed(self, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=appearance_manager.cycle_scaling()))
-        shell_button = CTkButtonFixed(self, text="🖥️", font=("Arial", 100), command=self.open_shell)
+        shell_button = CTkButtonFixed(self, text="🖥️", font=("Arial", 100), command=self.winfo_toplevel().destroy)
         back_button = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
         update_button = TSCTkButton(self, text="Update Software", font=("Arial", 20), command=release_api.update)
         appearance_button.grid(row=1, column=1)
@@ -57,11 +57,3 @@ class SettingsMenu(CTkFrame):
         self.grid_columnconfigure(4, weight=1)
         self.grid_columnconfigure(6, weight=1)
         self.grid_columnconfigure(8, weight=1)
-
-    def open_shell(self):
-        """
-        kills the display and opens the terminal shell.
-        """
-        
-        self.winfo_toplevel().destroy()
-        run(["sudo", "pkill", "Xorg"])

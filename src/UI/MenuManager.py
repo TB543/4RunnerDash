@@ -108,6 +108,7 @@ class MenuManager(CTk):
 
         print("Starting Debug Logging")
         super().mainloop()
+        print("Ending Debug Logging")
         with self.shutdown_lock:
             return self.return_code
 
@@ -122,6 +123,3 @@ class MenuManager(CTk):
         self.audio_api.shutdown()
         self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
         super().destroy()
-        print("Ending Debug Logging")
-        if name != "nt":
-            run(["../stop_backend.sh"])

@@ -1,14 +1,7 @@
 #!/bin/bash
 
-# ensures a version is given
-if [ -z "$1" ]; then
-    echo "usage: $0 <tag_name>"
-    exit 1
-fi
-
 # pulls the latest release code from github
-git fetch --tags
-git checkout $1
+git checkout $(git describe --tags "$(git rev-list --tags --max-count=1)")
 
 # runs update scripts
 cd patches/

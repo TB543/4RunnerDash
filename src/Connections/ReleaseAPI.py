@@ -1,6 +1,6 @@
-from os import mkdir, remove, environ
+from os import mkdir, remove
 from shutil import rmtree
-from subprocess import check_output
+from subprocess import check_output, run
 from datetime import datetime
 from threading import Thread, Lock
 
@@ -122,6 +122,7 @@ class ReleaseAPI:
 
         # downloads required files
         try:
+            run(["git", "fetch", "origin", self.releases[-1]['tag_name']])
             with open("AppData/patch_notes.txt", "w") as f:
                 for release in self.releases:
                     ReleaseAPI.download_patch(release) if release["assets"] else None
@@ -138,5 +139,4 @@ class ReleaseAPI:
             return
 
         # installs the new version
-        environ["UPDATE_TAG"] = self.releases[-1]['tag_name']
         self.callback(201)  # include update exit code 201

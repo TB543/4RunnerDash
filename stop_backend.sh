@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# save system time to CarPiHat
+# exit UI and save system time to CarPiHat
+sudo pkill Xorg
 sudo hwclock -w -f /dev/rtc1
 
 # maps
