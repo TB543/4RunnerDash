@@ -7,7 +7,6 @@ if [ -z "$1" ]; then
 fi
 
 # pulls the latest release code from github
-cd ..
 git fetch --tags
 git checkout $1
 

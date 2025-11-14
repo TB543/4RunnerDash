@@ -204,11 +204,11 @@ class NavigationAPI:
             callbacks are processed while shutting down
         """
 
-        # writes coords to file
-        with open("AppData/gps.json", "w") as f:
-            dump({"coords": cls.gps_coords}, f, indent=4)
-
         # shuts down gps read thread
         cls.running = False
         while cls.thread.is_alive():
             root.update()
+
+        # writes coords to file
+        with open("AppData/gps.json", "w") as f:
+            dump({"coords": cls.gps_coords}, f, indent=4)

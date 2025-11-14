@@ -113,7 +113,7 @@ class AudioAPI:
 
         self.tts_queue.put(None)
         self.tts_thread.join()
-        self.art_manager.shutdown(cancel_futures=True)
+        self.art_manager.shutdown()
 
     # ========================================== PLAYBACK CONTROLS ==========================================
 

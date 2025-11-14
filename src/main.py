@@ -11,4 +11,5 @@ if __name__ == "__main__":
     Thread(target=start_bluetooth, daemon=True).start()
     window = MenuManager()
     KeyboardController(window)
-    window.mainloop()
+    return_code = window.mainloop()
+    exit(return_code)

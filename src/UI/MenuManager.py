@@ -42,13 +42,14 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(**kwargs)
+        self.return_code = 1
         self.configure(cursor="none") if len(argv) != 2 or argv[1] != "dev" else None
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()
         self.audio_api = AudioAPI()
         self.fg_job_manager = FGJobManager(touch_screen)
-        GPIOAPI(lambda: self.after(0, self.destroy), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), self.shutdown_lock)
+        GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), self.shutdown_lock)
         notification = StringVar(self)
         release_api = ReleaseAPI(self.destroy)
         release_api.add_callback(lambda: self.after(0, lambda: notification.set("Software Update Available in Settings")))
@@ -98,18 +99,26 @@ class MenuManager(CTk):
         """
         overrides the mainloop to prevent program exit before shutdown command
         is finished executing
+
+        @return: the return code of the main loop to specify the action when the program exits
+            0 - normal exit
+            200 - shutdown
+            201 - update
         """
 
         print("Starting Debug Logging")
         super().mainloop()
         with self.shutdown_lock:
-            return
+            return self.return_code
 
-    def destroy(self):
+    def destroy(self, code=0):
         """
         overrides the destroy method to also ensure the backend is stopped before shutdown
+
+        @param code: the return code for the program
         """
 
+        self.return_code = code
         self.audio_api.shutdown()
         self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
         super().destroy()

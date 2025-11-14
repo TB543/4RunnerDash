@@ -1,4 +1,4 @@
-from os import mkdir, execv, remove
+from os import mkdir, remove, environ
 from shutil import rmtree
 from subprocess import check_output
 from datetime import datetime
@@ -93,6 +93,7 @@ class ReleaseAPI:
         """
 
         # installs the patch
+        from requests import get  # lazy import for performance
         mkdir(f"../patches/{patch['tag_name']}")
         for asset in patch["assets"]:
             with open(f"../patches/{patch['tag_name']}/{asset['name']}", "wb") as f:
@@ -137,5 +138,5 @@ class ReleaseAPI:
             return
 
         # installs the new version
-        self.callback()
-        execv("/bin/bash", ["/bin/bash", f"../resources/update.sh", self.releases[-1]['tag_name']])
+        environ["UPDATE_TAG"] = self.releases[-1]['tag_name']
+        self.callback(201)  # include update exit code 201

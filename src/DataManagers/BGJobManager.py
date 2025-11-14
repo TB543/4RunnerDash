@@ -128,4 +128,12 @@ class BGJobManager(ThreadPoolExecutor):
         # iterates over every song
         for query in self.cache.pending:
             self.submit(self.job, *query)
+
+    def shutdown(self, wait = True, *, cancel_futures = False):
+        """
+        overrides the shutdown method to close the diskcache
+        """
+
+        super().shutdown(cancel_futures=True)
+        self.cache.close()
         
