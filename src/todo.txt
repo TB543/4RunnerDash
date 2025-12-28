@@ -20,7 +20,6 @@ reroute is expensive and will keep trying if still to far from road
 announce bluetooth device connected
 load album art on device connect
 user set miles until change should not reset on update
-add cad file to readme + repo
 make boot-up faster at least for UI
 better get request error handling
 tileserver switch link for dark mode
@@ -30,3 +29,5 @@ non blockling routing
 routes auto end when complete
 maps menu emojis too big for buttons
 clear search bar after saving a route
+
+shutdown fails if screen off

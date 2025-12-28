@@ -1,6 +1,5 @@
 from json import dump, load
 from AppData import MILE_DELTAS
-from threading import Lock
 
 
 class MileManger:
@@ -10,31 +9,26 @@ class MileManger:
     """
 
     @staticmethod
-    def load_key(key, lock=None):
+    def load_key(key):
         """
         loads a key from the miles.json file
 
         @param key: the key to load from the miles.json file
-        @param lock: the file lock to use, only passed when getting current miles
-            as MileManager cannot be accessed yet
 
         @return: the value of the key in the miles.json file
         """
 
         # attempts to load the key from the miles.json file
-        lock = lock if lock else MileManger.file_lock
         try:
-            with lock:
-                with open("AppData/miles.json", "r") as f:
-                    return load(f)[key]
+            with open("AppData/miles.json", "r") as f:
+                return load(f)[key]
 
         # returns the current miles if an error occurs
         except:
             return MileManger.current_miles + MILE_DELTAS[key] if key in MILE_DELTAS else 0
 
     # sets global variables shared across all instances of the class
-    file_lock = Lock()
-    current_miles = load_key("current_miles", file_lock)
+    current_miles = load_key("current_miles")
     managers = []
 
     def __init__(self, key, callback):
@@ -93,6 +87,5 @@ class MileManger:
             data[manager.key] = manager.value
 
         # writes the data to the miles.json file
-        with cls.file_lock:
-            with open("AppData/miles.json", "w") as f:
-                dump(data, f, indent=4)
+        with open("AppData/miles.json", "w") as f:
+            dump(data, f, indent=4)
