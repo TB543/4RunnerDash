@@ -82,7 +82,7 @@ class GPIOAPI:
         # reverse camera
         self.reverse_cam_process = None
         add_event_detect(7, BOTH, lambda e: self.toggle_reverse_cam(reverse))
-        self.toggle_reverse_cam()
+        self.toggle_reverse_cam(reverse)
 
         # dimmer command
         add_event_detect(13, BOTH, lambda e: dimmer(read(13)))
