@@ -63,6 +63,8 @@
 
 >**Note:** Whatever name you give the Pi will be the name of the bluetooth connection to the Pi.
 
+>**Note:** Program has not been tested for newer versions of RaspiOS, if they do not work use [Bookworm](https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2025-05-13/2025-05-13-raspios-bookworm-arm64-lite.img.xz) and apply the same settings manually in raspi-config
+
 ## Initial Boot and Configuration
 1. Plug the SD card into the Pi, boot the Raspberry Pi and wait for the initial setup to finish.
 2. Log in using the username and password you set during flashing.
@@ -137,7 +139,7 @@
     ```bash
     ./install_dependencies.sh
     ```
-    it will first install rust. You can proceed with standard installation by pressing enter when prompted. The remaining installs will take a few minutes, just be patient. You do not need to be present during any of the remaining installs.
+    it will first install rust. You can proceed with standard installation by pressing enter when prompted. The remaining installs will take a few minutes and might ask for conformation, do so by typing "y".
 
 7. Lastly, run the map install script:
     ```bash

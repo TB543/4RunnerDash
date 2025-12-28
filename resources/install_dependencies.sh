@@ -35,3 +35,16 @@ wget https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/test_dat
 unzip test_data.zip -d ../src/Lib/tileserver
 rm test_data.zip
 sed -i 's#"mbtiles": "zurich_switzerland.mbtiles"#"mbtiles": "map_data/map.mbtiles"#' ../src/Lib/tileserver/config.json
+
+# installs camera drivers
+mkdir camera_drivers
+cd camera_drivers
+wget -O install_pivariety_pkgs.sh https://github.com/ArduCAM/Arducam-Pivariety-V4L2-Driver/releases/download/install_script/install_pivariety_pkgs.sh
+chmod +x install_pivariety_pkgs.sh
+./install_pivariety_pkgs.sh -p libcamera_dev
+./install_pivariety_pkgs.sh -p libcamera_apps
+sudo sed -i 's/^camera_auto_detect=1$/camera_auto_detect=0/' /boot/firmware/config.txt
+echo "dtoverlay=imx519,cam0" | sudo tee -a /boot/firmware/config.txt
+echo "dtoverlay=imx519" | sudo tee -a /boot/firmware/config.txt
+cd ..
+rm -r camera_drivers

@@ -82,7 +82,7 @@ class NavigationAPI:
 
     # class fields
     GRAPH_HOPPER_URL = "http://localhost:8989/route"
-    compass = BMM150(PresetMode.HIGHACCURACY)
+    compass = None if len(argv) == 2 and argv[1] == "dev" else BMM150(PresetMode.HIGHACCURACY)
     callbacks = []
     thread = Thread(target=gps_read_loop, daemon=True)
     running = True
@@ -102,7 +102,7 @@ class NavigationAPI:
         with open("AppData/gps.json", "r") as f:
             gps_coords = load(f)["coords"]
     except:
-        gps_coords = (0, 0)
+        gps_coords = INITIAL_MAP_COORDS
 
     def __init__(self, map_widget):
         """

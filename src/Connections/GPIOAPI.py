@@ -1,5 +1,5 @@
 from subprocess import run, PIPE, Popen
-from AppData import MAX_VOLUME
+from AppData import MAX_VOLUME, PI_WIDTH, PI_HEIGHT
 from time import sleep
 from sys import argv
 from json import dump, load
@@ -31,9 +31,11 @@ class GPIOAPI:
     setup(6, IN)
     setup(5, IN, pull_up_down=PUD_UP)
 
+    # reverse and temperature sensor pins
+    setup(7, IN)
     dht = DHT11(4)
 
-    def __init__(self, shutdown, dimmer, volume, lock):
+    def __init__(self, shutdown, dimmer, volume, reverse, lock):
         """
         initializes an instance of the GPIO api
 
@@ -42,6 +44,8 @@ class GPIOAPI:
             takes 1 parameter, for the new state of the dimmer: 0 for low, 1 for high
         @param volume: a callback function to run when the volume is changed
             takes 1 parameter, for the new volume % between 0 and 1
+        @param reverse: a callback function to run when the reverse camera is turned on and off
+            takes 1 int parameter 0 for camera off 1 for camera on
         @param lock: the thread lock to hold while executing the shutdown command
             this will prevent premature exit of the program
         """
@@ -74,6 +78,11 @@ class GPIOAPI:
         if len(argv) < 2 or argv[1] != "dev":
             add_event_detect(12, FALLING, lambda e: self.shutdown(shutdown))
             self.shutdown(shutdown) if read(12) == 0 else None
+
+        # reverse camera
+        self.reverse_cam_process = None
+        add_event_detect(7, BOTH, lambda e: self.toggle_reverse_cam(reverse))
+        self.toggle_reverse_cam()
 
         # dimmer command
         add_event_detect(13, BOTH, lambda e: dimmer(read(13)))
@@ -145,6 +154,23 @@ class GPIOAPI:
         reading = cls.dht.read()
         if reading.is_valid():
             return (reading.temperature * 1.8) + 32
+
+    def toggle_reverse_cam(self, reverse):
+        """
+        automatically toggles the reverse camera on/off when the car is in reverse
+
+        @param reverse the reverse camera callback
+        """
+
+        # turns reverse cam on
+        if read(7) == 1:
+            reverse(1)
+            self.reverse_cam_process = Popen(["rpicam-still", "-t", "0", "--width", str(PI_WIDTH), "--height", str(PI_HEIGHT)])
+
+        # turns reverse cam off
+        elif self.reverse_cam_process is not None:
+            reverse(0)
+            self.reverse_cam_process.terminate()
 
     def shutdown(self, callback):
         """

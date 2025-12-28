@@ -49,7 +49,7 @@ class MenuManager(CTk):
         self.shutdown_lock = Lock()
         self.audio_api = AudioAPI()
         self.fg_job_manager = FGJobManager(touch_screen)
-        GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), self.shutdown_lock)
+        GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), lambda r: self.after(0, lambda: self.deiconify() if r == 0 else self.withdraw()), self.shutdown_lock)
         notification = StringVar(self)
         release_api = ReleaseAPI(self.destroy)
         release_api.add_callback(lambda: self.after(0, lambda: notification.set("Software Update Available in Settings")))

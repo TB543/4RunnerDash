@@ -1,9 +1,9 @@
 from customtkinter import CTkFrame, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar, DoubleVar, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
-from UI.MapWidget import MapWidget
+from UI.Widgets.MapWidget import MapWidget
 from Connections.NavigationAPI import NavigationAPI
 from json import dumps, loads
-from UI.VirtualKeyBoard import VirtualKeyboard
+from UI.Widgets.VirtualKeyBoard import VirtualKeyboard
 from DataManagers.RouteManager import RouteManager
 
 
