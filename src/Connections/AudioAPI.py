@@ -6,8 +6,10 @@ from io import StringIO
 from playsound import playsound
 from DataManagers.BGJobManager import BGJobManager
 try:
+    from Lib.BluezAgent import my_app as start_bluetooth
     from pydbus import SystemBus
 except ModuleNotFoundError:
+    from Dev.Imports.BluezAgent import *
     from Dev.Imports.pydbus import *
 
 
@@ -17,6 +19,9 @@ class AudioAPI:
     handles playback controls and can retrieve information about current track and playback status.
     additionally can spawn tts audio
     """
+
+    # starts the bluetooth agent
+    Thread(target=start_bluetooth, daemon=True).start()
 
     def __init__(self):
         """

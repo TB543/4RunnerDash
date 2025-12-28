@@ -101,9 +101,9 @@ class MenuManager(CTk):
         is finished executing
 
         @return: the return code of the main loop to specify the action when the program exits
-            0 - normal exit
-            200 - shutdown
+            200 - do nothing on exit
             201 - update
+            anything else - shutdown (car battery life is most important)
         """
 
         print("Starting Debug Logging")
@@ -112,11 +112,13 @@ class MenuManager(CTk):
         with self.shutdown_lock:
             return self.return_code
 
-    def destroy(self, code=0):
+    def destroy(self, code=200):
         """
         overrides the destroy method to also ensure the backend is stopped before shutdown
 
-        @param code: the return code for the program
+        @param code: the return code for the program default is 200 - do nothing on exit
+            other options are 201 - update
+            anything else is shutdown
         """
 
         self.return_code = code

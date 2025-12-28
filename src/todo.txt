@@ -29,5 +29,3 @@ non blockling routing
 routes auto end when complete
 maps menu emojis too big for buttons
 clear search bar after saving a route
-
-shutdown fails if screen off

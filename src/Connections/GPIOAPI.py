@@ -187,6 +187,6 @@ class GPIOAPI:
         # gracefully shuts down
         with self.lock:
             try:
-                callback(200)  # shutdown code
+                callback(0)  # shutdown code - anything but 201 or 200
             except:
                 run(["sudo", "shutdown"])  # shutdown if error (prioritize car battery over safe shutdown)
