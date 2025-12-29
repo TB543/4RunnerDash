@@ -3,17 +3,17 @@ from Connections.ReleaseAPI import ReleaseAPI
 from customtkinter import CTk, CTkProgressBar, CTkFrame, StringVar, set_widget_scaling
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
-from os import environ, name
+from os import environ
 from sys import argv
 from Connections.AudioAPI import AudioAPI
 from DataManagers.FGJobManager import FGJobManager
+from DataManagers.BGJobManager import BGJobManager
 from UI.MainMenu import MainMenu
 from UI.SettingsMenu import SettingsMenu
 from UI.MusicMenu import MusicMenu
 from UI.MapsMenu import MapsMenu
 from UI.OBDMenu import OBDMenu
 from threading import Lock
-from subprocess import run
 try:
     from evdev import list_devices, InputDevice
 except ModuleNotFoundError:
@@ -47,8 +47,9 @@ class MenuManager(CTk):
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()
-        self.audio_api = AudioAPI()
         self.fg_job_manager = FGJobManager(touch_screen)
+        self.bg_job_manager = BGJobManager()
+        self.audio_api = AudioAPI(self.bg_job_manager)
         GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), lambda r: self.after(0, lambda: self.deiconify() if r == 0 else self.withdraw()), self.shutdown_lock)
         notification = StringVar(self)
         release_api = ReleaseAPI(self.destroy)
@@ -59,7 +60,7 @@ class MenuManager(CTk):
             "main": MainMenu(self, notification, self.fg_job_manager, self.appearance_manager.scaling),
             "maps": MapsMenu(self, self.audio_api, self.fg_job_manager, self.appearance_manager),
             "music": MusicMenu(self, self.audio_api),
-            "obd": OBDMenu(self, self.appearance_manager),
+            "obd": OBDMenu(self, self.appearance_manager, self.bg_job_manager),
             "settings": SettingsMenu(self, self.appearance_manager, release_api)
         }
         self.active_menu = "main"
@@ -124,4 +125,5 @@ class MenuManager(CTk):
         self.return_code = code
         self.audio_api.shutdown()
         self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
+        self.bg_job_manager.shutdown()
         super().destroy()

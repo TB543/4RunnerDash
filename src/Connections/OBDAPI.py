@@ -12,33 +12,24 @@ class OBDAPI(Async):
     # disables obd logging
     disable(CRITICAL)
 
-    def __init__(self, root, mpg, miles_until_empty):
+    def __init__(self, root, job_manager, mpg, miles_until_empty):
         """
         initializes the OBDAPI class.
 
         @param root: the root window to update to prevent deadlocks
+        @param job_manager: handles connecting to the OBD interface in background threads
         @param mpg: the callback function for updating the mpg
         @param miles_until_empty: the callback function for updating miles until empty
             ** note: all of these callbacks take 1 parameter for the new value **
         """
 
-        # attempts to connect to OBD scanner, does nothing if fails
-        try:
-            super().__init__()
-        except:
-            super().__init__("No OBD Connection")
-
         # initializes fields
         self.root = root
+        self.job_manager = job_manager
         self.mpg = mpg
         self.miles_until_empty = miles_until_empty
         self.speed_time = None
-
-        # sets the codes to watch
-        self.watch(commands.MAF)
-        self.watch(commands.FUEL_LEVEL)
-        self.watch(commands.SPEED, callback=lambda r: self.update_loop())
-        self.start()
+        self.job_manager.queue_obd_connection_job(self, root)
 
     def update_loop(self):
         """
@@ -106,6 +97,15 @@ class OBDAPI(Async):
             while self._Async__thread.is_alive():
                 self.root.update()
             self._Async__thread = None
+
+    def run(self):
+        """
+        overrides the superclass run method to ensure if connection to car fails, it retries
+        """
+
+        super().run()
+        if not self.is_connected():
+            self.job_manager.queue_obd_connection_job(self, self.root)
 
     def shutdown(self):
         """

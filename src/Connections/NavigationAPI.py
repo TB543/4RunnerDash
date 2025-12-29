@@ -111,7 +111,7 @@ class NavigationAPI:
         @param map_widget: the map widget to display the map
         """
 
-        map_widget.set_tile_servers(NavigationAPI.TILE_SERVER_URLS)
+        map_widget.set_tile_server(NavigationAPI.TILE_SERVER_URLS)
         if not NavigationAPI.thread.is_alive():
             NavigationAPI.thread.start()
 

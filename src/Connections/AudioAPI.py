@@ -4,7 +4,6 @@ from threading import Thread
 from contextlib import redirect_stdout
 from io import StringIO
 from playsound import playsound
-from DataManagers.BGJobManager import BGJobManager
 try:
     from Lib.BluezAgent import my_app as start_bluetooth
     from pydbus import SystemBus
@@ -23,15 +22,17 @@ class AudioAPI:
     # starts the bluetooth agent
     Thread(target=start_bluetooth, daemon=True).start()
 
-    def __init__(self):
+    def __init__(self, job_manager):
         """
         Initializes the AudioAPI by connecting to the system bus and retrieving the MediaPlayer1 interface.
+
+        @param job_manager a class to manage background jobs for getting album art
         """
 
         # initializes the fields
         self.bus = SystemBus()
         self.player = None
-        self.art_manager = BGJobManager()
+        self.art_manager = job_manager
         self._title = None
         self._artist = None
         self._playback_ratio = 0
@@ -45,7 +46,7 @@ class AudioAPI:
 
         # gets album art
         self.update_player()
-        self.art_job = self.art_manager.queue_job(self.title, self.artist, self.album)
+        self.art_job = self.art_manager.queue_album_art_job(self.title, self.artist, self.album)
         self.art_job.result()
         self.last_property_params = None
 
@@ -65,7 +66,7 @@ class AudioAPI:
 
         if "Track" in params and self.last_property_params != (params["Track"]["Title"], params["Track"]["Artist"]):
             self.last_property_params = (params["Track"]["Title"], params["Track"]["Artist"])
-            self.art_job = self.art_manager.queue_job(self.title, self.artist, self.album)
+            self.art_job = self.art_manager.queue_album_art_job(self.title, self.artist, self.album)
 
     def update_player(self):
         """
@@ -114,12 +115,11 @@ class AudioAPI:
 
     def shutdown(self):
         """
-        shuts down the album art manager
+        shuts down the worker thread
         """
 
         self.tts_queue.put(None)
         self.tts_thread.join()
-        self.art_manager.shutdown()
 
     # ========================================== PLAYBACK CONTROLS ==========================================
 

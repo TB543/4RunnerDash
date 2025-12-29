@@ -270,7 +270,8 @@ class MapsMenu(CTkFrame):
         self.map_widget.pending_route.save(self.saved_destination_name.get())
         self.save_destination_popup.place_forget()
         self.populate_destinations(self.saved_destinations_container, [{"display_name": k, **v} for k, v in RouteManager.routes["saved"].items()])
-
+        self.search_entry.delete(0, "end")
+        
     def delete_destination(self):
         """
         handles when the user deleted a saved destination

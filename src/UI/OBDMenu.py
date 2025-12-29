@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, DoubleVar, CTkScrollableFrame, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
 from DataManagers.MileManager import MileManger
-from threading import Thread, Lock
+from threading import Thread
 
 
 class OBDMenu(CTkFrame):
@@ -9,17 +9,19 @@ class OBDMenu(CTkFrame):
     OBD scanner menu for the 4runner dashboard
     """
 
-    def __init__(self, master, appearance_manager, **kwargs):
+    def __init__(self, master, appearance_manager, job_manager, **kwargs):
         """
         Initializes the settings menu frame.
         
         @param master: the parent widget
         @param appearance_manager: a reference to the apps appearance manager
+        @param job_manager: a class for managing jobs for connecting to the obd interface
         @param kwargs: additional keyword arguments for CTkFrame
         """
 
         super().__init__(master, **kwargs)
         self.appearance_manager = appearance_manager
+        self.job_manager = job_manager
 
         # creates spacer widgets and sets grid layout
         self.rowconfigure(1, weight=1)
@@ -130,6 +132,7 @@ class OBDMenu(CTkFrame):
         from Connections.OBDAPI import OBDAPI
         self.api = OBDAPI(
             self,
+            self.job_manager,
             lambda m: self.after(0, lambda: mpg.set(m)),
             lambda e: self.after(0, lambda: miles_until_empty.set(e)),
         )

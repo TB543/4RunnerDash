@@ -10,7 +10,7 @@ from threading import Lock
 
 class BGJobManager(ThreadPoolExecutor):
     """
-    a class to handle background api request threads
+    a class to handle jobs that will run in the background
     """
 
     # initializes global fields
@@ -29,10 +29,72 @@ class BGJobManager(ThreadPoolExecutor):
         self.api = SpotifyAPI()
         self.cache = AlbumArtCache(self.default_art)
         self.token_lock = Lock()
+        self.obd_lock = Lock()
+        self.is_shutdown = False
 
-    def queue_job(self, title, artist, album):
+    def queue_obd_connection_job(self, obd, root):
         """
-        queues a job to be completed
+        queues a job to connect to the obd scanner
+
+        @param obd the obd api instance to connect to the scanner
+        @param root the UI element to schedule another connection attempt after a bit of time
+        """
+
+        if not self.is_shutdown:
+            future = self.submit(lambda: self.obd_connection_job(obd))
+            future.add_done_callback(lambda f: self.check_obd_connection(obd, root))
+
+    def obd_connection_job(self, obd):
+        """
+        attempts to connect to the obd scanner
+
+        @param obd the obd api instance to connect to the scanner
+        """
+
+        # lazy loaded for performance
+        from obd import Async, commands
+
+        with self.obd_lock:
+            try:
+                if not obd.is_connected():
+                    Async.__init__(obd)
+                    obd.watch(commands.MAF)
+                    obd.watch(commands.FUEL_LEVEL)
+                    obd.watch(commands.SPEED, callback=lambda r: obd.update_loop())
+                    obd.start()
+            except:
+                    Async.__init__(obd)
+                    obd.watch(commands.MAF)
+                    obd.watch(commands.FUEL_LEVEL)
+                    obd.watch(commands.SPEED, callback=lambda r: obd.update_loop())
+                    obd.start()
+
+    def check_obd_connection(self, obd, root):
+        """
+        checks if obd is connected, if not retry later
+
+        @param obd the obd connection to check
+        @param root, the root element to queue the next job with
+        """
+
+        # retries connection on fail
+        with self.obd_lock:
+            try:
+                if not obd.is_connected():
+                    root.after(1000, lambda: self.queue_obd_connection_job(obd, root))
+            except:
+
+                # waits until mainloop has started to try connection again
+                while True:
+                    try:
+                        root.after(1000, lambda: self.queue_obd_connection_job(obd, root))
+                        return
+                    except:
+                        pass
+
+    def queue_album_art_job(self, title, artist, album):
+        """
+        queues an album art job to be completed
 
         @param title: the title of the track
         @param artist: the artist of the track
@@ -41,11 +103,11 @@ class BGJobManager(ThreadPoolExecutor):
         @return a future object to access the results of the job when completed
         """
 
-        future = self.submit(lambda: self.job(title, artist, album))
+        future = self.submit(lambda: self.album_art_job(title, artist, album))
         future.add_done_callback(lambda f: self.attempt_query_pending())
         return future
 
-    def job(self, title, artist, album=None):
+    def album_art_job(self, title, artist, album=None):
         """
         attempts to retrieve the data in the following order:
             -> checks cache
@@ -127,13 +189,14 @@ class BGJobManager(ThreadPoolExecutor):
 
         # iterates over every song
         for query in self.cache.pending:
-            self.submit(self.job, *query)
+            self.submit(self.album_art_job, *query)
 
     def shutdown(self, wait = True, *, cancel_futures = False):
         """
         overrides the shutdown method to close the diskcache
         """
 
+        self.is_shutdown = True
         super().shutdown(cancel_futures=True)
         self.cache.close()
         

@@ -130,7 +130,7 @@ class MapWidget(TkinterMapView):
         if self.follow_position:
             self.set_position(*coords)
 
-    def set_tile_servers(self, tile_server_urls):
+    def set_tile_server(self, tile_server_urls):
         """
         slightly different from the superclass method to allow multiple tile servers
         for different appearance modes 
@@ -150,4 +150,4 @@ class MapWidget(TkinterMapView):
 
         self.bg_color = self.master._apply_appearance_mode(self.master.cget("fg_color"))
         self.draw_rounded_corners()
-        self.set_tile_server(self.tile_servers[0] if mode == "Light" else self.tile_servers[1], MAP_TILE_RESOLUTION)
+        super().set_tile_server(self.tile_servers[0] if mode == "Light" else self.tile_servers[1], MAP_TILE_RESOLUTION)
