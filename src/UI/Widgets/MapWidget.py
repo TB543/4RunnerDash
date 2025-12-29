@@ -1,6 +1,6 @@
 from tkintermapview import TkinterMapView
 from customtkinter import AppearanceModeTracker
-from AppData import INITIAL_MAP_COORDS, INITIAL_MAP_ZOOM
+from AppData import INITIAL_MAP_COORDS, INITIAL_MAP_ZOOM, MAP_TILE_RESOLUTION
 from sys import argv
 
 
@@ -26,6 +26,7 @@ class MapWidget(TkinterMapView):
             self.canvas.tag_unbind(button, "<Leave>")
 
         # creates fields and sets map position
+        self.tile_servers = None
         self.position_marker = None
         self.POI_marker = None
         self.destination_marker = None
@@ -129,6 +130,17 @@ class MapWidget(TkinterMapView):
         if self.follow_position:
             self.set_position(*coords)
 
+    def set_tile_servers(self, tile_server_urls):
+        """
+        slightly different from the superclass method to allow multiple tile servers
+        for different appearance modes 
+
+        @param tile_server_urls: a tuple of tile server urls for light and dark modes respectively
+        """
+
+        self.tile_servers = tile_server_urls
+        self.update_appearance_mode("Light" if AppearanceModeTracker.get_mode() == 0 else "Dark")
+
     def update_appearance_mode(self, mode):
         """
         updates the appearance mode of the widget
@@ -138,3 +150,4 @@ class MapWidget(TkinterMapView):
 
         self.bg_color = self.master._apply_appearance_mode(self.master.cget("fg_color"))
         self.draw_rounded_corners()
+        self.set_tile_server(self.tile_servers[0] if mode == "Light" else self.tile_servers[1], MAP_TILE_RESOLUTION)

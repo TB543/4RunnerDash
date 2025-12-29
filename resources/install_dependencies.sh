@@ -34,7 +34,9 @@ sudo docker pull maptiler/tileserver-gl:v5.3.1
 wget https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/test_data.zip
 unzip test_data.zip -d ../src/Lib/tileserver
 rm test_data.zip
+tar -xf map-styles.tar -C ../src/Lib/tileserver/styles
 sed -i 's#"mbtiles": "zurich_switzerland.mbtiles"#"mbtiles": "map_data/map.mbtiles"#' ../src/Lib/tileserver/config.json
+sed -i 's#"styles": {#"styles": {"basic-v2":{"style":"basic-v2.json"}, "basic-v2-dark":{"style":"basic-v2-dark.json"},#' ../src/Lib/tileserver/config.json
 
 # installs camera drivers
 mkdir camera_drivers

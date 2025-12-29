@@ -89,12 +89,12 @@ class NavigationAPI:
 
     # use internet for apis when in debug mode
     if len(argv) == 2 and argv[1] == "dev":
-        TILE_SERVER_URL = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        TILE_SERVER_URLS = ("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")  # no dark mode tile server available
         NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 
     # otherwise use localhost running apis
     else:
-        TILE_SERVER_URL = "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png"
+        TILE_SERVER_URLS = ("http://localhost:8080/styles/basic-v2/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png", "http://localhost:8080/styles/basic-v2-dark/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png")
         NOMINATIM_URL = "http://localhost:8088/search"
 
     # attempts to read previous gps coords from file
@@ -111,8 +111,7 @@ class NavigationAPI:
         @param map_widget: the map widget to display the map
         """
 
-        map_widget = map_widget
-        map_widget.set_tile_server(NavigationAPI.TILE_SERVER_URL, MAP_TILE_RESOLUTION)
+        map_widget.set_tile_servers(NavigationAPI.TILE_SERVER_URLS)
         if not NavigationAPI.thread.is_alive():
             NavigationAPI.thread.start()
 

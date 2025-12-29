@@ -1,6 +1,4 @@
 from UI.MenuManager import MenuManager
-from threading import Thread
-from subprocess import run
 from Dev.KeyboardController import KeyboardController
 
 
