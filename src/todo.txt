@@ -19,3 +19,4 @@ non blockling routing
 routes auto end when complete
 maps menu emojis too big for buttons
 log all of python program not just mainloop
+fix placeholder text/cursor on maps searchbar

@@ -5,6 +5,7 @@ from DataManagers.AppearanceManager import AppearanceManager
 from AppData import PI_WIDTH, PI_HEIGHT
 from os import environ
 from sys import argv
+from subprocess import run
 from Connections.AudioAPI import AudioAPI
 from DataManagers.FGJobManager import FGJobManager
 from DataManagers.BGJobManager import BGJobManager
@@ -110,6 +111,7 @@ class MenuManager(CTk):
         print("Starting Debug Logging")
         super().mainloop()
         print("Ending Debug Logging")
+        run(["sudo", "pkill", "Xorg"])
         with self.shutdown_lock:
             return self.return_code
 

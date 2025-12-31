@@ -11,6 +11,7 @@ cd ..
 # processes return code of program
 if [ "$PY_EXIT_CODE" -eq 201 ]; then  # update
     ./resources/update.sh
+fi
 if [ "$PY_EXIT_CODE" -ne 200 ]; then  # 200 is exit code for do nothing, anything else shuts down to preserve battery life
     sudo shutdown now
 fi
