@@ -127,5 +127,5 @@ class MenuManager(CTk):
         self.return_code = code
         self.audio_api.shutdown()
         self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
-        self.bg_job_manager.shutdown()
+        self.bg_job_manager.shutdown(self)
         super().destroy()

@@ -62,6 +62,8 @@ class BGJobManager(ThreadPoolExecutor):
                     obd.watch(commands.FUEL_LEVEL)
                     obd.watch(commands.SPEED, callback=lambda r: obd.update_loop())
                     obd.start()
+
+            # is_connected can fail
             except:
                     Async.__init__(obd)
                     obd.watch(commands.MAF)
@@ -77,8 +79,12 @@ class BGJobManager(ThreadPoolExecutor):
         @param root, the root element to queue the next job with
         """
 
-        # retries connection on fail
+        # prevents race condition when shutting down
         with self.obd_lock:
+            if self.is_shutdown:
+                return
+
+            # retries connection on fail
             try:
                 if not obd.is_connected():
                     root.after(1000, lambda: self.queue_obd_connection_job(obd, root))
@@ -103,9 +109,10 @@ class BGJobManager(ThreadPoolExecutor):
         @return a future object to access the results of the job when completed
         """
 
-        future = self.submit(lambda: self.album_art_job(title, artist, album))
-        future.add_done_callback(lambda f: self.attempt_query_pending())
-        return future
+        if not self.is_shutdown:
+            future = self.submit(lambda: self.album_art_job(title, artist, album))
+            future.add_done_callback(lambda f: self.attempt_query_pending())
+            return future
 
     def album_art_job(self, title, artist, album=None):
         """
@@ -191,12 +198,20 @@ class BGJobManager(ThreadPoolExecutor):
         for query in self.cache.pending:
             self.submit(self.album_art_job, *query)
 
-    def shutdown(self, wait = True, *, cancel_futures = False):
+    def shutdown(self, root, wait = True, *, cancel_futures = False):
         """
         overrides the shutdown method to close the diskcache
+
+        @param root: the UI to update while waiting for jobs to finish to prevent race conditions
         """
 
+        # ensured obd job can finish UI updates
+        while not self.obd_lock.acquire():
+            root.update()
+
+        # shuts down thread pool and cache
         self.is_shutdown = True
+        self.obd_lock.release()
         super().shutdown(cancel_futures=True)
         self.cache.close()
         

@@ -165,7 +165,7 @@ class GPIOAPI:
         # turns reverse cam on
         if read(7) == 1:
             reverse(1)
-            self.reverse_cam_process = Popen(["rpicam-still", "-t", "0", "--width", str(PI_WIDTH), "--height", str(PI_HEIGHT)])
+            self.reverse_cam_process = Popen(["rpicam-still", "-t", "0", "--vflip", "--width", str(PI_WIDTH), "--height", str(PI_HEIGHT)])
 
         # turns reverse cam off
         elif self.reverse_cam_process is not None:
@@ -187,6 +187,7 @@ class GPIOAPI:
         # gracefully shuts down
         with self.lock:
             try:
+                output(27, 0)  # turn off amp to prevent shutdown crackle
                 callback(0)  # shutdown code - anything but 201 or 200
             except:
                 run(["sudo", "shutdown"])  # shutdown if error (prioritize car battery over safe shutdown)
