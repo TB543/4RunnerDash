@@ -206,7 +206,7 @@ class BGJobManager(ThreadPoolExecutor):
         """
 
         # ensured obd job can finish UI updates
-        while not self.obd_lock.acquire():
+        while not self.obd_lock.acquire(blocking=False):
             root.update()
 
         # shuts down thread pool and cache

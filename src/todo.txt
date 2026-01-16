@@ -20,3 +20,6 @@ routes auto end when complete
 maps menu emojis too big for buttons
 log all of python program not just mainloop
 fix placeholder text/cursor on maps searchbar
+emergency shutdown - hold volume buttons
+tilemaker 3.0.0 doesnt have costline landfill scrpts
+display sleep + camera hide UI bug
