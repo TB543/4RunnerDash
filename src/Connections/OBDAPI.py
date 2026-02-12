@@ -73,17 +73,30 @@ class OBDAPI(Async):
             Each DTC is represented by a tuple containing the DTC code, and a description (if python-OBD has one)
         """
 
-        with self.paused():
-            codes = super(Async, self).query(commands.GET_DTC)
-        return codes.value if codes.value else []
+        # fails if bg job manager has not finished connecting to obd
+        try:
+            with self.paused():
+                codes = super(Async, self).query(commands.GET_DTC)
+            return codes.value if codes.value else []
+        
+        # returns no codes on failure
+        except:
+            return []
 
     def clear_codes(self):
         """
         clears the diagnostic trouble codes (DTCs) from the OBD-II interface.
         """
 
-        with self.paused():
-            super(Async, self).query(commands.CLEAR_DTC)
+
+        # fails if bg job manager has not finished connecting to obd
+        try:
+            with self.paused():
+                super(Async, self).query(commands.CLEAR_DTC)
+
+        # do nothing on failure
+        except:
+            return
 
     def stop(self):
         """
@@ -92,11 +105,19 @@ class OBDAPI(Async):
             async thread waiting to update GUI
         """
 
-        if self._Async__thread is not None:
-            self._Async__running = False
-            while self._Async__thread.is_alive():
-                self.root.update()
-            self._Async__thread = None
+        # fails if bg job manager has not finished connecting to obd
+        try:
+            if self._Async__thread is not None:
+                self._Async__running = False
+
+                # update UI until thread finishes to prevent deadlock
+                while self._Async__thread.is_alive():
+                    self.root.update()
+                self._Async__thread = None
+
+        # do nothing on failure, there is nothing to stop
+        except:
+            return
 
     def run(self):
         """

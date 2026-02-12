@@ -82,7 +82,7 @@ class NavigationAPI:
 
     # class fields
     GRAPH_HOPPER_URL = "http://localhost:8989/route"
-    TILE_SERVER_URLS = ("http://localhost:8080/styles/basic-v2/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png", "http://localhost:8080/styles/basic-v2-dark/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png")
+    TILE_SERVER_URLS = ("http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png", "http://localhost:8080/styles/maptiler-basic/" + str(MAP_TILE_RESOLUTION) + "/{z}/{x}/{y}.png")
     compass = None if len(argv) == 2 and argv[1] == "dev" else BMM150(PresetMode.HIGHACCURACY)
     callbacks = []
     thread = Thread(target=gps_read_loop, daemon=True)
