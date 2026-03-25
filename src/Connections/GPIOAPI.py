@@ -165,7 +165,7 @@ class GPIOAPI:
         # turns reverse cam on
         if read(7) == 1:
             reverse(1)
-            self.reverse_cam_process = Popen(["rpicam-still", "-t", "0", "--vflip", "--width", str(PI_WIDTH), "--height", str(PI_HEIGHT)])
+            self.reverse_cam_process = Popen(["rpicam-still", "-t", "0", "--width", str(PI_WIDTH), "--height", str(PI_HEIGHT)])
 
         # turns reverse cam off
         elif self.reverse_cam_process is not None:
