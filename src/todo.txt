@@ -1,6 +1,6 @@
 # ======================================================== POLISHING ========================================================
 add commas for mile counters
-map pinch to zoom - make map take vector tiles and render them directly on the canvas for easy scaling - also makes it so dark mode can be applied to map
+map pinch to zoom
 add visuals for virtual keyboard for caps lock and shift and gray out blank keys
 car image for position marker
 caps lock shouldnt shift numbers
@@ -11,7 +11,6 @@ search for POI like gas stations in maps
 reroute and start route race condition
 add dashcam
 add dead reckoning - updating gps position based on speed and heading when no satellite lock
-obd oil/filter/trans change warning on main menu
 add things that need to be changed based on time (inspection, radiator fluid, etc)
 load album art on device connect
 make boot-up faster at least for UI
@@ -21,6 +20,8 @@ maps menu emojis too big for buttons
 log all of python program not just mainloop
 fix placeholder text/cursor on maps searchbar
 emergency shutdown - hold volume buttons
-tilemaker 3.0.0 doesnt have costline landfill scrpts
+ensure new tilemaker version builds and works properly
 display sleep + camera hide UI bug
 dont log camera connection
+handle spotify api requests better (check status code)
+mod (%) playback amount (repeat song doesnt reset)

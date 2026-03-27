@@ -7,6 +7,7 @@ from os import environ
 from sys import argv
 from subprocess import run
 from Connections.AudioAPI import AudioAPI
+from DataManagers.MileManager import MileManger
 from DataManagers.FGJobManager import FGJobManager
 from DataManagers.BGJobManager import BGJobManager
 from UI.MainMenu import MainMenu
@@ -52,13 +53,14 @@ class MenuManager(CTk):
         self.bg_job_manager = BGJobManager()
         self.audio_api = AudioAPI(self.bg_job_manager)
         GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), lambda r: self.after(0, lambda: self.deiconify() if r == 0 else self.withdraw()), self.shutdown_lock)
-        notification = StringVar(self)
+        self.notification = StringVar(self)
+        MileManger.maintenance_callback = lambda: self.set_notification("Maintenance Needed in OBD Menu")
         release_api = ReleaseAPI(self.destroy)
-        release_api.add_callback(lambda: self.after(0, lambda: notification.set("Software Update Available in Settings")))
+        release_api.add_callback(lambda: self.set_notification("Software Update Available in Settings"))
 
         # creates the various menus
         self.menus = {
-            "main": MainMenu(self, notification, self.fg_job_manager, self.appearance_manager.scaling),
+            "main": MainMenu(self, self.notification, self.fg_job_manager, self.appearance_manager.scaling),
             "maps": MapsMenu(self, self.audio_api, self.fg_job_manager, self.appearance_manager),
             "music": MusicMenu(self, self.audio_api),
             "obd": OBDMenu(self, self.appearance_manager, self.bg_job_manager),
@@ -84,6 +86,18 @@ class MenuManager(CTk):
         self.active_menu = menu_name
         self.menus[self.active_menu].place(relx=0, rely=0, relwidth=1, relheight=1)
         set_widget_scaling(self.appearance_manager.scaling)
+
+    def set_notification(self, notification):
+        """
+        updates the notification on the main menu
+
+        @param notification: the notification to display
+        """
+
+        if notification == "Software Update Available in Settings":
+            self.after(0, lambda: self.notification.set(notification))
+        elif not self.notification.get():
+            self.after(0, lambda: self.notification.set(notification))
 
     def show_volume(self, value):
         """
@@ -126,7 +140,7 @@ class MenuManager(CTk):
 
         self.return_code = code
         self.audio_api.shutdown()
-        self.touch_screen.close()
+        if self.touch_screen: self.touch_screen.close()
         self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
         self.bg_job_manager.shutdown(self)
         super().destroy()

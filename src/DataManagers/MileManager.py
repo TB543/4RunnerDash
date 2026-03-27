@@ -30,6 +30,7 @@ class MileManger:
     # sets global variables shared across all instances of the class
     current_miles = load_key("current_miles")
     managers = []
+    maintenance_callback = None  # will be set by parent class
 
     def __init__(self, key, callback):
         """
@@ -46,6 +47,7 @@ class MileManger:
         MileManger.managers.append(self)
         try:
             self.callback(round(self.value - MileManger.current_miles, 2))
+            if self.value - MileManger.current_miles < 500: MileManger.maintenance_callback()
         except:
             return
 
@@ -72,6 +74,7 @@ class MileManger:
         for manager in cls.managers:
             try:
                 manager.callback(round(manager.value - cls.current_miles, 2))
+                if manager.value - cls.current_miles < 500: cls.maintenance_callback()
             except:
                 continue
 
