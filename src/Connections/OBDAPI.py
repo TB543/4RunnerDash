@@ -133,5 +133,7 @@ class OBDAPI(Async):
         shuts down the OBD-II interface.
         """
 
-        self.close()
-        MileManger.save()
+        try:
+            self.close()  # can fail if not initialized
+        finally:
+            MileManger.save()

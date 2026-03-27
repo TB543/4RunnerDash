@@ -23,3 +23,4 @@ fix placeholder text/cursor on maps searchbar
 emergency shutdown - hold volume buttons
 tilemaker 3.0.0 doesnt have costline landfill scrpts
 display sleep + camera hide UI bug
+dont log camera connection
