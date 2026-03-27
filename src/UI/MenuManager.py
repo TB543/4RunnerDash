@@ -35,10 +35,10 @@ class MenuManager(CTk):
 
         # gets the touch screen device
         device_name = environ["TOUCH_SCREEN"]
-        touch_screen = None  # created here because will be used by map menu for custom map touch screen zoom later
+        self.touch_screen = None  # created here because will be used by map menu for custom map touch screen zoom later
         for path in list_devices():
-            touch_screen = InputDevice(path)
-            if device_name == touch_screen.name:
+            self.touch_screen = InputDevice(path)
+            if device_name == self.touch_screen.name:
                 break
 
         # initializes the window
@@ -48,7 +48,7 @@ class MenuManager(CTk):
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
         self.appearance_manager = AppearanceManager(self)
         self.shutdown_lock = Lock()
-        self.fg_job_manager = FGJobManager(touch_screen)
+        self.fg_job_manager = FGJobManager(self.touch_screen)
         self.bg_job_manager = BGJobManager()
         self.audio_api = AudioAPI(self.bg_job_manager)
         GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), lambda r: self.after(0, lambda: self.deiconify() if r == 0 else self.withdraw()), self.shutdown_lock)
@@ -126,6 +126,7 @@ class MenuManager(CTk):
 
         self.return_code = code
         self.audio_api.shutdown()
+        self.touch_screen.close()
         self.fg_job_manager.shutdown(cancel_futures=True, wait=False)
         self.bg_job_manager.shutdown(self)
         super().destroy()
