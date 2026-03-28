@@ -195,6 +195,7 @@ cython_debug/
 
 # default settings and cache files
 *.json
+!resources/dark_map_style.json
 *.db
 *.val
 *.db-shm
