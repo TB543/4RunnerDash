@@ -2,6 +2,8 @@ from tkintermapview import TkinterMapView
 from customtkinter import AppearanceModeTracker
 from AppData import INITIAL_MAP_COORDS, INITIAL_MAP_ZOOM, MAP_TILE_RESOLUTION
 from sys import argv
+from PIL.Image import new
+from PIL.ImageTk import PhotoImage
 
 
 class MapWidget(TkinterMapView):
@@ -151,3 +153,4 @@ class MapWidget(TkinterMapView):
         self.bg_color = self.master._apply_appearance_mode(self.master.cget("fg_color"))
         self.draw_rounded_corners()
         super().set_tile_server(self.tile_servers[0] if mode == "Light" else self.tile_servers[1], MAP_TILE_RESOLUTION)
+        self.canvas.config(bg="#F1EFEA" if mode == "Light" else "#242424")
