@@ -482,7 +482,18 @@
             ]
           ]
         },
-        "fill-outline-color": "hsl(30, 10%, 22%)"
+        "fill-outline-color": {
+          "stops": [
+            [
+              15,
+              "hsl(30, 10%, 22%)"
+            ],
+            [
+              16,
+              "hsl(30, 10%, 22%)"
+            ]
+          ]
+        }
       }
     },
     {
@@ -501,13 +512,10 @@
         "text-font": [
           "Open Sans Regular"
         ],
-        "text-size": 11.5
+        "text-size": 10
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-color": "hsl(0, 0%, 0%)",
-        "text-halo-width": 1.2,
-        "text-halo-blur": 0.5
+        "text-color": "hsl(0, 0%, 96%)"
       }
     },
     {
@@ -534,7 +542,7 @@
       },
       "paint": {
         "fill-antialias": true,
-        "fill-color": "hsl(0, 0%, 45%)"
+        "fill-color": "hsl(0, 0%, 30%)"
       }
     },
     {
@@ -561,7 +569,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "hsl(0, 0%, 45%)",
+        "line-color": "hsl(0, 0%, 30%)",
         "line-width": {
           "base": 1.2,
           "stops": [
@@ -597,7 +605,7 @@
       ],
       "layout": {},
       "paint": {
-        "fill-color": "hsl(0, 0%, 45%)",
+        "fill-color": "hsl(0, 0%, 30%)",
         "fill-opacity": 0.5
       }
     },
@@ -625,7 +633,7 @@
         "line-join": "bevel"
       },
       "paint": {
-        "line-color": "hsl(0, 0%, 45%)",
+        "line-color": "hsl(0, 0%, 30%)",
         "line-dasharray": [
           1,
           1
@@ -670,7 +678,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "hsl(0, 0%, 45%)",
+        "line-color": "hsl(0, 0%, 30%)",
         "line-width": {
           "base": 1.55,
           "stops": [
@@ -942,7 +950,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "hsl(0, 0%, 45%)",
+        "line-color": "hsl(0, 0%, 30%)",
         "line-width": {
           "base": 1.4,
           "stops": [
@@ -982,7 +990,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "hsl(0, 0%, 45%)",
+        "line-color": "hsl(0, 0%, 30%)",
         "line-width": {
           "base": 1.4,
           "stops": [
@@ -1021,7 +1029,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "hsl(0, 0%, 45%)",
+        "line-color": "hsl(0, 0%, 30%)",
         "line-offset": 0,
         "line-width": {
           "base": 1.4,
@@ -1546,14 +1554,14 @@
           0,
           0.5
         ],
-        "text-size": 12.649999999999999,
+        "text-size": 11,
         "visibility": "visible"
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-blur": 0.5,
-        "text-halo-color": "hsl(0, 0%, 0%)",
-        "text-halo-width": 1.2
+        "text-color": "hsl(0, 0%, 96%)",
+        "text-halo-blur": 1,
+        "text-halo-color": "hsl(0,0%,0%)",
+        "text-halo-width": 1
       }
     },
     {
@@ -1581,14 +1589,14 @@
           0,
           0.5
         ],
-        "text-size": 12.649999999999999,
+        "text-size": 11,
         "visibility": "visible"
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-blur": 0.5,
-        "text-halo-color": "hsl(0, 0%, 0%)",
-        "text-halo-width": 1.2
+        "text-color": "hsl(0, 0%, 96%)",
+        "text-halo-blur": 1,
+        "text-halo-color": "hsl(0,0%,0%)",
+        "text-halo-width": 1
       }
     },
     {
@@ -1615,11 +1623,11 @@
           "stops": [
             [
               10,
-              9.2
+              8
             ],
             [
               20,
-              16.099999999999998
+              14
             ]
           ]
         },
@@ -1627,10 +1635,9 @@
         "visibility": "visible"
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-color": "hsl(0, 0%, 45%)",
-        "text-halo-width": 1.2,
-        "text-halo-blur": 0.5
+        "text-color": "hsl(0, 0%, 96%)",
+        "text-halo-color": "hsl(0,0%,0%)",
+        "text-halo-width": 2
       }
     },
     {
@@ -1666,21 +1673,21 @@
           "stops": [
             [
               6,
-              11.5
+              10
             ],
             [
               12,
-              16.099999999999998
+              14
             ]
           ]
         },
         "visibility": "visible"
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-blur": 0.5,
-        "text-halo-color": "hsl(0, 0%, 0%)",
-        "text-halo-width": 1.2
+        "text-color": "hsl(0, 0%, 96%)",
+        "text-halo-blur": 0,
+        "text-halo-color": "hsl(0,0%,0%)",
+        "text-halo-width": 2
       }
     },
     {
@@ -1712,20 +1719,20 @@
           "stops": [
             [
               3,
-              13.799999999999999
+              12
             ],
             [
               8,
-              18.4
+              16
             ]
           ]
         }
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-blur": 0.5,
-        "text-halo-color": "hsl(0, 0%, 0%)",
-        "text-halo-width": 1.2
+        "text-color": "hsl(0, 0%, 96%)",
+        "text-halo-blur": 0,
+        "text-halo-color": "hsl(0,0%,0%)",
+        "text-halo-width": 2
       }
     },
     {
@@ -1761,21 +1768,21 @@
           "stops": [
             [
               3,
-              13.799999999999999
+              12
             ],
             [
               8,
-              25.299999999999997
+              22
             ]
           ]
         },
         "visibility": "visible"
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-blur": 0.5,
-        "text-halo-color": "hsl(0, 0%, 0%)",
-        "text-halo-width": 1.2
+        "text-color": "hsl(0, 0%, 96%)",
+        "text-halo-blur": 0,
+        "text-halo-color": "hsl(0,0%,0%)",
+        "text-halo-width": 2
       }
     },
     {
@@ -1811,21 +1818,21 @@
           "stops": [
             [
               3,
-              13.799999999999999
+              12
             ],
             [
               8,
-              25.299999999999997
+              22
             ]
           ]
         },
         "visibility": "visible"
       },
       "paint": {
-        "text-color": "hsl(0, 0%, 88%)",
-        "text-halo-blur": 0.5,
-        "text-halo-color": "hsl(0, 0%, 0%)",
-        "text-halo-width": 1.2
+        "text-color": "hsl(0, 0%, 96%)",
+        "text-halo-blur": 0,
+        "text-halo-color": "hsl(0,0%,0%)",
+        "text-halo-width": 2
       }
     }
   ]
