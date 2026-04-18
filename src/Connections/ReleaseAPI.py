@@ -56,7 +56,6 @@ class ReleaseAPI:
         # lazy load for performance
         from requests import get
         current_release = check_output(["git", "describe", "--tags", "--abbrev=0"]).decode("utf-8").strip()
-        current_release = "v1.4.0"
 
         # pulls the latest release from GitHub
         try:
