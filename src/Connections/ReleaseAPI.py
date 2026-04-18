@@ -122,7 +122,7 @@ class ReleaseAPI:
 
         # downloads required files
         try:
-            run(["git", "fetch", "origin", self.releases[-1]['tag_name']])
+            run(["git", "fetch", "origin", "tag", self.releases[-1]['tag_name']])
             with open("AppData/patch_notes.txt", "w") as f:
                 for release in self.releases:
                     ReleaseAPI.download_patch(release) if release["assets"] else None
