@@ -150,7 +150,7 @@
 
     >**Note:** By default only the US map database is installed, but feel free to modify the install_map.sh file to change this.
 
-8. The **4RunnerDash/src/AppData/__init__.py** file contains configuration settings that can be changed as needed to fit your car/hardware. Feel free to modify based on your needs and the dashboard will reflect these changes.
+8. The **4RunnerDash/src/AppData/app_settings.json** (auto created on first launch) file contains configuration settings that can be changed as needed to fit your car/hardware. Additionally, you can specify commands to launch external apps. Feel free to modify based on your needs and the dashboard will reflect these changes. (Documentation for what these values do can be found in the __init__.py file in this same directory)
 
 ## Hardware Installation
 >**Note:** Make sure software installation has completed before continuing to hardware installation. Additionally you should 3d print the 3d model of the mount using any filament that can resist heat and UV (I used ASA). The file for the mount can be found in the resources folder.
