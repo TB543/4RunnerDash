@@ -231,7 +231,7 @@ class AudioAPI:
         """
 
         try:
-            self._elapsed_time_str = strftime("%M:%S", gmtime(self.player.Position / 1000))
+            self._elapsed_time_str = strftime("%M:%S", gmtime((self.player.Position % self.player.Track["Duration"]) / 1000))
         except:
             self.update_player()
         return self._elapsed_time_str
@@ -246,7 +246,7 @@ class AudioAPI:
         """
 
         try:
-            self._playback_ratio = self.player.Position / self.player.Track["Duration"]
+            self._playback_ratio = (self.player.Position % self.player.Track["Duration"]) / self.player.Track["Duration"]
         except:
             self.update_player()
         return self._playback_ratio
@@ -261,7 +261,7 @@ class AudioAPI:
         """
 
         try:
-            remaining = self.player.Track["Duration"] - self.player.Position
+            remaining = self.player.Track["Duration"] - (self.player.Position % self.player.Track["Duration"])
             self._remaining_time_str = strftime("%M:%S", gmtime((0 if remaining < 0 else remaining) / 1000))
         except:
             self.update_player()
