@@ -3,7 +3,7 @@ from DataManagers.AlbumArtCache import AlbumArtCache
 from Connections.SpotifyAPI import SpotifyAPI
 from io import BytesIO
 from PIL.Image import open as open_img, new as new_img
-from AppData import IMAGE_RESOLUTION
+from AppData import ALBUM_ART_RESOLUTION
 from PIL.ImageDraw import Draw
 from threading import Lock
 
@@ -14,8 +14,8 @@ class BGJobManager(ThreadPoolExecutor):
     """
 
     # initializes global fields
-    image_mask = new_img("L", (IMAGE_RESOLUTION, IMAGE_RESOLUTION), 0)
-    Draw(image_mask).rounded_rectangle([0, 0, IMAGE_RESOLUTION, IMAGE_RESOLUTION], radius=12, fill=255)
+    image_mask = new_img("L", (ALBUM_ART_RESOLUTION, ALBUM_ART_RESOLUTION), 0)
+    Draw(image_mask).rounded_rectangle([0, 0, ALBUM_ART_RESOLUTION, ALBUM_ART_RESOLUTION], radius=12, fill=255)
 
     def __init__(self):
         """
@@ -166,7 +166,7 @@ class BGJobManager(ThreadPoolExecutor):
         @return the formatted bytes
         """
 
-        image = open_img(BytesIO(image_bytes)).resize((IMAGE_RESOLUTION, IMAGE_RESOLUTION)).convert("RGBA")
+        image = open_img(BytesIO(image_bytes)).resize((ALBUM_ART_RESOLUTION, ALBUM_ART_RESOLUTION)).convert("RGBA")
         image.putalpha(cls.image_mask)
         return image
     

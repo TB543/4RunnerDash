@@ -1,3 +1,6 @@
+from json import load, dump
+
+
 # pi screen settings
 PI_WIDTH = 1024  # both these might need to be adjusted for pi screen dimensions, hard coded for easier development in other environments
 PI_HEIGHT = 600
@@ -5,10 +8,10 @@ FPS = 30  # how often to update music menu
 
 # audio playback settings
 MAX_VOLUME = 100  # might take some adjusting based on cars sound system
-MAX_CACHE_ALBUMS = 90_000  # around 90 gb with 512 resolution, feel free to adjust if needed
+MAX_CACHED_ALBUMS = 90_000  # around 90 gb with 512 resolution, feel free to adjust if needed
 
 # image resolutions
-IMAGE_RESOLUTION = 512  # can be adjusted to change the quality of the album art, but will change the size of the image cache
+ALBUM_ART_RESOLUTION = 512  # can be adjusted to change the quality of the album art, but will change the size of the image cache
 MAP_TILE_RESOLUTION = 256  # changes how big the map tiles are
 
 # default map view when no gps connection
@@ -22,3 +25,47 @@ MILE_DELTAS = {
     "change_transmission_at": 75_000,
 }
 TANK_CAPACITY = 18.5  # the maximum capacity of your cars gas tank in gallons
+
+# overrides default settings with saved settings json. note unexpected types will cause unexpected behavior
+try:
+    with open("AppData/app_settings.json", "r") as f:
+        settings = load(f)
+        PI_WIDTH = settings["screen"]["width"]
+        PI_HEIGHT = settings["screen"]["height"]
+        FPS = settings["screen"]["fps"]
+        MAX_VOLUME = settings["audio"]["max_volume"]
+        MAX_CACHED_ALBUMS = settings["audio"]["max_cached_albums"]
+        ALBUM_ART_RESOLUTION = settings["image"]["album_art_resolution"]
+        MAP_TILE_RESOLUTION = settings["image"]["map_tile_resolution"]
+        INITIAL_MAP_COORDS = settings["map"]["initial_coords"]
+        INITIAL_MAP_ZOOM = settings["map"]["initial_zoom"]
+        MILE_DELTAS = settings["maintenance"]["mile_deltas"]
+        TANK_CAPACITY = settings["maintenance"]["tank_capacity"]
+
+# writes default settings to json file if an error occurs while reading saved settings
+except:
+    with open("AppData/app_settings.json", "w") as f:
+        settings = {
+            "screen": {
+                "width": PI_WIDTH,
+                "height": PI_HEIGHT,
+                "fps": FPS,
+            },
+            "audio": {
+                "max_volume": MAX_VOLUME,
+                "max_cached_albums": MAX_CACHED_ALBUMS,
+            },
+            "image": {
+                "album_art_resolution": ALBUM_ART_RESOLUTION,
+                "map_tile_resolution": MAP_TILE_RESOLUTION,
+            },
+            "map": {
+                "initial_coords": INITIAL_MAP_COORDS,
+                "initial_zoom": INITIAL_MAP_ZOOM,
+            },
+            "maintenance": {
+                "mile_deltas": MILE_DELTAS,
+                "tank_capacity": TANK_CAPACITY,
+            },
+        }
+        dump(settings, f, indent=4)

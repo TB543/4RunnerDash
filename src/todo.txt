@@ -26,3 +26,4 @@ dont log camera connection
 handle spotify api requests better (check status code)
 mod (%) playback amount (repeat song doesnt reset)
 add way to run other programs from main program
+check network status before attempt query pending

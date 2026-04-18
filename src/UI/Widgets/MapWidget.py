@@ -2,8 +2,6 @@ from tkintermapview import TkinterMapView
 from customtkinter import AppearanceModeTracker
 from AppData import INITIAL_MAP_COORDS, INITIAL_MAP_ZOOM, MAP_TILE_RESOLUTION
 from sys import argv
-from PIL.Image import new
-from PIL.ImageTk import PhotoImage
 
 
 class MapWidget(TkinterMapView):

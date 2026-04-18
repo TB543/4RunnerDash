@@ -1,4 +1,4 @@
-from AppData import MAX_CACHE_ALBUMS
+from AppData import MAX_CACHED_ALBUMS
 from diskcache import Cache
 from collections import OrderedDict
 from threading import Lock
@@ -163,7 +163,7 @@ class AlbumArtCache(Cache):
             LRU_dict = self.get("LRU", OrderedDict())
 
             # removes the least recently accessed album
-            while len(LRU_dict) > MAX_CACHE_ALBUMS:
+            while len(LRU_dict) > MAX_CACHED_ALBUMS:
                 with self.transact():  # ensures atomicity
                     self.evict("default")
                     self.evict(LRU_dict.popitem(last=False)[0])
