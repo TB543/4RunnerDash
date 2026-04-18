@@ -122,9 +122,7 @@ class MenuManager(CTk):
             anything else - shutdown (car battery life is most important)
         """
 
-        print("Starting Debug Logging")
         super().mainloop()
-        print("Ending Debug Logging")
         run(["sudo", "pkill", "Xorg"])
         with self.shutdown_lock:
             return self.return_code

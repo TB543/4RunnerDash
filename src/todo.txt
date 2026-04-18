@@ -17,12 +17,10 @@ make boot-up faster at least for UI
 non blockling routing
 routes auto end when complete
 maps menu emojis too big for buttons
-log all of python program not just mainloop
 fix placeholder text/cursor on maps searchbar
-emergency shutdown - hold volume buttons
-ensure new tilemaker version builds and works properly
 display sleep + camera hide UI bug
 dont log camera connection
 handle spotify api requests better (check status code)
 add way to run other programs from main program
 check network status before attempt query pending
+bluetooth auto connect
