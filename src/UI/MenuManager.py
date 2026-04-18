@@ -44,19 +44,28 @@ class MenuManager(CTk):
 
         # initializes the window
         super().__init__(**kwargs)
-        self.return_code = 1
         self.configure(cursor="none") if len(argv) != 2 or argv[1] != "dev" else None
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
-        self.appearance_manager = AppearanceManager(self)
+
+        # instance variables
+        self.notification = StringVar(self)
+        self.return_code = 1
         self.shutdown_lock = Lock()
+        self.mainloop_lock = Lock()
+        self.mainloop_lock.acquire()
+        self.after(0, self.mainloop_lock.release)
+
+        # managers setup
+        self.appearance_manager = AppearanceManager(self)
         self.fg_job_manager = FGJobManager(touch_screen)
         self.bg_job_manager = BGJobManager()
-        self.audio_api = AudioAPI(self.bg_job_manager)
-        GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.fg_job_manager.ignore_shutdown, self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), lambda r: self.after(0, lambda: self.deiconify() if r == 0 else self.withdraw()), self.shutdown_lock)
-        self.notification = StringVar(self)
         MileManger.maintenance_callback = lambda: self.set_notification("Maintenance Needed in OBD Menu")
-        release_api = ReleaseAPI(self.destroy)
+
+        # apis setup
+        self.audio_api = AudioAPI(self.bg_job_manager)
+        release_api = ReleaseAPI(self.destroy, self.mainloop_lock)
         release_api.add_callback(lambda: self.set_notification("Software Update Available in Settings"))
+        GPIOAPI(lambda c: self.after(0, lambda: self.destroy(c)), self.fg_job_manager.ignore_shutdown, self.appearance_manager.apply_system_mode, lambda v: self.after(0, lambda: self.show_volume(v)), lambda r: self.after(0, lambda: self.deiconify() if r == 0 else self.withdraw()), self.shutdown_lock)
 
         # creates the various menus
         self.menus = {

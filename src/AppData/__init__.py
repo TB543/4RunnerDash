@@ -33,7 +33,7 @@ APPS = {
     # here is an example app: https://github.com/TB543/4RunnerEffects
     # "4RunnerEffects": { # this program will be hidden but still running in the background while app is running
     #     "command": "~/4RunnerEffects/venv/bin/python ~/4RunnerEffects/src/main.py",  # the command to run the app (required)
-    #     "cwd": "~/4RunnerEffects/src",  # working directory of the app (defaults to this programs src directory)
+    #     "cwd": "~/4RunnerEffects/src/",  # working directory of the app (defaults to this programs src directory)
     #     "ignore_shutdown": True,  # determines if app should ignore shutdown when ignition is turned off (defaults to False). behavior will return to normal when program exits
     # } # once the app exits with a return code this program will continue running normally
 }

@@ -21,33 +21,30 @@ class ReleaseAPI:
 
     REPO_URL = "https://api.github.com/repos/TB543/4RunnerDash/releases"
 
-    def __init__(self, shutdown):
+    def __init__(self, shutdown, mainloop_lock):
         """
         creates the release manager
 
-        @param callback: the shutdown callback to call before updating
-        @param update_available: the callback when an update is found
+        @param callback: the callback to shutdown the UI before updating
+        @param mainloop_lock: the lock object to ensure mainloop has started before checking for updates
         """
 
         # sets fields
         self.callback = shutdown
+        self.mainloop_lock = mainloop_lock
         self.releases = None
         self.update_available_callbacks = []
-        self.thread_lock = Lock()
         Thread(target=self.get_releases).start()
 
     def add_callback(self, func):
         """
-        adds a callback function if an update is found
+        adds a callback function if an update is found.
+        ** note: callbacks can only be added before the program mainloop starts or they will not be executed **
 
         @param func: the callback function
         """
 
-        with self.thread_lock:
-            if self.releases:
-                func()
-            else:
-                self.update_available_callbacks.append(func)
+        self.update_available_callbacks.append(func)
 
     def get_releases(self):
         """
@@ -59,6 +56,7 @@ class ReleaseAPI:
         # lazy load for performance
         from requests import get
         current_release = check_output(["git", "describe", "--tags", "--abbrev=0"]).decode("utf-8").strip()
+        current_release = "v1.4.0"
 
         # pulls the latest release from GitHub
         try:
@@ -75,7 +73,7 @@ class ReleaseAPI:
 
             # performs callback functions if an update is found
             if self.releases:
-                with self.thread_lock:
+                with self.mainloop_lock:
                     for callback in self.update_available_callbacks:
                         callback()
                     self.update_available_callbacks = []
