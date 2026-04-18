@@ -16,7 +16,7 @@ MAP_TILE_RESOLUTION = 256  # changes how big the map tiles are
 
 # default map view when no gps connection
 INITIAL_MAP_COORDS = [39.8283, -98.5795]
-INITIAL_MAP_ZOOM = 4
+INITIAL_MAP_ZOOM = 10
 
 # defines how often a fluid/part should be changed where key is the fluid/part and value is how often in miles it should be changed
 MILE_DELTAS = {
@@ -25,6 +25,18 @@ MILE_DELTAS = {
     "change_transmission_at": 75_000,
 }
 TANK_CAPACITY = 18.5  # the maximum capacity of your cars gas tank in gallons
+
+# apps - add as many as you'd like key is app name value is app settings (see example)
+APPS = {
+    "Shell": None,  # none is default command for exiting this program
+
+    # here is an example app: https://github.com/TB543/4RunnerEffects
+    # "4RunnerEffects": { # this program will be hidden but still running in the background while app is running
+    #     "command": "~/4RunnerEffects/venv/bin/python ~/4RunnerEffects/src/main.py",  # the command to run the app (required)
+    #     "cwd": "~/4RunnerEffects/src",  # working directory of the app (defaults to this programs src directory)
+    #     "ignore_shutdown": True,  # determines if app should ignore shutdown when ignition is turned off (defaults to False). behavior will return to normal when program exits
+    # } # once the app exits with a return code this program will continue running normally
+}
 
 # overrides default settings with saved settings json. note unexpected types will cause unexpected behavior
 try:
@@ -41,6 +53,7 @@ try:
         INITIAL_MAP_ZOOM = settings["map"]["initial_zoom"]
         MILE_DELTAS = settings["maintenance"]["mile_deltas"]
         TANK_CAPACITY = settings["maintenance"]["tank_capacity"]
+        APPS = settings["apps"]
 
 # writes default settings to json file if an error occurs while reading saved settings
 except:
@@ -67,5 +80,6 @@ except:
                 "mile_deltas": MILE_DELTAS,
                 "tank_capacity": TANK_CAPACITY,
             },
+            "apps": APPS,
         }
         dump(settings, f, indent=4)

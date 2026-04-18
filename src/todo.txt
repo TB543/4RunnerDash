@@ -21,6 +21,5 @@ fix placeholder text/cursor on maps searchbar
 display sleep + camera hide UI bug
 dont log camera connection
 handle spotify api requests better (check status code)
-add way to run other programs from main program
 check network status before attempt query pending
 bluetooth auto connect

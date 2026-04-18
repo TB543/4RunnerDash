@@ -35,11 +35,13 @@ class GPIOAPI:
     setup(7, IN)
     dht = DHT11(4)
 
-    def __init__(self, shutdown, dimmer, volume, reverse, lock):
+    def __init__(self, shutdown, ignore_shutdown, dimmer, volume, reverse, lock):
         """
         initializes an instance of the GPIO api
 
-        @param shutdown: a callback function to run before the shutdown command is issued
+        @param shutdown: a callback function to shut down the GUI
+        @param ignore_shutdown: a callback function to check if the shutdown command should be ignored this time
+            takes 1 parameter, the class instance shutdown command so that it can be called again when shutdown should no longer be ignored
         @param dimmer: a callback function to run when the dimmer wire is switched
             takes 1 parameter, for the new state of the dimmer: 0 for low, 1 for high
         @param volume: a callback function to run when the volume is changed
@@ -76,8 +78,8 @@ class GPIOAPI:
         # shutdown command
         self.lock = lock
         if len(argv) < 2 or argv[1] != "dev":
-            add_event_detect(12, FALLING, lambda e: self.shutdown(shutdown))
-            self.shutdown(shutdown) if read(12) == 0 else None
+            add_event_detect(12, FALLING, lambda e: self.shutdown(shutdown, ignore_shutdown))
+            self.shutdown(shutdown, ignore_shutdown) if read(12) == 0 else None
 
         # reverse camera
         self.reverse_cam_process = None
@@ -172,12 +174,17 @@ class GPIOAPI:
             reverse(0)
             self.reverse_cam_process.terminate()
 
-    def shutdown(self, callback):
+    def shutdown(self, callback, ignore):
         """
         runs the specified shutdown callback and shuts down the pi
 
         @param callback: the shutdown callback to run
+        @param ignore: a callback to check if this shutdown should be ignored
         """
+
+        # checks if this shutdown should be ignored
+        if ignore(lambda: self.shutdown(callback, ignore)):
+            return
 
         # ensures pi stays on throughout short power loss (switch from battery to engine power)
         sleep(5)

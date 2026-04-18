@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from time import time
+from subprocess import Popen
 from Connections.NavigationAPI import NavigationAPI
 try:
     from evdev.ecodes import BTN_TOUCH
@@ -25,6 +26,9 @@ class FGJobManager(ThreadPoolExecutor):
         super().__init__()
         self.touch_screen = touch_screen
         self.address_search_future = None
+        self.running_app = None
+        self._ignore_shutdown = False
+        self.shutdown_callback = None
 
     def queue_display_sleep(self, wake):
         """
@@ -60,6 +64,24 @@ class FGJobManager(ThreadPoolExecutor):
 
         @return: a future object for accessing the calculated route later
         """
+
+    def start_application(self, callback, command, cwd=None, ignore_shutdown=False):
+        """
+        start an application and waits for it to finish
+        this program will be hidden but continue running in the background until app has exited
+
+        @param callback: the function to call when the application has exited
+        @param command: the command that will be executed to start the app
+        @param cwd: the current working directory of the app
+        @param ignore_shutdown: whether to ignore ignition shutdown while app is running
+        """
+
+        self.shutdown_callback = None
+        self.running_app = Popen(command.split(" "), cwd=cwd)
+        self._ignore_shutdown = ignore_shutdown
+        future = self.submit(self.application_job)
+        future.add_done_callback(lambda f: callback())
+        future.add_done_callback(lambda f: self.shutdown_callback() if self.shutdown_callback else None)
 
     def display_sleep_job(self):
         """
@@ -100,3 +122,31 @@ class FGJobManager(ThreadPoolExecutor):
         """
 
         return NavigationAPI.navigate(destination)
+
+    def application_job(self):
+        """
+        waits for the running application to exit before calling the done callback
+        """
+
+        self.running_app.wait()
+        self._ignore_shutdown = False
+
+    def ignore_shutdown(self, shutdown):
+        """
+        checks to see if an application is running and if it is configured to ignore the ignition shutdown
+
+        @param shutdown: the function to call when application has exited and shutdown sequence can begin
+        """
+
+        self.shutdown_callback = shutdown
+        return self._ignore_shutdown
+
+    def shutdown(self, wait = True, *, cancel_futures = False):
+        """
+        overrides the shutdown method to exit the running application and shutdown the touch screen as well
+        """
+
+        if self.touch_screen: self.touch_screen.close()
+        if self.running_app is not None: self.running_app.terminate()
+        if self.running_app is not None: self.running_app.wait(timeout=5)
+        super().shutdown(cancel_futures=cancel_futures, wait=wait)
