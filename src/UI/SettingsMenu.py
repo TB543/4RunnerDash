@@ -45,7 +45,7 @@ class SettingsMenu(CTkFrame):
         scale_button = CTkButtonFixed(self, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=self.appearance_manager.cycle_scaling()))
         apps_button = CTkButtonFixed(self, text="📱", font=("Arial", 100), command=self.show_apps_menu)
         back_button = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
-        update_button = TSCTkButton(self, text="Update Software", font=("Arial", 20), command=release_api.update)
+        update_button = PWCTkButton(self, self, text="Update Software", font=("Arial", 20), command=release_api.update)
         appearance_button.grid(row=1, column=1)
         theme_button.grid(row=1, column=3)
         scale_button.grid(row=1, column=5)
