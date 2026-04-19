@@ -1,4 +1,4 @@
-from subprocess import run, PIPE, Popen
+from subprocess import run, PIPE, Popen, DEVNULL
 from AppData import MAX_VOLUME, PI_WIDTH, PI_HEIGHT
 from time import sleep
 from sys import argv
@@ -167,7 +167,7 @@ class GPIOAPI:
         # turns reverse cam on
         if read(7) == 1:
             reverse(1)
-            self.reverse_cam_process = Popen(["rpicam-still", "-t", "0", "--width", str(PI_WIDTH), "--height", str(PI_HEIGHT)])
+            self.reverse_cam_process = Popen(["rpicam-still", "-t", "0", "--width", str(PI_WIDTH), "--height", str(PI_HEIGHT)], stdout=DEVNULL, stderr=DEVNULL)
 
         # turns reverse cam off
         elif self.reverse_cam_process is not None:
