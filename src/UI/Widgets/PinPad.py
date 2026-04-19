@@ -71,7 +71,7 @@ class PinPad(CTkFrame):
         # handles when pin is correct
         if self.pin == str(PIN):
             PinPad.unlocked = True
-            self.after(250, lambda: [instance.place_forget() for instance in tuple(PinPad.active_instances.values())])
+            self.after(250, lambda: [instance.place_forget() for instance in PinPad.active_instances.values()])
             self.after(250, self.callback)
 
         # handles when pin is incorrect
@@ -81,22 +81,17 @@ class PinPad(CTkFrame):
 
     def place(self, **kwargs):
         """
-        overrides the place method to ensure only 1 pinpad is active per menu
+        overrides the place method to ensure only 1 pinpad is active per menu and previously entered pin is cleared
 
         @param kwargs: the arguments passed to the widget
         """
 
+        # resets pin
+        self.pin = ""
+        self.pin_label.configure(text="Enter Pin")
+
+        # removes old pinpad
         if instance := PinPad.active_instances.get(self.master):
             instance.place_forget()
         PinPad.active_instances[self.master] = self
         super().place(**kwargs)
-
-    def place_forget(self):
-        """
-        overrides the place forget method to also clear the currently entered pin
-        """
-
-        self.pin = ""
-        self.pin_label.configure(text="Enter Pin")
-        PinPad.active_instances.pop(self.master)
-        super().place_forget()
