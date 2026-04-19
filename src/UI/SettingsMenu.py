@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, CTkScrollableFrame, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
-from Dev.PWCTkButton import PWCTkButton
+from Dev.PWCTkButton import PWCTkButton, PWCTkButtonFixed
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import APPS
 
@@ -40,9 +40,9 @@ class SettingsMenu(CTkFrame):
         apps_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        appearance_button = PWCTkButton(self, self, 3, text=appearance_text, font=("Arial", 100), command=lambda: appearance_button.configure(text=self.appearance_manager.cycle_mode()))
-        theme_button = PWCTkButton(self, self, 3, text=theme_text, font=("Arial", 100), command=lambda: theme_button.configure(text=self.appearance_manager.cycle_theme()))
-        scale_button = PWCTkButton(self, self, 3, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=self.appearance_manager.cycle_scaling()))
+        appearance_button = PWCTkButtonFixed(self, self, 3, text=appearance_text, font=("Arial", 100), command=lambda: appearance_button.configure(text=self.appearance_manager.cycle_mode()))
+        theme_button = PWCTkButtonFixed(self, self, 3, text=theme_text, font=("Arial", 100), command=lambda: theme_button.configure(text=self.appearance_manager.cycle_theme()))
+        scale_button = PWCTkButtonFixed(self, self, 3, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=self.appearance_manager.cycle_scaling()))
         apps_button = CTkButtonFixed(self, text="📱", font=("Arial", 100), command=self.show_apps_menu)
         back_button = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
         update_button = PWCTkButton(self, self, 1, text="Update Software", font=("Arial", 20), command=release_api.update)

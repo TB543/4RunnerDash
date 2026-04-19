@@ -1,4 +1,5 @@
 from Dev.TSCTkButton import TSCTkButton
+from Dev.CTkButtonFixed import CTkButtonFixed
 from UI.Widgets.PinPad import PinPad
 from AppData import SECURITY_LEVEL
 
@@ -27,3 +28,9 @@ class PWCTkButton(TSCTkButton):
         kwargs["command"] = lambda: command() if PinPad.unlocked or security_level > SECURITY_LEVEL else pinpad.place(relx=.5, rely=.5, relwidth=.4, relheight=.9, anchor="center")
         super().__init__(master, *args, **kwargs)
         self.after(0, pinpad.lift)
+
+
+class PWCTkButtonFixed(PWCTkButton, CTkButtonFixed):
+    """
+    a password protected button that includes the logic for fixing the render bug for larger buttons
+    """
