@@ -38,6 +38,10 @@ APPS = {
     # } # once the app exits with a return code this program will continue running normally
 }
 
+# security
+PIN = 1234  # just stored in plaintext, security isnt too much of a major concern, I just dont want passengers pressing buttons they shouldnt
+SECURITY_LEVEL = 1  # not implemented yet, but I will add different levels
+
 # overrides default settings with saved settings json. note unexpected types will cause unexpected behavior
 try:
     with open("AppData/app_settings.json", "r") as f:
@@ -54,6 +58,8 @@ try:
         MILE_DELTAS = settings["maintenance"]["mile_deltas"]
         TANK_CAPACITY = settings["maintenance"]["tank_capacity"]
         APPS = settings["apps"]
+        PIN = settings["security"]["pin"]
+        SECURITY_LEVEL = settings["security"]["security_level"]
 
 # writes default settings to json file if an error occurs while reading saved settings
 except:
@@ -81,5 +87,9 @@ except:
                 "tank_capacity": TANK_CAPACITY,
             },
             "apps": APPS,
+            "security": {
+                "pin": PIN,
+                "security_level": SECURITY_LEVEL,
+            }
         }
         dump(settings, f, indent=4)

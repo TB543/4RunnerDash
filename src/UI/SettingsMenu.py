@@ -1,6 +1,7 @@
 from customtkinter import CTkFrame, CTkLabel, CTkScrollableFrame, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
 from Dev.CTkButtonFixed import CTkButtonFixed
+from Dev.PWCTkButton import PWCTkButton
 from DataManagers.AppearanceManager import AppearanceManager
 from AppData import APPS
 
@@ -27,22 +28,6 @@ class SettingsMenu(CTkFrame):
         appearance_text = AppearanceManager.MODES[self.appearance_manager.mode]["icon"]
         theme_text = AppearanceManager.THEMES[self.appearance_manager.theme]["icon"]
         scale_text = AppearanceManager.SCALES[self.appearance_manager.scaling]["icon"]
-
-        # creates apps menu
-        self.apps_menu = CTkFrame(self)
-        apps_menu_label = CTkLabel(self.apps_menu, text="Select an external app to open:", font=("Arial", 20))
-        close_apps_menu = TSCTkButton(self.apps_menu, text="x", width=12, font=("Arial", 20),command=self.apps_menu.place_forget)
-        apps_container = CTkScrollableFrame(self.apps_menu)
-        apps_menu_label.grid(row=0, column=0)
-        close_apps_menu.grid(row=0, column=1, pady=5, padx=5)
-        apps_container.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=2, pady=(0, 2))
-        self.apps_menu.rowconfigure(1, weight=1)
-        self.apps_menu.columnconfigure(0, weight=1)
-
-        # adds apps to apps menu
-        for name, config in APPS.items():
-            app = TSCTkButton(apps_container, text=name, font=("Arial", 20), command=lambda c=config: self.start_app(c))
-            app.pack(fill="x", expand=True, padx=5, pady=5)
 
         # creates the labels for the buttons
         appearance_label = CTkLabel(self, text="Appearance", font=("Arial", 20))
@@ -76,7 +61,28 @@ class SettingsMenu(CTkFrame):
         self.grid_columnconfigure(4, weight=1)
         self.grid_columnconfigure(6, weight=1)
         self.grid_columnconfigure(8, weight=1)
-        self.apps_menu.lift()
+
+        # creates apps menu
+        self.apps_menu = CTkFrame(self, border_width=2)
+        apps_menu_label = CTkLabel(self.apps_menu, text="Select an external app to open:", font=("Arial", 20))
+        close_apps_menu = TSCTkButton(self.apps_menu, text="x", width=12, font=("Arial", 20),command=self.apps_menu.place_forget)
+        apps_container = CTkScrollableFrame(self.apps_menu)
+        apps_menu_label.grid(row=0, column=0)
+        close_apps_menu.grid(row=0, column=1, pady=5, padx=5)
+        apps_container.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=2, pady=(0, 2))
+        self.apps_menu.rowconfigure(1, weight=1)
+        self.apps_menu.columnconfigure(0, weight=1)
+
+        # adds apps to apps menu
+        for name, config in APPS.items():
+            if config:
+                app = TSCTkButton(apps_container, text=name, font=("Arial", 20), command=lambda c=config: self.start_app(c))
+                app.pack(fill="x", expand=True, padx=5, pady=5)
+
+            # shell command will be password protected
+            else:
+                app = PWCTkButton(apps_container, self, text=name, font=("Arial", 20), command=lambda c=config: self.start_app(c))
+                app.pack(fill="x", expand=True, padx=5, pady=5)
 
     def show_apps_menu(self):
         """
