@@ -1,5 +1,6 @@
 from customtkinter import CTkFrame, CTkLabel, DoubleVar, CTkScrollableFrame, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
+from Dev.PWCTkButton import PWCTkButton
 from DataManagers.MileManager import MileManger
 from threading import Thread
 
@@ -78,7 +79,7 @@ class OBDMenu(CTkFrame):
         oil_change_container = CTkFrame(container)
         oil_change_label = CTkLabel(oil_change_container, text="Miles Until Oil Change:", font=("Arial", 20))
         oil_change_label.pack(side="left", padx=10, pady=5)
-        oil_change_button = TSCTkButton(oil_change_container, text="Reset", font=("Arial", 20), width=70, command=oil_change_manager.reset)
+        oil_change_button = PWCTkButton(oil_change_container, self, 2, text="Reset", font=("Arial", 20), width=70, command=oil_change_manager.reset)
         oil_change_button.pack(side="right", padx=10, pady=5)
         oil_change_label = CTkLabel(oil_change_container, textvariable=oil_change, font=("Arial", 20))
         oil_change_label.pack(side="right", pady=5)
@@ -88,7 +89,7 @@ class OBDMenu(CTkFrame):
         filter_change_container = CTkFrame(container)
         filter_change_label = CTkLabel(filter_change_container, text="Miles Until Air Filter Change:", font=("Arial", 20))
         filter_change_label.pack(side="left", padx=10, pady=5)
-        filter_change_button = TSCTkButton(filter_change_container, text="Reset", font=("Arial", 20), width=70, command=filter_change_manager.reset)
+        filter_change_button = PWCTkButton(filter_change_container, self, 2, text="Reset", font=("Arial", 20), width=70, command=filter_change_manager.reset)
         filter_change_button.pack(side="right", padx=10, pady=5)
         filter_change_label = CTkLabel(filter_change_container, textvariable=filter_change, font=("Arial", 20))
         filter_change_label.pack(side="right", pady=5)
@@ -98,7 +99,7 @@ class OBDMenu(CTkFrame):
         transmission_change_container = CTkFrame(container)
         transmission_change_label = CTkLabel(transmission_change_container, text="Miles Until Transmission Fluid Change:", font=("Arial", 20))
         transmission_change_label.pack(side="left", padx=10, pady=5)
-        transmission_change_button = TSCTkButton(transmission_change_container, text="Reset", font=("Arial", 20), width=70, command=transmission_change_manager.reset)
+        transmission_change_button = PWCTkButton(transmission_change_container, self, 2, text="Reset", font=("Arial", 20), width=70, command=transmission_change_manager.reset)
         transmission_change_button.pack(side="right", padx=10, pady=5)
         transmission_change_label = CTkLabel(transmission_change_container, textvariable=transmission_change, font=("Arial", 20))
         transmission_change_label.pack(side="right", pady=5)
@@ -110,7 +111,7 @@ class OBDMenu(CTkFrame):
         description = CTkLabel(self.codes_popup, text="Description:", font=("Arial", 20))
         close_codes = TSCTkButton(self.codes_popup, text="x", width=12, font=("Arial", 20), command=self.codes_popup.place_forget)
         self.codes_container = CTkScrollableFrame(self.codes_popup)
-        clear_codes = TSCTkButton(self.codes_popup, text="Clear Codes", font=("Arial", 20), command=self.clear_codes)
+        clear_codes = PWCTkButton(self.codes_popup, self, 2, text="Clear Codes", font=("Arial", 20), command=self.clear_codes)
 
         # places codes widgets
         close_codes.grid(row=0, column=2, pady=5, padx=5)

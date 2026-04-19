@@ -1,5 +1,6 @@
 from customtkinter import CTkFrame, CTkEntry, CTkScrollableFrame, CTkLabel, CTkRadioButton, StringVar, DoubleVar, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
+from Dev.PWCTkButton import PWCTkButton
 from UI.Widgets.MapWidget import MapWidget
 from Connections.NavigationAPI import NavigationAPI
 from json import dumps, loads
@@ -94,7 +95,7 @@ class MapsMenu(CTkFrame):
         # creates destinations menu
         self.destinations_menu = CTkFrame(map_container, width=250)
         self.start_navigation_button = TSCTkButton(self.destinations_menu, text="Start Navigation", font=("Arial", 20), command=self.start_navigation)
-        self.manage_saved_destinations_button = TSCTkButton(self.destinations_menu, width=12, font=("Arial", 20), command=self.manage_saved_routes)
+        self.manage_saved_destinations_button = PWCTkButton(self.destinations_menu, self, 3, width=12, font=("Arial", 20), command=self.manage_saved_routes)
         close = TSCTkButton(self.destinations_menu, text="x", width=12, font=("Arial", 20), command=lambda: self.close_destinations_menu())
         self.search_destinations_container = CTkScrollableFrame(self.destinations_menu, fg_color=self.destinations_menu.cget("fg_color"))
         self.saved_destinations_container = CTkScrollableFrame(self.destinations_menu, fg_color=self.destinations_menu.cget("fg_color"))

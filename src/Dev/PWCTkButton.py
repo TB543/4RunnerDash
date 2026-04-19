@@ -1,5 +1,6 @@
 from Dev.TSCTkButton import TSCTkButton
 from UI.Widgets.PinPad import PinPad
+from AppData import SECURITY_LEVEL
 
 
 class PWCTkButton(TSCTkButton):
@@ -10,16 +11,19 @@ class PWCTkButton(TSCTkButton):
     additionally the pin will only need to be entered once per session and will remain unlocked until the next run
     """
 
-    def __init__(self, master, pinpad_master, *args, **kwargs):
+    def __init__(self, master, pinpad_master, security_level, *args, **kwargs):
         """
         creates the button
 
         @param master: the master widget for the button
         @param pinpad_master: the master widget for the pin pad overlay for the button
+        @param security_level: the security level of the button
+        @param args: additional arguments
+        @param kwargs: additional keyword arguments
         """
 
         command = kwargs.get("command", lambda: None)
         pinpad = PinPad(pinpad_master, command, border_width=2)
-        kwargs["command"] = lambda: command() if PinPad.unlocked else pinpad.place(relx=.5, rely=.5, relwidth=.4, relheight=.9, anchor="center")
+        kwargs["command"] = lambda: command() if PinPad.unlocked or security_level > SECURITY_LEVEL else pinpad.place(relx=.5, rely=.5, relwidth=.4, relheight=.9, anchor="center")
         super().__init__(master, *args, **kwargs)
-        pinpad.lift()
+        self.after(0, pinpad.lift)

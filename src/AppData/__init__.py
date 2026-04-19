@@ -40,7 +40,7 @@ APPS = {
 
 # security
 PIN = 1234  # just stored in plaintext, security isnt too much of a major concern, I just dont want passengers pressing buttons they shouldnt
-SECURITY_LEVEL = 1  # not implemented yet, but I will add different levels
+SECURITY_LEVEL = 1  # 0 - no pin protection, 1 - OS security (shell access, updates), 2 - OBD security (mile resets, clear codes), 3 - all app customization (saved routes, appearance settings)
 
 # overrides default settings with saved settings json. note unexpected types will cause unexpected behavior
 try:

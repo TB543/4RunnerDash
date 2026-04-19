@@ -40,12 +40,12 @@ class SettingsMenu(CTkFrame):
         apps_label.grid(row=0, column=7, sticky="s")
 
         # creates the buttons of the menu
-        appearance_button = CTkButtonFixed(self, text=appearance_text, font=("Arial", 100), command=lambda: appearance_button.configure(text=self.appearance_manager.cycle_mode()))
-        theme_button = CTkButtonFixed(self, text=theme_text, font=("Arial", 100), command=lambda: theme_button.configure(text=self.appearance_manager.cycle_theme()))
-        scale_button = CTkButtonFixed(self, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=self.appearance_manager.cycle_scaling()))
+        appearance_button = PWCTkButton(self, self, 3, text=appearance_text, font=("Arial", 100), command=lambda: appearance_button.configure(text=self.appearance_manager.cycle_mode()))
+        theme_button = PWCTkButton(self, self, 3, text=theme_text, font=("Arial", 100), command=lambda: theme_button.configure(text=self.appearance_manager.cycle_theme()))
+        scale_button = PWCTkButton(self, self, 3, text=scale_text, font=("Arial", 100), command=lambda: scale_button.configure(text=self.appearance_manager.cycle_scaling()))
         apps_button = CTkButtonFixed(self, text="📱", font=("Arial", 100), command=self.show_apps_menu)
         back_button = TSCTkButton(self, text="Main Menu", font=("Arial", 20), command=lambda: master.change_menu("main"))
-        update_button = PWCTkButton(self, self, text="Update Software", font=("Arial", 20), command=release_api.update)
+        update_button = PWCTkButton(self, self, 1, text="Update Software", font=("Arial", 20), command=release_api.update)
         appearance_button.grid(row=1, column=1)
         theme_button.grid(row=1, column=3)
         scale_button.grid(row=1, column=5)
@@ -81,7 +81,7 @@ class SettingsMenu(CTkFrame):
 
             # shell command will be password protected
             else:
-                app = PWCTkButton(apps_container, self, text=name, font=("Arial", 20), command=lambda c=config: self.start_app(c))
+                app = PWCTkButton(apps_container, self, 1, text=name, font=("Arial", 20), command=lambda c=config: self.start_app(c))
                 app.pack(fill="x", expand=True, padx=5, pady=5)
 
     def show_apps_menu(self):
