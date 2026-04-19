@@ -138,7 +138,7 @@ class FGJobManager(ThreadPoolExecutor):
         @param shutdown: the function to call when application has exited and shutdown sequence can begin
         """
 
-        self.shutdown_callback = shutdown
+        self.shutdown_callback = shutdown if self._ignore_shutdown else None
         return self._ignore_shutdown
 
     def shutdown(self, wait = True, *, cancel_futures = False):
