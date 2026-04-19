@@ -22,3 +22,4 @@ class PWCTkButton(TSCTkButton):
         pinpad = PinPad(pinpad_master, command, border_width=2)
         kwargs["command"] = lambda: command() if PinPad.unlocked else pinpad.place(relx=.5, rely=.5, relwidth=.4, relheight=.9, anchor="center")
         super().__init__(master, *args, **kwargs)
+        pinpad.lift()
