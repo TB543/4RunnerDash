@@ -21,4 +21,5 @@ fix placeholder text/cursor on maps searchbar
 display sleep + camera hide UI bug
 handle spotify api requests better (check status code)
 check network status before attempt query pending
-bluetooth auto connect
+bluetooth auto connect - seperate bluetooth app
+save opened menu accross reboots

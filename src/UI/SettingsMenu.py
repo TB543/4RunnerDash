@@ -106,5 +106,5 @@ class SettingsMenu(CTkFrame):
 
         # hides this program and opens the app
         else:
-            self.winfo_toplevel().withdraw()
-            self.fg_job_manager.start_application(lambda: self.winfo_toplevel().deiconify(), **config)
+            self.winfo_toplevel().withdraw(fg=True)
+            self.fg_job_manager.start_application(lambda: self.winfo_toplevel().deiconify(fg=True), **config)

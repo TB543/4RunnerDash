@@ -122,7 +122,7 @@ class MainMenu(CTkFrame):
         """
 
         # hide the main window and turn off the HDMI output
-        self.winfo_toplevel().withdraw()
+        self.winfo_toplevel().withdraw(fg=True)
         run(["xrandr", "--output", "HDMI-1", "--off", "--output", "HDMI-2", "--off"])
         self.fg_job_manager.queue_display_sleep(lambda: self.after(0, self.wake))
 
@@ -131,7 +131,7 @@ class MainMenu(CTkFrame):
         wakes the display after a touch event by then re-enabling the HDMI output and showing the main window again.
         """
 
-        self.winfo_toplevel().deiconify()
+        self.winfo_toplevel().deiconify(fg=True)
         run(["xrandr", "--output", "HDMI-1", "--auto", "--output", "HDMI-2", "--auto"])
 
     @staticmethod

@@ -49,6 +49,7 @@ class MenuManager(CTk):
 
         # instance variables
         self.notification = StringVar(self)
+        self.hidden = False
         self.return_code = 1
         self.shutdown_lock = Lock()
         self.mainloop_lock = Lock()
@@ -135,6 +136,28 @@ class MenuManager(CTk):
         run(["sudo", "pkill", "Xorg"])
         with self.shutdown_lock:
             return self.return_code
+
+    def withdraw(self, fg=False):
+        """
+        overrides the withdraw command so that if it is called by a foreground process it maintains the hidden
+        state even when background processes try to show the screen
+
+        @param fg: determines if the function was called by a foreground process or not
+        """
+
+        if fg: self.hidden = True
+        super().withdraw()
+
+    def deiconify(self, fg=False):
+        """
+        overrides the show command so that if it is called by a foreground process it maintains the shown
+        state so when background processes try to show the screen they succeed
+
+        @param fg: determines if the function was called by a foreground process or not
+        """
+
+        if fg: self.hidden = False
+        if not self.hidden: super().deiconify()
 
     def destroy(self, code=200):
         """
