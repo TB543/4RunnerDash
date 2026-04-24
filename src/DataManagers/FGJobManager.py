@@ -76,8 +76,14 @@ class FGJobManager(ThreadPoolExecutor):
         @param ignore_shutdown: whether to ignore ignition shutdown while app is running
         """
 
+        # if app fails to launch print a message
+        try:
+            self.running_app = Popen(command, cwd=cwd, shell=True)
+        except:
+            self.running_app = Popen("echo invalid command to launch app", cwd=cwd, shell=True)
+
+        # starts job to wait for app to exit
         self.shutdown_callback = None
-        self.running_app = Popen(command.split(" "), cwd=cwd)
         self._ignore_shutdown = ignore_shutdown
         future = self.submit(self.application_job)
         future.add_done_callback(lambda f: callback())
