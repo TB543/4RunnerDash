@@ -77,13 +77,13 @@ class FGJobManager(ThreadPoolExecutor):
         """
 
         # if app fails to launch print a message
+        self.shutdown_callback = None
         try:
             self.running_app = Popen(command, cwd=cwd, shell=True)
         except:
             self.running_app = Popen("echo invalid command to launch app", cwd=cwd, shell=True)
 
         # starts job to wait for app to exit
-        self.shutdown_callback = None
         self._ignore_shutdown = ignore_shutdown
         future = self.submit(self.application_job)
         future.add_done_callback(lambda f: callback())
