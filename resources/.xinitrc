@@ -3,7 +3,6 @@
 
 # starts backend
 cd ~/4RunnerDash
-matchbox-window-manager -use_cursor no &
 feh --fullscreen --borderless resources/splash.png &
 ./start_backend.sh
 
