@@ -11,12 +11,12 @@ sudo apt install -y openjdk-17-jdk postgresql postgis osm2pgsql libicu-dev acl d
 
 # moves postgresql database to correct location
 mkdir -p ../src/AppData/map_data
+mkdir -p ../src/AppData/map_data/postgresql
 DIR=$(realpath ../src/AppData/map_data/postgresql)
 while [ "$DIR" != "/" ]; do
     sudo setfacl -m u:postgres:x "$DIR"
     DIR=$(dirname "$DIR")
 done
-mkdir -p ../src/AppData/map_data/postgresql
 sudo chown -R postgres:postgres ../src/AppData/map_data/postgresql
 sudo sed -i.bak "s|^data_directory *=.*|data_directory = '$(realpath ../src/AppData/map_data/postgresql)'|" /etc/postgresql/15/main/postgresql.conf
 
