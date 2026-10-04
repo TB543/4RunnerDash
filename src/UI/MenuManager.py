@@ -134,7 +134,6 @@ class MenuManager(CTk):
         """
 
         super().mainloop()
-        run(["sudo", "pkill", "Xorg"])
         with self.shutdown_lock:
             return self.return_code
 
