@@ -47,6 +47,7 @@ class MenuManager(CTk):
         self.after(1000, lambda: run(["sudo", "pkill", "feh"]))  # kills splash screen after 1 second
         self.configure(cursor="none") if len(argv) != 2 or argv[1] != "dev" else None
         self.geometry(f"{PI_WIDTH}x{PI_HEIGHT}+0+0")
+        self.attributes("-fullscreen", True)
 
         # instance variables
         self.notification = StringVar(self)

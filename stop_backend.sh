@@ -17,7 +17,7 @@ while pgrep -f graphhopper > /dev/null; do
     pkill -9 -f graphhopper
     sleep 1
 done
-while [ "$(sudo docker ps -q -f name=tileserver)" != "" ]; do
+while sudo docker inspect tileserver >/dev/null 2>&1; do
     sudo docker stop tileserver
     sudo docker rm tileserver
     sleep 1
