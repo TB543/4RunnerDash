@@ -22,9 +22,7 @@ INITIAL_MAP_ZOOM = 10
 MILE_DELTAS = {
     "change_oil_at": 5_000,  # for example, this line means oil should be changed every 5000 miles
     "change_filter_at": 15_000,  # to line up with oil change. air filter not oil filter
-    "change_transmission_at": 75_000,
 }
-TANK_CAPACITY = 18.5  # the maximum capacity of your cars gas tank in gallons
 
 # apps - add as many as you'd like key is app name value is app settings (see example)
 APPS = {
@@ -56,7 +54,6 @@ try:
         INITIAL_MAP_COORDS = settings["map"]["initial_coords"]
         INITIAL_MAP_ZOOM = settings["map"]["initial_zoom"]
         MILE_DELTAS = settings["maintenance"]["mile_deltas"]
-        TANK_CAPACITY = settings["maintenance"]["tank_capacity"]
         APPS = settings["apps"]
         PIN = settings["security"]["pin"]
         SECURITY_LEVEL = settings["security"]["security_level"]
@@ -84,7 +81,6 @@ except:
             },
             "maintenance": {
                 "mile_deltas": MILE_DELTAS,
-                "tank_capacity": TANK_CAPACITY,
             },
             "apps": APPS,
             "security": {

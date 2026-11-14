@@ -1,7 +1,9 @@
-from customtkinter import CTkFrame, CTkLabel, DoubleVar, CTkScrollableFrame, set_widget_scaling
+from customtkinter import CTkFrame, CTkLabel, DoubleVar, StringVar, CTkScrollableFrame, set_widget_scaling
 from Dev.TSCTkButton import TSCTkButton
 from Dev.PWCTkButton import PWCTkButton
 from DataManagers.MileManager import MileManger
+from DataManagers.DateManager import DateManager
+from UI.Widgets.Calendar import Calendar
 from threading import Thread
 
 
@@ -42,9 +44,8 @@ class OBDMenu(CTkFrame):
 
         # creates vars to hold obd data and binds them to the API
         mpg = DoubleVar(self)
-        miles_until_empty = DoubleVar(self)
         self.api = None
-        self.api_thread = Thread(target=lambda: self.load_api(mpg, miles_until_empty))
+        self.api_thread = Thread(target=lambda: self.load_api(mpg))
         self.api_thread.start()
 
         # creates widgets for mpg
@@ -57,23 +58,17 @@ class OBDMenu(CTkFrame):
         mpg_label.pack(side="right", pady=5)
         mpg_container.pack(fill="x", padx=10, expand=True)
 
-        # creates widgets for miles until empty
-        miles_until_empty_container = CTkFrame(container)
-        miles_until_empty_label = CTkLabel(miles_until_empty_container, text="Miles Until Empty:", font=("Arial", 20))
-        miles_until_empty_label.pack(side="left", padx=10, pady=5)
-        spacer = TSCTkButton(miles_until_empty_container, text="", fg_color="transparent", width=70, hover=False)
-        spacer.pack(side="right", padx=10, pady=5)
-        miles_until_empty_label = CTkLabel(miles_until_empty_container, textvariable=miles_until_empty, font=("Arial", 20))
-        miles_until_empty_label.pack(side="right", pady=5)
-        miles_until_empty_container.pack(fill="x", padx=10, expand=True)
-
         # creates mile tracker variables and binds them to a mile manager
         oil_change = DoubleVar(self)
         filter_change = DoubleVar(self)
-        transmission_change = DoubleVar(self)
         oil_change_manager = MileManger("change_oil_at", lambda o: self.after(0, lambda: oil_change.set(o)))
         filter_change_manager = MileManger("change_filter_at", lambda f: self.after(0, lambda: filter_change.set(f)))
-        transmission_change_manager = MileManger("change_transmission_at", lambda t: self.after(0, lambda: transmission_change.set(t)))
+
+        # creates time based maintenance and binds them to date manager
+        registration = StringVar(self)
+        inspection = StringVar(self)
+        registration_manager = DateManager("registration", lambda r: registration.set(r))
+        inspection_manager = DateManager("inspection", lambda r: inspection.set(r))
 
         # creates widgets for oil change
         oil_change_container = CTkFrame(container)
@@ -95,15 +90,27 @@ class OBDMenu(CTkFrame):
         filter_change_label.pack(side="right", pady=5)
         filter_change_container.pack(fill="x", padx=10, expand=True)
 
-        # creates widgets for transmission change
-        transmission_change_container = CTkFrame(container)
-        transmission_change_label = CTkLabel(transmission_change_container, text="Miles Until Transmission Fluid Change:", font=("Arial", 20))
-        transmission_change_label.pack(side="left", padx=10, pady=5)
-        transmission_change_button = PWCTkButton(transmission_change_container, self, 2, text="Reset", font=("Arial", 20), width=70, command=transmission_change_manager.reset)
-        transmission_change_button.pack(side="right", padx=10, pady=5)
-        transmission_change_label = CTkLabel(transmission_change_container, textvariable=transmission_change, font=("Arial", 20))
-        transmission_change_label.pack(side="right", pady=5)
-        transmission_change_container.pack(fill="x", padx=10, expand=True)
+        # creates widgets for registration
+        registration_calendar = Calendar(self, lambda d: [setattr(registration_manager, "value", d), registration_calendar.place_forget()])
+        registration_container = CTkFrame(container)
+        registration_label = CTkLabel(registration_container, text="Renew Registration At:", font=("Arial", 20))
+        registration_label.pack(side="left", padx=10, pady=5)
+        registration_button = PWCTkButton(registration_container, self, 2, text="Reset", font=("Arial", 20), width=70, command=lambda: registration_calendar.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center"))
+        registration_button.pack(side="right", padx=10, pady=5)
+        registration_label = CTkLabel(registration_container, textvariable=registration, font=("Arial", 20))
+        registration_label.pack(side="right", pady=5)
+        registration_container.pack(fill="x", padx=10, expand=True)
+
+        # creates widgets for inspection
+        inspection_calendar = Calendar(self, lambda d: [setattr(inspection_manager, "value", d), inspection_calendar.place_forget()])
+        inspection_container = CTkFrame(container)
+        inspection_label = CTkLabel(inspection_container, text="Inspection Due At:", font=("Arial", 20))
+        inspection_label.pack(side="left", padx=10, pady=5)
+        inspection_button = PWCTkButton(inspection_container, self, 2, text="Reset", font=("Arial", 20), width=70, command=lambda: inspection_calendar.place(relx=.5, rely=.5, relwidth=.75, relheight=.75, anchor="center"))
+        inspection_button.pack(side="right", padx=10, pady=5)
+        inspection_label = CTkLabel(inspection_container, textvariable=inspection, font=("Arial", 20))
+        inspection_label.pack(side="right", pady=5)
+        inspection_container.pack(fill="x", padx=10, expand=True)
 
         # creates the error codes popup
         self.codes_popup = CTkFrame(self, border_width=2)
@@ -125,7 +132,7 @@ class OBDMenu(CTkFrame):
         self.codes_popup.columnconfigure(1, weight=1)
         self.codes_container.columnconfigure(1, weight=1)
 
-    def load_api(self, mpg, miles_until_empty):
+    def load_api(self, mpg):
         """
         loads the OBD scanner asynchronously for UI performance
         """
@@ -134,8 +141,7 @@ class OBDMenu(CTkFrame):
         self.api = OBDAPI(
             self,
             self.job_manager,
-            lambda m: self.after(0, lambda: mpg.set(m)),
-            lambda e: self.after(0, lambda: miles_until_empty.set(e)),
+            lambda m: self.after(0, lambda: mpg.set(m))
         )
 
     def get_codes(self):

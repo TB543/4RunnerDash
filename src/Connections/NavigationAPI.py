@@ -89,11 +89,6 @@ class NavigationAPI:
     thread = Thread(target=gps_read_loop, daemon=True)
     running = True
 
-    # use internet for apis when in debug mode
-    if len(argv) == 2 and argv[1] == "dev":
-        TILE_SERVER_URLS = ("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
-
     # attempts to read previous gps coords from file
     try:
         with open("AppData/gps.json", "r") as f:

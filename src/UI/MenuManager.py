@@ -8,6 +8,7 @@ from sys import argv
 from subprocess import run
 from Connections.AudioAPI import AudioAPI
 from DataManagers.MileManager import MileManger
+from DataManagers.DateManager import DateManager
 from DataManagers.FGJobManager import FGJobManager
 from DataManagers.BGJobManager import BGJobManager
 from UI.MainMenu import MainMenu
@@ -62,7 +63,7 @@ class MenuManager(CTk):
         self.appearance_manager = AppearanceManager(self)
         self.fg_job_manager = FGJobManager(touch_screen)
         self.bg_job_manager = BGJobManager()
-        MileManger.maintenance_callback = lambda: self.set_notification("Maintenance Needed in OBD Menu")
+        MileManger.maintenance_callback = DateManager.maintenance_callback = lambda: self.set_notification("Vehicle Maintenance Needed Soon")
 
         # apis setup
         self.audio_api = AudioAPI(self.bg_job_manager)

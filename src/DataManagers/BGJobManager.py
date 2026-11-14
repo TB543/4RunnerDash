@@ -59,7 +59,6 @@ class BGJobManager(ThreadPoolExecutor):
                 if not obd.is_connected():
                     Async.__init__(obd)
                     obd.watch(commands.MAF)
-                    obd.watch(commands.FUEL_LEVEL)
                     obd.watch(commands.SPEED, callback=lambda r: obd.update_loop())
                     obd.start()
 
@@ -67,7 +66,6 @@ class BGJobManager(ThreadPoolExecutor):
             except:
                     Async.__init__(obd)
                     obd.watch(commands.MAF)
-                    obd.watch(commands.FUEL_LEVEL)
                     obd.watch(commands.SPEED, callback=lambda r: obd.update_loop())
                     obd.start()
 

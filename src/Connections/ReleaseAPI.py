@@ -2,7 +2,7 @@ from os import mkdir, remove
 from shutil import rmtree
 from subprocess import check_output, run
 from datetime import datetime
-from threading import Thread, Lock
+from threading import Thread
 
 
 class ReleaseAPI:
